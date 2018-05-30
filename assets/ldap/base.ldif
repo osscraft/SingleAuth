@@ -1,0 +1,4 @@
+dn: dc=ldap,dc=lixin,dc=edu,dc=cn
+dc: ldap
+objectclass: top
+objectclass: domain

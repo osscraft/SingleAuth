@@ -1,0 +1,1 @@
+<?php include dirname(dirname(dirname(__DIR__))) . '/theme/default/error.php';?>

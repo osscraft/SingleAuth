@@ -1,0 +1,64 @@
+{
+  "name": "puse-icons-feather",
+  "repository": {
+    "type": "git",
+    "url": "http://github.com/puse/icons-feather.git"
+  },
+  "description": "A growing collection of beautifully simple icons.",
+  "version": "1.1.0",
+  "keywords": [
+    "icon",
+    "font",
+    "feather",
+    "puse"
+  ],
+  "homepage": "http://colebemis.com/feather/",
+  "author": {
+    "name": "Cole Bemis",
+    "email": "info@colebemis.com"
+  },
+  "contributors": [
+    {
+      "name": "Mushex Antaranian",
+      "email": "mushex@antaranian.com"
+    }
+  ],
+  "files": [
+    "feather.css",
+    "fonts/"
+  ],
+  "style": "feather.css",
+  "scripts": {
+    "build": "make build",
+    "prepublish": "make build-dev"
+  },
+  "engines": {
+    "node": ">=0.10.0"
+  },
+  "devDependencies": {
+    "faiton": "^1.0.1"
+  },
+  "bugs": {
+    "url": "https://github.com/puse/icons-feather/issues"
+  },
+  "_id": "puse-icons-feather@1.1.0",
+  "dist": {
+    "shasum": "3e4ac3bb353a7fb8678ded06aea06f50a535938c",
+    "tarball": "http://registry.npmjs.org/puse-icons-feather/-/puse-icons-feather-1.1.0.tgz"
+  },
+  "_from": "puse-icons-feather@",
+  "_npmVersion": "1.4.4",
+  "_npmUser": {
+    "name": "antaranian",
+    "email": "mushex@antaranian.com"
+  },
+  "maintainers": [
+    {
+      "name": "antaranian",
+      "email": "mushex@antaranian.com"
+    }
+  ],
+  "directories": {},
+  "_shasum": "3e4ac3bb353a7fb8678ded06aea06f50a535938c",
+  "_resolved": "https://registry.npmjs.org/puse-icons-feather/-/puse-icons-feather-1.1.0.tgz"
+}

@@ -1,0 +1,187 @@
+<?php
+/**
+ * PHP SDK for SSO (using OAuth2)
+ * 
+ * @author liaiyong <liaiyong@dcux.com>
+ */
+
+/**
+ * SSO OAuth 认证类(OAuth2)
+ *
+ * 授权机制说明请大家参考OAuth官方
+ *
+ * @package 
+ * @author liaiyong
+ * @version 1.0
+ */
+class SSOToOAuth2 {
+    /**
+     * @ignore
+     */
+    public $clientId;
+    /**
+     * @ignore
+     */
+    public $clientSecret;
+    /**
+     * @ignore
+     */
+    public $access_token;
+    /**
+     * @ignore
+     */
+    public $refresh_token;
+    /**
+     * Set timeout default.
+     *
+     * @ignore
+     */
+    public $timeout = 30;
+    /**
+     * Set connect timeout.
+     *
+     * @ignore
+     */
+    public $connectTimeout = 30;
+    /**
+     * Verify SSL Cert.
+     *
+     * @ignore
+     */
+    public $sslVerifyPeer = false;
+
+    public $authorizeURL = 'http://sso.project.dcux.com/authorize.php';
+
+    public $accessTokenURL = 'http://sso.project.dcux.com/token.php';
+
+    public $logoutURL = 'http://sso.project.dcux.com/logout.php';
+
+    public function __construct($clientId, $clientSecret, $access_token = NULL, $refresh_token = NULL) {
+        $this->clientId = $clientId;
+        $this->clientSecret = $clientSecret;
+        $this->access_token = $access_token;
+        $this->refresh_token = $refresh_token;
+    }
+    /**
+     * authorize接口
+     *
+     * @param string $url 授权后的回调地址
+     * @param string $response_type 支持的值包括 code 和token 默认值为code
+     * @param string $state 用于保持请求和回调的状态。在回调时,会在Query Parameter中回传该参数
+     * @return array
+     */
+    public function getAuthorizeURL( $url, $response_type = 'code', $state = '1q2w3e') {
+        $params = array();
+        $params['client_id'] = $this->clientId;
+        $params['redirect_uri'] = $url;
+        $params['response_type'] = $response_type;
+        $params['state'] = $state;
+        return $this->authorizeURL."?".http_build_query($params);
+    }
+
+    /**
+     * access_token接口
+     *
+     * @param string $type 请求的类型,可以为:code, token
+     * @param array $keys 其他参数：
+     *  - 当$type为code时： array('code'=>..., 'redirectURI'=>...)
+     *  - 当$type为token时： array('refresh_token'=>...)
+     * @return array
+     */
+    public function getAccessToken( $type = 'code', $keys ) {
+        $params = array();
+        $params['client_id'] = $this->clientId;
+        $params['client_secret'] = $this->clientSecret;
+        if ( $type === 'token' ) {
+            $params['grant_type'] = 'refresh_token';
+            $params['refresh_token'] = $keys['refresh_token'];
+        } else if ( $type === 'code' ) {
+            $params['grant_type'] = 'authorization_code';
+            $params['code'] = $keys['code'];
+            $params['redirect_uri'] = $keys['redirect_uri'];
+        }
+
+        $response = $this->fopen($this->accessTokenURL,'GET',$params);
+        //$response = $this->http($this->accessTokenURL,'GET',$params);
+        $token = json_decode($response,true);
+
+        if ( is_array($token) && !isset($token['error']) ) {
+            $this->access_token = $token['access_token'];
+            $this->refresh_token = $token['refresh_token'];
+        }
+        return $token;
+    }
+    public function getLogoutURL($uri = '') {
+        $params = array();
+        $params['access_token'] = $this->access_token;
+        $params['refresh_token'] = $this->refresh_token;
+        $params['redirect_uri'] = $uri;
+        return $this->logoutURL."?".http_build_query($params);
+    }
+
+    /**
+     * Make an fopen request
+     *
+     * @return string API results
+     */
+    protected function fopen($url, $method, $fields = null) {
+        $path = $url."?".((is_array($fields))?http_build_query($fields):$fields);
+        $stream = ($this->sslVerifyPeer)?fsockopen($path,'r'):fopen($path,'r');
+        $response = stream_get_contents($stream);
+        return $response;
+    }
+    /**
+     * Make an HTTP request
+     *
+     * @return string API results
+     */
+    protected function http($url, $method, $fields = null, $headers = null) {
+        if(!function_exists('curl_init')) exit('{"success":false,"msg":"install curl"}');
+        $ci = curl_init();
+
+        curl_setopt($ci, CURLOPT_CONNECTTIMEOUT, $this->connectTimeout);
+        curl_setopt($ci, CURLOPT_TIMEOUT, $this->timeout);
+        curl_setopt($ci, CURLOPT_USERAGENT, $this->userAgent);
+        curl_setopt($ci, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ci, CURLOPT_SSL_VERIFYPEER, $this->sslVerifyPeer);
+        
+        switch ($method) {
+        case 'POST':
+            curl_setopt($ci, CURLOPT_POST, true);
+            if (!empty($fields))
+                curl_setopt($ci, CURLOPT_POSTFIELDS, $fields);
+            break;
+        case 'GET':
+            if (!empty($fields))
+                $url = $url."?".((is_array($fields))?http_build_query($fields):$fields);
+            break;
+        }
+
+        if ( isset($this->access_token) && $this->access_token )
+            $headers[] = "Authorization: OAuth2 ".$this->access_token;
+
+        $headers[] = "API-RemoteIP: " . $_SERVER['REMOTE_ADDR'];
+
+        curl_setopt($ci, CURLOPT_HTTPHEADER, $headers );
+        curl_setopt($ci, CURLOPT_URL, $url);
+
+        $response = curl_exec($ci);
+        curl_close($ci);
+
+        return $response;
+    }
+}
+
+class SSOClient extends SSOToOAuth2 {
+    public $resourceURL = 'http://sso.project.dcux.com/resource.php';
+    public function getUserInfo() {
+        $resourceURL = $this->resourceURL;
+        $access_token = $this->access_token;
+        $params = array('access_token' => $access_token);
+        //$response = $this->http($resourceURL,'GET',$params);
+        $response = $this->fopen($resourceURL,'GET',$params);
+        $result = json_decode($response,true);
+        return $result;
+    }
+}
+?>

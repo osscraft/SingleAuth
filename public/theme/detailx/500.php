@@ -1,0 +1,1 @@
+<?php include dirname(__DIR__) . '/detail/500.php';?>

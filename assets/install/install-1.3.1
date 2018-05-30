@@ -1,0 +1,48 @@
+1.3.1安装
+
+1，拷贝SSO项目下的web,class,config,cmd,job等目录
+2，web下cache,log目录加权：chmod 0777 web/cache web/log cmd/log job/log
+3，修改config/env.php，设置使用的配置主文件，如：test => main.test.php
+	3.1，使用新配置主文件，请参考其他配置主文件
+4，修改web/js/env.js，设置前端使用的配置主文件，如：test => configuration['test'] #
+	4.1，使用新配置，在web/js/config.js中增加新配置项
+5，开启计划任务（可选）
+	5.1，根目录下创建job目录，并将项目链接，命令：ln -s $project_dir$ /job/SSO #可选
+	5.2，给如下文件加权，命令如下：
+		chmod +x $PROJECT_HOME$/bin/job/minutely.sh
+		chmod +x $PROJECT_HOME$/bin/job/hourly.sh
+		chmod +x $PROJECT_HOME$/bin/job/daily.sh
+		chmod +x $PROJECT_HOME$/bin/job/weekly.sh
+		chmod +x $PROJECT_HOME$/bin/job/monthly.sh
+		chmod +x $PROJECT_HOME$/bin/job/yearly.sh
+	5.3，将job/sso.cron中的内容加入计划任务配置中，命令如下
+		crontab -e
+		注：集群情况下都要执行
+	5.4，执行如下命令
+		ln -s $PROJECT_HOME$/bin/sso/clean.php $PROJECT_HOME$/bin/job/minutely/sso.clean.php
+		ln -s $PROJECT_HOME$/bin/oauth2/clean.php $PROJECT_HOME$/bin/job/minutely/oauth2.clean.php
+		ln -s $PROJECT_HOME$/bin/sso/online.php $PROJECT_HOME$/bin/job/minutely/sso.online.php
+		ln -s $PROJECT_HOME$/bin/sso/failure.php $PROJECT_HOME$/bin/job/daily/sso.failure.php
+		ln -s $PROJECT_HOME$/bin/sso/dailyuser.php $PROJECT_HOME$/bin/job/daily/sso.dailyuser.php
+		ln -s $PROJECT_HOME$/bin/sso/dailyclient.php $PROJECT_HOME$/bin/job/daily/sso.dailyclient.php
+		ln -s $PROJECT_HOME$/bin/sso/monthclient.php $PROJECT_HOME$/bin/job/monthly/sso.monthclient.php
+		注：集群情况下只需一台机器执行
+6, 配置browscap
+	6.1, 给config下的php_browscap加权, 命令如下：
+		chmod 0777 -R $project_dir$/config/php_browscap/
+	6.2, 修改PHP5配置文件, 命令如下：
+		vi /etc/php5/apache2/php.ini
+		vi /etc/php5/cli/php.ini
+	6.3, 找到browscap配置项并修改
+		...
+		#browscap=*.ini
+		browscap=$project_dir$/config/php_browscap/browscap.ini
+		...
+	6.4, 开启自动更新计划任务, 执行如下命令
+		ln -s $PROJECT_HOME$/bin/browser/browscaps.php $PROJECT_HOME$/bin/job/daily/browser.dailybrowscap.php
+		注：集群情况下都要执行
+	6.5, 初始化Browscap, 执行如下命令
+		php $PROJECT_HOME$/bin/browser/browscaps.php
+		注：集群情况下都要执行
+7, 保持集群时间一致
+

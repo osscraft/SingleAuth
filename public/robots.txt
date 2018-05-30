@@ -1,0 +1,14 @@
+User-agent: * 
+Disallow: /inc
+Disallow: /log
+Disallow: /theme
+Disallow: /admin/theme
+Disallow: /admin/inc
+Disallow: /portal/theme
+Disallow: /portal/inc
+Disallow: /profile/theme
+Disallow: /profile/inc
+Disallow: /cache/theme
+Disallow: /cache/inc
+Disallow: /dev/theme
+Disallow: /dev/inc

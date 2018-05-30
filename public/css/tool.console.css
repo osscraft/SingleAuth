@@ -1,0 +1,287 @@
+body {
+    color: #666;
+}
+body, button, input, select, textarea {
+    font: 12px/1.125 Arial,Helvetica,sans-serif;
+    _font-family: "宋体";
+}
+input, textarea {
+    outline-style: none;
+}
+input[type=password], input[type=text], textarea {
+    outline-style: none;
+    -webkit-appearance: none;
+}
+address, caption, cite, code, dfn, em, i, th, var {
+    font-style: normal;
+    font-weight: 400;
+}
+a:hover {
+    text-decoration: underline;
+}
+.W_textb, a.W_textb {
+    color: #999;
+}
+.W_linka a, a, a.W_linka {
+    color: #3c7cb3;
+}
+.W_inputStp {
+    border: 1px solid #c6c6c6;
+    box-shadow: 1px 1px 1px 0 #f0f0f0 inset;
+    height: 26px;
+    height: 20px\9;
+    padding: 0 0 0 2px;
+    padding: 6px 0 0 2px\9;
+    vertical-align: top;
+    color: #666;
+    line-height: 26px;
+    line-height: 15px\9;
+    line-height: 12px\0;
+}
+textarea.W_inputStp {
+    padding-top: 4px;
+}
+.W_btn_a, .W_btn_a span, .W_btn_b, .W_btn_b span, .W_btn_e, .W_btn_e span {
+    cursor: pointer;
+    background: url(/images/apitest/btn.png?id=1380275451261) no-repeat 0 0;
+    color: #73797c;
+    display: inline-block;
+    padding: 0 0 0 3px;
+    height: 25px;
+    line-height: 25px;
+}
+.W_btn_b, .W_btn_b span {
+    background-position: 0 -100px;
+    color: #fff;
+}
+.W_btn_a span, .W_btn_b span, .W_btn_e span {
+    background-position: right -25px;
+    padding: 0 10px 0 7px;
+    min-width: 35px;
+    text-align: center;
+}
+.W_btn_b span {
+    background-position: right -125px;
+}
+.W_vline {
+    color: #ccc;
+}
+
+
+.home_apitest_wrap {
+    background: url(/images/apitest/website_topbg.png?id=1380275451261) repeat-x top;
+}
+.home_apitest_wrap .apitest_inner {
+    background: url(/images/apitest/website_header.jpg?id=1380275451261) no-repeat center top;
+}
+.home_apitest_wrap .home_apitest_banner {
+    width: 950px;
+    height:80px;
+    overflow: hidden;
+    margin: 0 auto;
+}
+.home_apitest_wrap .home_apitest_banner .logo {
+    width: 146px;
+    height: 44px;
+    background: url(/images/apitest/bg_home_logo.png?id=1380275451261) no-repeat;
+    margin: 23px 0 0 10px;
+}
+.home_apitest_wrap .home_apitest_content {
+    background: #fff;
+    background: -moz-linear-gradient(center top,rgba(9,60,87,.3),rgba(211,215,217,.3));
+    background: -webkit-gradient(linear,0 0,0 30%,from(#093c57),to(#d3d7d9));
+    box-shadow: 0 0 7px rgba(0,0,0,.2);
+    border-radius: 8px;
+    padding: 1px;
+    width: 948px;
+    margin: 0 auto;
+}
+.home_apitest_wrap .home_apitest_content .inner {
+    background: #fff;
+    border-radius: 8px;
+}
+.home_apitest_wrap .home_apitest_content .inner_left {
+    float: left;
+    width: 295px;
+    padding: 25px;
+    background: #f7f7f7;
+    min-height: 450px;
+    _height: 450px;
+    position: relative;
+    border-radius: 8px;
+}
+.home_apitest_wrap .home_apitest_content .inner_right {
+    float: right;
+    width: 614px;
+    padding: 25px 50px 0 0;
+}
+
+.form_apitest {
+    width: 235px;
+}
+.form_apitest .line {
+    height: 1px;
+    background: #e2e2e2;
+    border-bottom: 1px solid #fff;
+    overflow: hidden;
+    margin: 10px 0;
+}
+.form_apitest dl {
+    padding: 7px 0;
+    margin-bottom:0;
+}
+.form_apitest dl dd, .form_apitest dl dt {
+    float: left;
+    font-weight: normal;
+}
+.form_apitest dl.s1 dt {
+    margin-top: 3px;
+    width: 115px;
+}
+.form_apitest dl.s1 dt select {
+    width: 110px;
+}
+.form_apitest dl.s2 dt {
+    margin-bottom: 5px;
+}
+.form_apitest dl.s2 dd, .form_apitest dl.s2 dt {
+    float: none;
+}
+.form_apitest dl.s2 .W_inputStp {
+    width: 231px;
+}
+.form_apitest dl.s3 dt {
+    line-height: 20px;
+    width: 60px;
+}
+.form_apitest dl.s3 dd {
+    width: 175px;
+    line-height: 20px;
+}
+.form_apitest dl.s3 dd select {
+    width: 170px;
+    float: right;
+}
+.form_apitest dl.addbox {
+    border: 1px solid #d1d1d1;
+    border-radius: 3px;
+    background: #fff;
+    margin: 10px 0;
+    min-height: 150px;
+    _height: 150px;
+}
+.form_apitest dl.addbox dd, .form_apitest dl.addbox dt {
+    float: none;
+    padding: 0 10px 0 15px;
+}
+.form_apitest dl.addbox dt {
+    padding-bottom: 10px;
+}
+.form_apitest dl.addbox dd.inp {
+    padding-top: 5px;
+}
+.form_apitest dl.addbox dd.inp .W_inputStp {
+    vertical-align: middle;
+    color: #ccc;
+}
+.form_apitest dl.addbox dd.inp .wid1 {
+    width: 66px;
+}
+.form_apitest dl.addbox dd.inp .wid2 {
+    width: 100px;
+}
+.form_apitest dl.addbox dd.inp .op_closes {
+    display: inline-block;
+    vertical-align: middle;
+    margin-left: 2px;
+}
+.form_apitest dl.addbox dd.link {
+    padding-top: 10px;
+    line-height: 20px;
+}
+.form_apitest dl.addbox dd.link .icon_op_add {
+    vertical-align: middle;
+    margin-right: 5px;
+}
+
+.form_code dl {
+    padding-bottom: 20px;
+    line-height: 20px;
+}
+.form_code dl dt {
+    margin-bottom: 10px;
+}
+.form_code dl dt .icon_op_off, .form_code dl dt .icon_op_on {
+    vertical-align: middle;
+    margin-left: 5px;
+    cursor: pointer;
+}
+.form_code dl .W_inputStp {
+    line-height: 20px;
+    padding-left: 10px;
+    padding-right: 10px;
+    overflow: hidden;
+    overflow-y: auto;
+}
+.form_code dl .W_inputStp.heig1 {
+    height: 100px;
+}
+.form_code dl dt .fr {
+    float: right;
+}
+.form_code dl dt .fr .W_vline {
+    margin: 0 5px;
+}
+.form_code dl .W_inputStp {
+    line-height: 20px;
+    padding-left: 10px;
+    padding-right: 10px;
+    overflow: hidden;
+    overflow-y: auto;
+}
+.form_code dl .W_inputStp.heig2 {
+    height: 240px;
+    color: #518A00;
+}
+.form_code dl .W_inputStp.heig2 {
+    width: 564px;
+}
+
+.icon_notice_ask, .icon_notice_askgr, .icon_op_add, .icon_op_del, .icon_op_off, .icon_op_on {
+    display: inline-block;
+    background: url(/images/apitest/ico.png?id=1380275451261) no-repeat;
+}
+.icon_op_add {
+    width: 9px;
+    height: 9px;
+    background-position: 0 -190px;
+}
+.icon_op_off, .icon_op_on {
+    width: 13px;
+    height: 13px;
+}
+.icon_op_off {
+    background-position: 0 -210px;
+}
+
+.op_closes {
+    cursor: pointer;
+    width: 20px;
+    height: 20px;
+    background: url(/images/apitest/ico.png?id=1380275451261) no-repeat 5px -130px;
+    display: block;
+}
+
+.op_footer {
+    width: 980px;
+    margin: 20px auto 0;
+    padding-bottom: 20px;
+    text-align: center;
+}
+.op_footer .links a {
+    margin: 0 15px;
+    color: #3c7cb3;
+}
+.op_footer .copyright span {
+    margin: 0 10px;
+}

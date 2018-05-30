@@ -1,0 +1,8 @@
+# sso-ldap v3 directory schema
+#attributetype ( 1.3.6.1.4.1.7914.1.2.1.1 NAME 'userId' DESC 'id of the teacher, student or other' SYNTAX 1.3.6.1.4.1.1466.115.121.1.15 SUP cn )
+#attributetype ( 1.3.6.1.4.1.7914.1.2.1.2 NAME 'password' DESC 'user password' SYNTAX 1.3.6.1.4.1.1466.115.121.1.40 SUP userPassword )
+attributetype ( 1.3.6.1.4.1.7914.1.2.1.3 NAME 'username' DESC 'user name' SYNTAX 1.3.6.1.4.1.1466.115.121.1.15 SUP sn )
+attributetype ( 1.3.6.1.4.1.7914.1.2.1.4 NAME 'role' DESC 'sign of teacher, student or other' SYNTAX 1.3.6.1.4.1.1466.115.121.1.15 SUP employeeType )
+
+# Object Class Definitions
+objectclass ( 1.3.6.1.4.1.7914.1.2.2.1 NAME 'user' DESC 'sso-ldap user' SUP top STRUCTURAL MUST ( userid $ userPassword $ username $ role ) )

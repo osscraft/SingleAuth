@@ -1,0 +1,10 @@
+一、Authorization Code授权码方式(web场景)：这种是推荐使用的，也是最安全的，也是替换OAuth1.1的一种授权方式。
+  
+二、Implicit Grant隐式授权(无服务端JS场景)：相比授权码授权，隐式授权少了第一步的取Authorization Code的过程，而且不会返回 refresh_token。主要用于无服务器端的应用，比如 浏览器插件或一些特殊应用。隐式授权不包含Client授权，它的授权依赖于 资源所有者及注册应用时候所填写的redirection URI（跳转地址）。因为Access token是附着在 redirect_uri 上面被返回的，所以这个 Access token就可能会暴露给 资源所有者或者设置内的其它方（对资源所有者来说，可以看到redirect_uri，对其它方来说，可以通过监测浏览器的地址变化来得到 Access token）。
+ 
+三、Resource Owner Password Credentials资源所有者密码证书授权(桌面应用场景)：这种验证主要用于资源所有者对Client有极高的信任度的情况，比如操作系统或高权限程序。只有在不能使用其它授权方式的情况下才使用这种方式。
+  Q:为何要这种这么不安全的方式？
+  A:取代原来原始的 username，password的授权方式，而且不需要 client保存用户的密码，client只要保存access token就可以。主要用于客户端程序。
+四、Client Credentials客户端证书授权(后加入的场景，针对未来的可穿戴设备、家庭设备等)：这种情况下 Client使用自己的 client证书（如 client_id及client_secret组成的 http basic验证码）来获取 access token，只能用于信任的client。
+
+五、Extension Grants扩展授权(针对其他协议，交换授权证书)。

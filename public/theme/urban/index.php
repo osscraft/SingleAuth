@@ -1,0 +1,1 @@
+<?php include dirname(__DIR__) . '/fix/index.php';?>

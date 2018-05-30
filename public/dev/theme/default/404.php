@@ -1,0 +1,1 @@
+<?php include dirname(dirname(__DIR__)) . '/theme/default/404.php';?>
