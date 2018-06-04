@@ -1,6 +1,11 @@
 # SingleAuth
 Open Authentication Platform System
 
+## 环境
+* PHP > 5.4
+* PHP扩展：php_mysqli php_memcache
+* Apache2 Web或Ngnix
+
 ## 安装
 1. 下载或克隆至任意位置;
 2. 使用[composer](http://getcomposer.org/ "Dependency Manager for PHP")命令;
@@ -8,7 +13,8 @@ Open Authentication Platform System
 composer update
 ```
 3. 导入数据表结构和demo数据，执行`$PROJECT_PATH$/assets/sql/SSO-demo/sso.sql`和`$PROJECT_PATH$/assets/sql/SSO-demo/data.sql`;
-4. Apache Web服务地址指向`$PROJECT_PATH$/public`;
+4. Apache Web服务地址指向`$PROJECT_PATH$/public`，端口8800;
+5. 浏览器打开 http://127.0.0.1:8800/
 
 ## 命名规范
 
