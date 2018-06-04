@@ -37,7 +37,6 @@ class VerifyCode {
         //MemSession::setSession();
         // 消息头
         Header("Content-type: image/PNG");
-        // 图片
         $im = imagecreate($w, $h);
         // 字体色
         $font_color = imagecolorallocate($im, mt_rand(0, 200), mt_rand(0, 120), mt_rand(0, 120));
@@ -70,7 +69,7 @@ class VerifyCode {
         for($i = 0; $i < $num; $i ++) {
             $strpos = rand(1, 6);
             // imagestring($im, 5, $strx, $strpos, substr($code, $i, 1), $font_color);
-            @imagefttext($im, $size, mt_rand(- 10, 10), $strx, $strpos + 16, $text_color, dirname(App::$_rootpath).'/PHPLib/DejaVuSerif-Bold.ttf', substr($code, $i, 1));
+            @imagefttext($im, $size, mt_rand(- 10, 10), $strx, $strpos + 16, $font_color, App::$_rootpath .'/assets/font/DejaVuSerif-Bold.ttf', substr($code, $i, 1));
             $strx += rand(15, 18);
         }
         imagepng($im);

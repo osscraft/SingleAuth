@@ -41,7 +41,7 @@ class OAuth2CodeService extends Service {
 	        $authCodeArray['expires'] = $expires;
 	        $authCodeArray['scope'] = $scope;
 	        $authCodeArray['username'] = $username;
-	        $ret = $this->add($authCodeArray);
+	        $ret = $this->add($authCodeArray, false);
         }
         return empty($ret) ? false : $code;
     }

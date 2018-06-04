@@ -50,11 +50,11 @@ class SSOToOAuth2 {
      */
     public $sslVerifyPeer = false;
 
-    public $authorizeURL = 'http://sso.project.dcux.com/authorize.php';
+    public $authorizeURL = 'http://127.0.0.1:8800/authorize.php';
 
-    public $accessTokenURL = 'http://sso.project.dcux.com/token.php';
+    public $accessTokenURL = 'http://127.0.0.1:8800/token.php';
 
-    public $logoutURL = 'http://sso.project.dcux.com/logout.php';
+    public $logoutURL = 'http://127.0.0.1:8800/logout.php';
 
     public function __construct($clientId, $clientSecret, $access_token = NULL, $refresh_token = NULL) {
         $this->clientId = $clientId;
@@ -173,7 +173,7 @@ class SSOToOAuth2 {
 }
 
 class SSOClient extends SSOToOAuth2 {
-    public $resourceURL = 'http://sso.project.dcux.com/resource.php';
+    public $resourceURL = 'http://127.0.0.1:8800/resource.php';
     public function getUserInfo() {
         $resourceURL = $this->resourceURL;
         $access_token = $this->access_token;

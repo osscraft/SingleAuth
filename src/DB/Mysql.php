@@ -57,7 +57,7 @@ class Mysql extends DataBase implements Querying, Uniqueness {
     protected $showsql;
     public function __construct() {
         global $CFG;
-        $this->server = $CFG['mysql_host'];
+        $this->server = $CFG['mysql_host'] . ":" . $CFG['mysql_port'];
         $this->username = $CFG['mysql_name'];
         $this->password = $CFG['mysql_password'];
         $this->dbname = $CFG['mysql_database'];

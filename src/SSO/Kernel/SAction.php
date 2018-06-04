@@ -75,6 +75,7 @@ abstract class SAction extends Action {
         unset($_SESSION['loginCount']);
     }
     protected function updateLoginCount() {
+        $_SESSION['loginCount'] = empty($_SESSION['loginCount']) ? 0 : $_SESSION['loginCount'];
         $loginCount = ++ $_SESSION['loginCount'];
         return $loginCount;
     }
@@ -82,7 +83,7 @@ abstract class SAction extends Action {
         $_SESSION['verifyCode'] = $verifyCode;
     }
     protected function isNeedVerification() {
-        $loginCount = $_SESSION['loginCount'];
+        $loginCount = empty($_SESSION['loginCount']) ? 0 : $_SESSION['loginCount'];
         return $loginCount && $loginCount > 1 ? true : false;
     }
 
@@ -91,10 +92,12 @@ abstract class SAction extends Action {
         if(empty($CFG['cron_open'])) {
             $this->sessionService->gc();
         }
-        return $this->sessionService->open($savePath, $sessionName);
+        $ret = $this->sessionService->open($savePath, $sessionName);
+        return empty($ret) ? false : true;
     }
     public function sclose() {
-        return $this->sessionService->close();
+        $ret = $this->sessionService->close();
+        return empty($ret) ? false : true;
     }
     public function sread($sessionId) {
         global $CFG;
@@ -112,16 +115,21 @@ abstract class SAction extends Action {
     public function swrite($sessionId, $data) {
         if (empty($_SESSION) && $this->hasSession) {
             // 读取时有，写入时没有则执行删除
-            return $this->sessionService->destroy($sessionId);
+            $ret = $this->sessionService->destroy($sessionId);
+            return empty($ret) ? false : true;
         } else if(!empty($_SESSION)) {
             //$online = ! empty($_SESSION['uid']) ? 1 : 0;
-            return $this->sessionService->write($sessionId, $data);
+            $ret = $this->sessionService->write($sessionId, $data);
+            return empty($ret) ? false : true;
         }
+        return true;
     }
     public function sdestroy($sessionId) {
-        return $this->sessionService->destroy($sessionId);
+        $ret = $this->sessionService->destroy($sessionId);
+        return empty($ret) ? false : true;
     }
     public function sgc() {
-        return $this->sessionService->gc();
+        $ret = $this->sessionService->gc();
+        return empty($ret) ? false : true;
     }
 }

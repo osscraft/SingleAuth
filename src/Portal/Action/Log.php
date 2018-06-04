@@ -15,8 +15,8 @@ use Dcux\SSO\Service\ClientService;
 
 class Log extends PAction {
     public function onGet() {
-		$client_id=$_REQUEST['client_id'];
-        $_REQUEST['pageSize'] = $_REQUEST['rp'];
+		$client_id=empty($_REQUEST['client_id']) ? '' : $_REQUEST['client_id'];
+        $_REQUEST['pageSize'] = empty($_REQUEST['rp']) ? '' : $_REQUEST['rp'];
         $query = empty($_REQUEST['query']) ? '' : $_REQUEST['query'];
         $qtype = empty($_REQUEST['qtype']) ? '' : $_REQUEST['qtype'];
         $uid = empty($_SESSION['uid']) ? '' : $_SESSION['uid'];
@@ -54,11 +54,11 @@ class Log extends PAction {
             } else {
                 $arr[$qtype] = $query;
             }
-			if(!$_SESSION['user']['isAdmin']){
+			if(empty($_SESSION['user']['isAdmin'])){
 				$arr['username']=$uid;
 			}
         } else {
-			if(!$_SESSION['user']['isAdmin']){
+			if(empty($_SESSION['user']['isAdmin'])){
 				$arr['username']=$uid;
 			}
         }
@@ -66,6 +66,7 @@ class Log extends PAction {
 			$arr=array();
 		}
 		$total = StatUserDetailService::counts($arr);
+        
 		$paging->count = $total;
 		$logUsers=StatUserDetailService::getInstance()->getSUDetailListPaging($arr,array('id' => 'DESC'),$paging->toLimit());
 		$page=$paging->toPaging();

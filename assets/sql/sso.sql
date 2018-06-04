@@ -1,24 +1,24 @@
 
 ---20150416---
-ALTER TABLE  `sso`.`clients` ADD  `visible` INT NOT NULL DEFAULT  '0' AFTER  `is_show`;
-ALTER TABLE  `sso`.`clients` CHANGE  `is_show`  `is_show` TINYINT( 4 ) NOT NULL DEFAULT  '0';
+ALTER TABLE  `single_auth`.`clients` ADD  `visible` INT NOT NULL DEFAULT  '0' AFTER  `is_show`;
+ALTER TABLE  `single_auth`.`clients` CHANGE  `is_show`  `is_show` TINYINT( 4 ) NOT NULL DEFAULT  '0';
 
 ---20150422---
 ALTER TABLE  `users` ADD  `role` TINYINT NOT NULL COMMENT  '0:未知，1:老师，2:学生，3:其他人员' AFTER  `username`;
 ALTER TABLE  `clients` ADD  `order_num` INT UNSIGNED NOT NULL COMMENT  '排序值，通过访问量' AFTER  `visible` ,
 ADD INDEX (  `order_num` )
 
-ALTER TABLE  `sso`.`clients` DROP PRIMARY KEY ,
+ALTER TABLE  `single_auth`.`clients` DROP PRIMARY KEY ,
 ADD PRIMARY KEY (  `id` );
 
-ALTER TABLE `sso`.`clients` DROP INDEX `id`;
-ALTER TABLE `sso`.`clients` ADD UNIQUE (`client_id`);
+ALTER TABLE `single_auth`.`clients` DROP INDEX `id`;
+ALTER TABLE `single_auth`.`clients` ADD UNIQUE (`client_id`);
 
-ALTER TABLE  `sso`.`clients` CHANGE  `visible`  `visible` TINYINT( 4 ) NOT NULL DEFAULT  '0';
+ALTER TABLE  `single_auth`.`clients` CHANGE  `visible`  `visible` TINYINT( 4 ) NOT NULL DEFAULT  '0';
 
-ALTER TABLE  `sso`.`clients` CHANGE  `order_num`  `order_num` INT NOT NULL DEFAULT  '0' COMMENT  '排序值，通过访问量';
+ALTER TABLE  `single_auth`.`clients` CHANGE  `order_num`  `order_num` INT NOT NULL DEFAULT  '0' COMMENT  '排序值，通过访问量';
 
-CREATE  TABLE `sso`.`setting` (
+CREATE  TABLE `single_auth`.`setting` (
   `k` VARCHAR(255) NOT NULL ,
   `v` VARCHAR(255) NOT NULL ,
   PRIMARY KEY (`k`)
@@ -41,20 +41,20 @@ CREATE TABLE `session` (
   KEY `expires` (`expires`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8
 
-ALTER TABLE `sso`.`user_extension` ADD COLUMN `last_client_id` VARCHAR(50) NOT NULL  AFTER `last_login` , ADD COLUMN `last_ip` INT UNSIGNED NOT NULL  AFTER `last_client_id` , ADD COLUMN `last_os` VARCHAR(200) NOT NULL  AFTER `last_ip` , ADD COLUMN `last_browser` VARCHAR(200) NOT NULL  AFTER `last_os` ;
+ALTER TABLE `single_auth`.`user_extension` ADD COLUMN `last_client_id` VARCHAR(50) NOT NULL  AFTER `last_login` , ADD COLUMN `last_ip` INT UNSIGNED NOT NULL  AFTER `last_client_id` , ADD COLUMN `last_os` VARCHAR(200) NOT NULL  AFTER `last_ip` , ADD COLUMN `last_browser` VARCHAR(200) NOT NULL  AFTER `last_os` ;
 
 ---20150423---
-ALTER TABLE `sso`.`user_extension` CHANGE COLUMN `last_login` `last_login` DATETIME NOT NULL COMMENT '最后登录时间'  ;
+ALTER TABLE `single_auth`.`user_extension` CHANGE COLUMN `last_login` `last_login` DATETIME NOT NULL COMMENT '最后登录时间'  ;
 
-ALTER TABLE `sso`.`stat_user_detail` CHANGE COLUMN `time` `time` DATETIME NOT NULL  ;
+ALTER TABLE `single_auth`.`stat_user_detail` CHANGE COLUMN `time` `time` DATETIME NOT NULL  ;
 
-ALTER TABLE `sso`.`session` CHANGE COLUMN `time` `time` DATETIME NOT NULL  ;
+ALTER TABLE `single_auth`.`session` CHANGE COLUMN `time` `time` DATETIME NOT NULL  ;
 
 ---20150504---
 ALTER TABLE  `stat_user_detail` ADD INDEX (  `time` )
 
 ---20150505---
-CREATE TABLE `sso`.`stat_browser` (
+CREATE TABLE `single_auth`.`stat_browser` (
 `id` INT NOT NULL AUTO_INCREMENT ,
 `browser` VARCHAR(50) NOT NULL ,
 `version` VARCHAR(50) NOT NULL ,
@@ -65,7 +65,7 @@ ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8
 COLLATE = utf8_general_ci;
 
-CREATE TABLE `sso`.`stat_failure` (
+CREATE TABLE `single_auth`.`stat_failure` (
 `id` INT NOT NULL AUTO_INCREMENT ,
 `date` DATE NOT NULL ,
 `ip` INT UNSIGNED NOT NULL ,
@@ -87,7 +87,7 @@ ALTER TABLE  `log_user` ENGINE = INNODB;
 ALTER TABLE  `tokens` ENGINE = INNODB;
 ALTER TABLE  `users` ENGINE = INNODB;
 ---20150514---
-ALTER TABLE `sso`.`setting` ADD COLUMN `info` VARCHAR(1000) NOT NULL COMMENT '配置项说明'  AFTER `v` , CHANGE COLUMN `v` `v` VARCHAR(1000) NOT NULL  ;
+ALTER TABLE `single_auth`.`setting` ADD COLUMN `info` VARCHAR(1000) NOT NULL COMMENT '配置项说明'  AFTER `v` , CHANGE COLUMN `v` `v` VARCHAR(1000) NOT NULL  ;
 
 ---20150520---
 ALTER TABLE  `auth_codes` ADD PRIMARY KEY (  `code` );
@@ -100,7 +100,7 @@ ALTER TABLE  `tokens` ADD INDEX (  `expires` );
 ALTER TABLE  `auth_codes` CHANGE  `expires`  `expires` INT UNSIGNED NOT NULL;
 ALTER TABLE  `tokens` CHANGE  `expires`  `expires` INT UNSIGNED NOT NULL;
 --不客户端，不同的令牌有效时间，SQL如下：
-ALTER TABLE `sso`.`clients` ADD COLUMN `token_lifetime` INT NOT NULL  AFTER `order_num` ;
+ALTER TABLE `single_auth`.`clients` ADD COLUMN `token_lifetime` INT NOT NULL  AFTER `order_num` ;
 
 --实时在线用户数 表，SQL如下：
 CREATE TABLE `stat_online` (
@@ -111,7 +111,7 @@ CREATE TABLE `stat_online` (
   UNIQUE KEY `time_UNIQUE` (`time`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 ---20150601---
-CREATE  TABLE `sso`.`client_extension` (
+CREATE  TABLE `single_auth`.`client_extension` (
   `cid` VARCHAR(32) NOT NULL ,
   `total` INT NOT NULL ,
   `security_level` TINYINT NOT NULL ,
@@ -122,7 +122,7 @@ ALTER TABLE  `client_extension` ENGINE = INNODB;
 
 ALTER TABLE  `users` ADD  `password` VARCHAR( 32 ) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL AFTER  `username`
 ---20150626---
-CREATE  TABLE `sso`.`user_grant` (
+CREATE  TABLE `single_auth`.`user_grant` (
   `uid` VARCHAR(50) NOT NULL ,
   `is_super` TINYINT NOT NULL ,
   `grants` VARCHAR(2000) NOT NULL ,
@@ -132,7 +132,7 @@ DEFAULT CHARACTER SET = utf8
 COLLATE = utf8_general_ci;
 
 ---20150709---
-CREATE  TABLE `sso`.`connection` (
+CREATE  TABLE `single_auth`.`connection` (
   `id` INT NOT NULL ,
   `source` TINYINT NOT NULL ,
   `sid` INT NOT NULL ,
@@ -149,10 +149,10 @@ DEFAULT CHARACTER SET = utf8
 COLLATE = utf8_general_ci;
 
 ---20150713---
-ALTER TABLE `sso`.`stat_user_detail` ADD COLUMN `ua` VARCHAR(2000) NOT NULL  AFTER `browser` ;
+ALTER TABLE `single_auth`.`stat_user_detail` ADD COLUMN `ua` VARCHAR(2000) NOT NULL  AFTER `browser` ;
 
 ---20150715---
-CREATE  TABLE `sso`.`stat_referer` (
+CREATE  TABLE `single_auth`.`stat_referer` (
   `id` INT NOT NULL AUTO_INCREMENT ,
   `type` TINYINT NOT NULL COMMENT '0：未知，1：用户手动输入，2：从SSO首 页，3：从客户端引导，4：本页' ,
   `referer` VARCHAR(2000) NOT NULL ,
@@ -166,13 +166,13 @@ DEFAULT CHARACTER SET = utf8
 COLLATE = utf8_general_ci
 COMMENT = '用户进入登录页来源（referer）';
 
-ALTER TABLE `sso`.`stat_referer` CHANGE COLUMN `referer` `referer` VARCHAR(2000) NOT NULL  AFTER `browser` ;
+ALTER TABLE `single_auth`.`stat_referer` CHANGE COLUMN `referer` `referer` VARCHAR(2000) NOT NULL  AFTER `browser` ;
 ALTER TABLE  `stat_referer` CHANGE  `ip`  `ip` INT( 10 ) UNSIGNED NOT NULL
 
 ---20150717---
 ALTER TABLE  `setting` CHANGE  `v`  `v` TEXT CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL
 
-CREATE  TABLE `sso`.`user_election` (
+CREATE  TABLE `single_auth`.`user_election` (
   `id` INT NOT NULL AUTO_INCREMENT ,
   `uid` VARCHAR(50) NOT NULL ,
   `client_id` VARCHAR(32) NOT NULL ,
@@ -215,7 +215,7 @@ CREATE TABLE IF NOT EXISTS `uid_email` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 ---20150915---
-CREATE TABLE `sso`.`user_student` (
+CREATE TABLE `single_auth`.`user_student` (
   `uid` VARCHAR(50) NOT NULL COMMENT '',
   `gender` TINYINT(1) NOT NULL COMMENT '',
   `birthday` DATE NOT NULL COMMENT '',
@@ -230,7 +230,7 @@ DEFAULT CHARACTER SET = utf8
 COLLATE = utf8_general_ci
 COMMENT = '学生表';
 
-CREATE TABLE `sso`.`user_teacher` (
+CREATE TABLE `single_auth`.`user_teacher` (
   `uid` INT NOT NULL COMMENT '',
   `gender` TINYINT(1) NOT NULL COMMENT '',
   `birthday` DATE NOT NULL COMMENT '',
@@ -245,10 +245,10 @@ COMMENT = '教师表';
 
 ALTER TABLE  `user_teacher` CHANGE  `uid`  `uid` VARCHAR( 50 ) NOT NULL
 
-ALTER TABLE `sso`.`users` 
+ALTER TABLE `single_auth`.`users` 
 ADD COLUMN `avatar` VARCHAR(200) NOT NULL COMMENT '' AFTER `is_admin`;
 
-CREATE TABLE `sso`.`user_setting` (
+CREATE TABLE `single_auth`.`user_setting` (
   `uid` VARCHAR(50) NOT NULL COMMENT '',
   `privacy` VARCHAR(2000) NOT NULL COMMENT '个人隐私信息设置项（JSON结构）',
   PRIMARY KEY (`uid`) )
@@ -257,11 +257,11 @@ DEFAULT CHARACTER SET = utf8
 COLLATE = utf8_general_ci
 COMMENT = '用户个人设置项';
 
-ALTER TABLE `sso`.`user_extension` 
+ALTER TABLE `single_auth`.`user_extension` 
 ADD COLUMN `last_status` TINYINT(4) NOT NULL COMMENT '在线状态' AFTER `last_browser`, 
 COMMENT = '个人信息扩展表' ;
 
-CREATE TABLE `sso`.`user_block` (
+CREATE TABLE `single_auth`.`user_block` (
   `uid` VARCHAR(50) NOT NULL COMMENT '',
   `uid_block` VARCHAR(50) NOT NULL COMMENT '用户阻止（屏蔽）表',
   PRIMARY KEY (`uid`) )
@@ -270,20 +270,20 @@ DEFAULT CHARACTER SET = utf8
 COLLATE = utf8_general_ci
 COMMENT = '用户阻止（屏蔽）表';
 
-ALTER TABLE `sso`.`user_block` 
+ALTER TABLE `single_auth`.`user_block` 
 ADD COLUMN `id` INT NOT NULL COMMENT '' FIRST,
 DROP PRIMARY KEY,
 ADD PRIMARY KEY (`id`) ,
 ADD UNIQUE INDEX `u_uid_block` (`uid` ASC, `uid_block` ASC) ;
 
-ALTER TABLE `sso`.`user_block` 
+ALTER TABLE `single_auth`.`user_block` 
 CHANGE COLUMN `id` `id` INT(11) NOT NULL AUTO_INCREMENT COMMENT '' ;
 
-ALTER TABLE `sso`.`user_block` 
+ALTER TABLE `single_auth`.`user_block` 
 ADD COLUMN `time` DATETIME NOT NULL COMMENT '' AFTER `uid_block`;
 
 ---20150918---
-ALTER TABLE `sso`.`stat_user_detail` 
+ALTER TABLE `single_auth`.`stat_user_detail` 
 ADD INDEX `ip` (`ip` ASC),
 ADD INDEX `os` (`os` ASC),
 ADD INDEX `browser` (`browser` ASC);
@@ -293,15 +293,15 @@ ALTER TABLE  `info` CHANGE  `info`  `info` VARCHAR( 2000 ) CHARACTER SET utf8 CO
 ALTER TABLE `transfer`.`info` 
 ADD COLUMN `create_time` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '' AFTER `id`;
 
-ALTER TABLE `sso`.`users` 
+ALTER TABLE `single_auth`.`users` 
 ADD COLUMN `gender` TINYINT(4) NOT NULL COMMENT '' AFTER `role`,
 ADD COLUMN `birthday` DATE NOT NULL COMMENT '' AFTER `gender`;
 
-ALTER TABLE `sso`.`user_student` 
+ALTER TABLE `single_auth`.`user_student` 
 DROP COLUMN `birthday`,
 DROP COLUMN `gender`;
 
-ALTER TABLE `sso`.`user_teacher` 
+ALTER TABLE `single_auth`.`user_teacher` 
 DROP COLUMN `birthday`,
 DROP COLUMN `gender`;
 
@@ -329,7 +329,7 @@ ALTER TABLE  `stat_user_detail` ADD  `login_by` TINYINT NOT NULL COMMENT  '登�
 
 ---20151021---
 --新建qr_code表
-CREATE TABLE `sso`.`qr_code` (
+CREATE TABLE `single_auth`.`qr_code` (
   `code` VARCHAR(32) NOT NULL COMMENT '',
   `time` DATETIME NOT NULL COMMENT '',
   `expires` INT UNSIGNED NOT NULL COMMENT '',
@@ -341,7 +341,7 @@ COLLATE = utf8_general_ci;
 
 ---20151027---
 --主消息表
-CREATE TABLE `sso`.`msgs` (
+CREATE TABLE `single_auth`.`msgs` (
   `id` INT NOT NULL AUTO_INCREMENT COMMENT '',
   `sender_id` VARCHAR(50) NOT NULL COMMENT '发送者UID',
   `receiver_id` VARCHAR(50) NOT NULL COMMENT '接收者UID',

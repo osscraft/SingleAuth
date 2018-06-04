@@ -36,6 +36,7 @@ class MysqlUserService extends UserService implements Authorizable {
     }
     public function verifyResourceOwner($uid, $password, $scope = array()) {
         $scope = is_string($scope) ? array_map('trim', explode(',', $scope)) : $scope;
+        // 96e79218965eb72c92a549dd5a330112
         $ret = $this->model()->db()->select($scope, array('uid' => $uid, 'password' => md5($password)), array(), array(1));
         if(empty($ret)) {
             return false;

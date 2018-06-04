@@ -174,7 +174,7 @@ Portal.trans = <?php echo $CFG["tranditional_apps"]?>;
 					
 				</div>
 				<div class="center">
-					<div class="text"><h2><?php echo $LANG['PORTAL_SSO_SIGNINR']?></h2></div>
+					<div class="text"><h2><?php echo $LANG['PORTAL_SSO_SIGNIN']?></h2></div>
 					<!-- <div class="loader loading-wrapper fade hide"></div> -->
 					<!-- <div id="divPageLoading" class="loader loading-container hide"><img src="/images/loading.1.gif" class="loading"/><span></span></div> -->
 					<div id="appsbysso" class="container appsbysso">

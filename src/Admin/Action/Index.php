@@ -41,7 +41,7 @@ class Index extends MenuAction {
             $keys['code'] = $_REQUEST['code'];
             $keys['redirect_uri'] = $CFG['SSO_CALLBACK'];
             $ret = $oauth->getAccessToken('code', $keys);
-            if ($ret && $token['error']) {
+            if ($ret && !empty($token['error'])) {
                 $error = $token['error'];
             } else if($ret) {
                 $token = $_SESSION['token'] = $ret;
@@ -59,9 +59,9 @@ class Index extends MenuAction {
         } else if(! empty($token) && empty($_SESSION['user'])) {
             $_SESSION['token'] = $token;
             // new SSOClient instance
-            $oauth->access_token = $token['access_token'];
-            $oauth->refresh_token = $token['refresh_token'];
-            $client = new SSOClient($CFG['SSO_CLIENT_ID'], $CFG['SSO_CLIENT_SECRET'], $token['access_token'], $token['refresh_token']);
+            $oauth->access_token = empty($token['access_token']) ? '' : $token['access_token'];
+            $oauth->refresh_token = empty($token['refresh_token']) ? '' : $token['refresh_token'];
+            $client = new SSOClient($CFG['SSO_CLIENT_ID'], $CFG['SSO_CLIENT_SECRET'], empty($token['access_token']) ? '' : $token['access_token'], empty($token['refresh_token']) ? '' : $token['refresh_token']);
 			//$count = UserService::counts(array('uid'=> array('0', '>')));
             $root = $this->userService->get($CFG['root_uid']);
 			if(empty($root)) {
@@ -111,7 +111,7 @@ class Index extends MenuAction {
             $out['WELCOME'] = $CFG['LANG']['WELCOME'];
             $out['LANG'] = $CFG['LANG'];
             $out['SIGN'] = 'index';
-            $out['user'] = $_SESSION['user'];
+            $out['user'] = empty($_SESSION['user']) ? [] : $_SESSION['user'];
             $out['SESSION'] = $_SESSION;
             $this->template->push($out);
             $this->template->file('index.php');

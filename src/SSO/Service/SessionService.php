@@ -78,11 +78,11 @@ class SessionService extends Service {
                     $ret = $this->replace($arr);
                 } else {
                     // do not write;
-                    $ret = ture;
+                    $ret = true;
                 }
             } else {
                 // do not write;
-                $ret = ture;
+                $ret = true;
             }
         } else if(! empty($_SESSION)){
             $ret = $this->replace($arr);

@@ -14,18 +14,18 @@ global $CFG;
 $CFG['SSO_CLIENT_ID'] = 'ufsso_dcux_portal';
 $CFG['SSO_CLIENT_SECRET'] = '';
 $CFG['SSO_CLIENT_TYPE'] = 'jsApp';
-$CFG['SSO_REDIRECT_URI'] = 'http://sso.project.dcux.com/index.html';
-$CFG['SSO_CALLBACK'] = 'http://sso.project.dcux.com/index.html';
-$CFG['SSO_AUTHORIZE_URL'] = 'http://sso.project.dcux.com/authorize.php';
-$CFG['SSO_TOKEN_URL'] = 'http://sso.project.dcux.com/token.php';
-$CFG['SSO_LOGOUT_URL'] = 'http://sso.project.dcux.com/logout.php';
-$CFG['SSO_RESOURCE_URL'] = 'http://sso.project.dcux.com/resource.php';
+$CFG['SSO_REDIRECT_URI'] = 'http://127.0.0.1:8800/index.html';
+$CFG['SSO_CALLBACK'] = 'http://127.0.0.1:8800/index.html';
+$CFG['SSO_AUTHORIZE_URL'] = 'http://127.0.0.1:8800/authorize.php';
+$CFG['SSO_TOKEN_URL'] = 'http://127.0.0.1:8800/token.php';
+$CFG['SSO_LOGOUT_URL'] = 'http://127.0.0.1:8800/logout.php';
+$CFG['SSO_RESOURCE_URL'] = 'http://127.0.0.1:8800/resource.php';
 
 //SSO项目地址
-$CFG['project_path'] = 'http://sso.project.dcux.com/';
+$CFG['project_path'] = 'http://127.0.0.1:8800/';
 
 //特殊UID
-$CFG['special_uids'] = array('ssoAdmin');
+$CFG['special_uids'] = array('ssoAdmin','lay');
 
 //选择旧版LDAP数据服务器数据
 $CFG['ldap_resource_old'] = false;//deprecated
@@ -44,11 +44,11 @@ $CFG['portal_app_has_title'] = true;
 $CFG['sid_encrypt_key'] = 'dev';
 
 //mysql config
-$CFG['mysql_host'] = '192.168.0.22';
-$CFG['mysql_port'] = 3306;
+$CFG['mysql_host'] = '127.0.0.1';
+$CFG['mysql_port'] = 3307;
 $CFG['mysql_name'] = 'root';
-$CFG['mysql_password'] = '';
-$CFG['mysql_database'] = 'single_auth';
+$CFG['mysql_password'] = '123456';
+$CFG['mysql_database'] = 'sso';
 $CFG['mysql_showsql'] = true;
 
 // 1.2 mysql config
@@ -101,7 +101,7 @@ $CFG['memcache']['default']['port'] = $CFG['memcache_port'];
 $CFG['memcache']['default']['show'] = $CFG['memcache_show'];
 // 1.2 ldap config
 $CFG['ldap_host'] = '192.168.0.22';
-$CFG['ldap_post'] = 389;
+$CFG['ldap_port'] = 389;
 $CFG['ldap_name'] = 'cn=admin,dc=ldap,dc=lixin,dc=edu,dc=cn';
 $CFG['ldap_pass'] = '';
 $CFG['ldap_base'] = 'o=sso,dc=ldap,dc=lixin,dc=edu,dc=cn';
@@ -115,7 +115,7 @@ $CFG['ldap']['default']['show'] = $CFG['ldap_show'];
 // 1.2 cron open
 $CFG['cron_open'] = true;
 // 1.2 identify database
-$CFG['identify_database'] = 'ldap';
+$CFG['identify_database'] = 'mysql';
 
 //选择语言包
 $CFG['language'] = 'zh_cn';
@@ -124,7 +124,8 @@ $CFG['themes']['main'] = array('default', 'imitate', 'detail', 'fix', 'urban', '
 $CFG['themes']['admin'] = array('default','urban');
 $CFG['themes']['portal'] = array('default');
 $CFG['themes']['dev'] = array('default');
-$CFG['theme']['main'] = 'default';
+$CFG['theme']['main'] = 'detailx';
+$CFG['theme']['admin'] = 'urban';
 $CFG['theme_customize'] = true;//开启关闭用户皮肤切换功能
 // 1.2 log
 $CFG['logo']['main'] = '/images/logo.dcux.png';
@@ -156,7 +157,7 @@ $CFG['access_token_type'] = 0;//设置access_token的标记量
 $CFG['refresh_token_type'] = 1;//设置refresh_token的标记量
 
 // 1.2 client js,css cache
-$CFG['frontcache']['open'] = false;
+$CFG['frontcache']['open'] = true;
 $CFG['frontcache']['minimize'] = false;
 $CFG['frontcache']['js']['open'] = $CFG['frontcache']['open'];
 $CFG['frontcache']['js']['minimize'] = $CFG['frontcache']['minimize'];
@@ -207,6 +208,7 @@ $CFG['server']['internal_gateway']['uri'] = 'Text://0.0.0.0:7273';
 $CFG['server']['internal_gateway']['name'] = 'InternalGateway';
 $CFG['server']['internal_gateway']['start_port'] = 2800;
 // qr code
+$CFG['qr_login_enable'] = false; 
 $CFG['qr_code_lifetime'] = 300;// 300秒过期时间
 // sid key
 $CFG['sid_encrypt_key'] = 'key_for_sid';
@@ -216,7 +218,7 @@ $CFG['server_qrlogin_key'] = '123';
 $CFG['server_internal_gateway'] = 'tcp://192.168.0.18:7273';// 内部服务地址及端口
 // sso key
 $CFG['sso_qrlogin_key'] = '456';
-$CFG['sso_qrlogin_url'] = 'http://sso.project.dcux.com/qrscan.php';
+$CFG['sso_qrlogin_url'] = 'http://127.0.0.1:8800/qrscan.php';
 
 //mobile clients
 $CFG['super_client_id'] = array("AndroidSDK");

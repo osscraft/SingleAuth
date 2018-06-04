@@ -2,9 +2,9 @@
 // timezone
 date_default_timezone_set('Asia/Shanghai');
 // require autoload
-require_once dirname(dirname(dirname(__DIR__))) . '/PHPLib/Autoloader.php';
+require_once dirname(dirname(__DIR__)) . '/vendor/autoload.php';
 // register classpath
-Autoloader::register(dirname(dirname(__DIR__)) . '/class');
+// Autoloader::register(dirname(dirname(__DIR__)) . '/class');
 // start app
 Dcux\SSO\Kernel\App::start(dirname(dirname(__DIR__)), dirname(__DIR__), 'Dcux\SSO\Service\SettingService');
 

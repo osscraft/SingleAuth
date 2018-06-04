@@ -105,7 +105,7 @@ class OAuth2 {
         return md5(base64_encode(pack('N6', mt_rand(), mt_rand(), mt_rand(), mt_rand(), mt_rand(), uniqid())));
     }
     public static function getResponseType() {
-        $responseType = $_REQUEST[OAuth2::HTTP_QUERY_PARAM_RESPONSE_TYPE];
+        $responseType = empty($_REQUEST[OAuth2::HTTP_QUERY_PARAM_RESPONSE_TYPE]) ? '' : $_REQUEST[OAuth2::HTTP_QUERY_PARAM_RESPONSE_TYPE];
         if (in_array($responseType, array (
                 OAuth2::RESPONSE_TYPE_CODE,
                 OAuth2::RESPONSE_TYPE_TOKEN 
@@ -116,7 +116,7 @@ class OAuth2 {
         }
     }
     public static function getRedirectURI() {
-        $redirectURI = $_REQUEST[OAuth2::HTTP_QUERY_PARAM_REDIRECT_URI];
+        $redirectURI = empty($_REQUEST[OAuth2::HTTP_QUERY_PARAM_REDIRECT_URI]) ? '' : $_REQUEST[OAuth2::HTTP_QUERY_PARAM_REDIRECT_URI];
         if (empty($redirectURI)) {
             return '';
         } else {
@@ -124,7 +124,7 @@ class OAuth2 {
         }
     }
     public static function getClientId() {
-        $clientId = $_REQUEST[OAuth2::HTTP_QUERY_PARAM_CLIENT_ID];
+        $clientId = empty($_REQUEST[OAuth2::HTTP_QUERY_PARAM_CLIENT_ID]) ? '' : $_REQUEST[OAuth2::HTTP_QUERY_PARAM_CLIENT_ID];
         if (empty($clientId)) {
             return '';
         } else {
@@ -132,7 +132,7 @@ class OAuth2 {
         }
     }
     public static function getClientSecret() {
-        $clientSecret = $_REQUEST[OAuth2::HTTP_QUERY_PARAM_CLIENT_SECRET];
+        $clientSecret = empty($_REQUEST[OAuth2::HTTP_QUERY_PARAM_CLIENT_SECRET]) ? '' : $_REQUEST[OAuth2::HTTP_QUERY_PARAM_CLIENT_SECRET];
         if (empty($clientSecret)) {
             return '';
         } else {
@@ -140,7 +140,7 @@ class OAuth2 {
         }
     }
     public static function getRequestScope() {
-        $scope = $_REQUEST[OAuth2::HTTP_QUERY_PARAM_SCOPE];
+        $scope = empty($_REQUEST[OAuth2::HTTP_QUERY_PARAM_SCOPE]) ? '' : $_REQUEST[OAuth2::HTTP_QUERY_PARAM_SCOPE];
         if (empty($scope)) {
             return '';
         } else {
@@ -194,17 +194,17 @@ class OAuth2 {
         if (empty($requestType)) {
             $requestType = OAuth2::REQUEST_TYPE_CODE;
         }
-        $responseType = $_REQUEST[OAuth2::HTTP_QUERY_PARAM_RESPONSE_TYPE];
-        $grantType = $_REQUEST[OAuth2::HTTP_QUERY_PARAM_GRANT_TYPE];
-        $clientId = $_REQUEST[OAuth2::HTTP_QUERY_PARAM_CLIENT_ID];
-        $redirectURI = $_REQUEST[OAuth2::HTTP_QUERY_PARAM_REDIRECT_URI];
-        $clientSecret = $_REQUEST[OAuth2::HTTP_QUERY_PARAM_CLIENT_SECRET];
-        $code = $_REQUEST[OAuth2::HTTP_QUERY_PARAM_CODE];
-        $token = $_REQUEST[OAuth2::HTTP_QUERY_PARAM_TOKEN];
-        $username = $_REQUEST[OAuth2::HTTP_QUERY_PARAM_USERNAME];
-        $password = $_REQUEST[OAuth2::HTTP_QUERY_PARAM_PASSWORD];
-        $refreshToken = $_REQUEST[OAuth2::HTTP_QUERY_PARAM_REFRESH_TOKEN];
-        $uid = empty($_REQUEST[OAuth2::HTTP_QUERY_PARAM_USER_ID]) ?  : $_REQUEST[OAuth2::HTTP_QUERY_PARAM_USER_ID];
+        $responseType = empty($_REQUEST[OAuth2::HTTP_QUERY_PARAM_RESPONSE_TYPE]) ? '' : $_REQUEST[OAuth2::HTTP_QUERY_PARAM_RESPONSE_TYPE];
+        $grantType = empty($_REQUEST[OAuth2::HTTP_QUERY_PARAM_GRANT_TYPE]) ? '' : $_REQUEST[OAuth2::HTTP_QUERY_PARAM_GRANT_TYPE];
+        $clientId = empty($_REQUEST[OAuth2::HTTP_QUERY_PARAM_CLIENT_ID]) ? '' : $_REQUEST[OAuth2::HTTP_QUERY_PARAM_CLIENT_ID];
+        $redirectURI = empty($_REQUEST[OAuth2::HTTP_QUERY_PARAM_REDIRECT_URI]) ? '' : $_REQUEST[OAuth2::HTTP_QUERY_PARAM_REDIRECT_URI];
+        $clientSecret = empty($_REQUEST[OAuth2::HTTP_QUERY_PARAM_CLIENT_SECRET]) ? '' : $_REQUEST[OAuth2::HTTP_QUERY_PARAM_CLIENT_SECRET];
+        $code = empty($_REQUEST[OAuth2::HTTP_QUERY_PARAM_CODE]) ? '' : $_REQUEST[OAuth2::HTTP_QUERY_PARAM_CODE];
+        $token = empty($_REQUEST[OAuth2::HTTP_QUERY_PARAM_TOKEN]) ? '' : $_REQUEST[OAuth2::HTTP_QUERY_PARAM_TOKEN];
+        $username = empty($_REQUEST[OAuth2::HTTP_QUERY_PARAM_USERNAME]) ? '' : $_REQUEST[OAuth2::HTTP_QUERY_PARAM_USERNAME];
+        $password = empty($_REQUEST[OAuth2::HTTP_QUERY_PARAM_PASSWORD]) ? '' : $_REQUEST[OAuth2::HTTP_QUERY_PARAM_PASSWORD];
+        $refreshToken = empty($_REQUEST[OAuth2::HTTP_QUERY_PARAM_REFRESH_TOKEN]) ? '' : $_REQUEST[OAuth2::HTTP_QUERY_PARAM_REFRESH_TOKEN];
+        $uid = empty($_REQUEST[OAuth2::HTTP_QUERY_PARAM_USER_ID]) ? '' : $_REQUEST[OAuth2::HTTP_QUERY_PARAM_USER_ID];
         $id = isset($_SESSION['uid']) ? $_SESSION['uid'] : null;
         $name = isset($_SESSION['username']) ? $_SESSION['username'] : null;
         $ret = true;

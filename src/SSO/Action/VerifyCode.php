@@ -8,7 +8,7 @@ use Dcux\SSO\Core\MemSession;
 class VerifyCode extends UAction {
     public function onGet() {
         if ($_REQUEST['key'] == 'verifyCode') {
-            \Dcux\SSO\Kernel\VerifyCode::getCode(4, 100, 25);
+            \Dcux\SSO\Kernel\VerifyCode::getCode(4, 100, 45);
             exit();
         } else if ($_REQUEST['key'] == 'checkCode') {
             // MemSession::getSession();

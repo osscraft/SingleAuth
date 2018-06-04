@@ -98,6 +98,7 @@ Portal.loadApps = function(role, option) {
             for(var i = 0; i < obj.length;i++) {
                 var client = obj[i];
                 var showOperate = !Portal.checkElection(client.clientId);
+                obj[i].clientLogoUri = obj[i].clientLogoUri ? obj[i].clientLogoUri : "/images/ICON_BackGround_Raw.png";
                 if(i%column == 0) {
                     html += '<div class="apps">';
                 }

@@ -6,7 +6,7 @@ Portal.username = '';
 Portal.column = 6;
 Portal.role = "";
 Portal.elections = null;
-Portal.trans = [{
+Portal.trans = [/*{
         "clientName":"校友管理系统",
         "clientLocation":"http://xiaoyou.lixin.edu.cn/",
         "clientLogoUri":"/images/y_71717517.png",
@@ -36,13 +36,13 @@ Portal.trans = [{
         "clientLogoUri":"/images/y_71717597.png",
         "clientDescribe":"学生补贴",
         "clientVisible":2
-    },{
+    },*/{
         "clientName":"VPN服务",
         "clientLocation":"http://www.lixin.edu.cn/default.php?mod=c&s=ssf511661",
         "clientLogoUri":"/images/logo_vpna.png",
         "clientDescribe":"VPN服务",
         "clientVisible":0
-    },{
+    }/*,{
         "clientName":"财务综合查询",
         "clientLocation":"http://cw.lixin.edu.cn:8080/",
         "clientLogoUri":"/images/icon_fin.png",
@@ -60,7 +60,7 @@ Portal.trans = [{
         "clientLogoUri":"/images/y_71717598.png",
         "clientDescribe":"研究生招生",
         "clientVisible":1
-    }];
+    }*/];
 Portal.init = function() {
     var token = $.cookie("ufsso_longmeng_portal_token");
     var uid = $.cookie("ufsso_longmeng_portal_uid");

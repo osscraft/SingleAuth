@@ -119,18 +119,18 @@ class Authorize extends UAction {
         /**
          * 检测使用其他账号登录
          */
-        $other = $_REQUEST['otherlogin'];
-        $register = $_REQUEST['register'];
-        $state = $_REQUEST[OAuth2::HTTP_QUERY_PARAM_STATE];
-        $loginCount = $_SESSION['loginCount'];
+        $other = empty($_REQUEST['otherlogin']) ? false : $_REQUEST['otherlogin'];
+        $register = empty($_REQUEST['register']) ? false : $_REQUEST['register'];
+        $state = empty($_REQUEST[OAuth2::HTTP_QUERY_PARAM_STATE]) ? '' : $_REQUEST[OAuth2::HTTP_QUERY_PARAM_STATE];
+        $loginCount = empty($_SESSION['loginCount']) ? 0 : $_SESSION['loginCount'];
         $requestType = OAuth2::REQUEST_TYPE_POST;
-        $userid = $_REQUEST[OAuth2::HTTP_QUERY_PARAM_USER_ID];
+        $userid = empty($_REQUEST[OAuth2::HTTP_QUERY_PARAM_USER_ID]) ? false : $_REQUEST[OAuth2::HTTP_QUERY_PARAM_USER_ID];
         $userid = $userid ?  : false; // false表示不使用此字段作为验证条件
-        $username = $_REQUEST[OAuth2::HTTP_QUERY_PARAM_USERNAME];
+        $username = empty($_REQUEST[OAuth2::HTTP_QUERY_PARAM_USERNAME]) ? false : $_REQUEST[OAuth2::HTTP_QUERY_PARAM_USERNAME];
         $username = $username ?  : false; // false表示不使用此字段作为验证条件
-        $password = $_REQUEST[OAuth2::HTTP_QUERY_PARAM_PASSWORD];
+        $password = empty($_REQUEST[OAuth2::HTTP_QUERY_PARAM_PASSWORD]) ? '' : $_REQUEST[OAuth2::HTTP_QUERY_PARAM_PASSWORD];
         $password = $password ?  : '';
-        $verifyCode = $_REQUEST[OAuth2::HTTP_QUERY_PARAM_VERIFY_CODE];
+        $verifyCode = empty($_REQUEST[OAuth2::HTTP_QUERY_PARAM_VERIFY_CODE]) ? '' : $_REQUEST[OAuth2::HTTP_QUERY_PARAM_VERIFY_CODE];
         $verifyCode = $verifyCode ?  : '';
         
         $scope = OAuth2::getRequestScope();

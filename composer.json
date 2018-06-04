@@ -1,0 +1,39 @@
+{
+    "name": "lay/single-auth",
+    "description": "oauth2 implement framework",
+    "type": "project",
+    "keywords": [
+        "framework",
+        "oauth2"
+    ],
+    "homepage": "http://liaiyong.com/",
+    "license": "Apache-2.0",
+    "authors": [
+        {
+            "name": "lay",
+            "email": "lay@liaiyong.com"
+        }
+    ],
+    "require": {
+        "php": ">=5.4.0",
+        "kriswallsmith/assetic": "1.4.0"
+    },
+    "extra": {
+        "lib-path": "lib"
+    },
+    "config": {
+        "preferred-install": "dist"
+    },
+    "autoload": {
+        "psr-4": {
+            "Dcux\\": "src/"
+        },
+        "classmap": ["lib"]
+    },
+    "repositories": {
+        "packagist": {
+            "type": "composer",
+            "url": "https://packagist.phpcomposer.com"
+        }
+    }
+}

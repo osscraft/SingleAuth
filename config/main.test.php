@@ -80,7 +80,7 @@ $CFG['memcache']['default']['port'] = $CFG['memcache_port'];
 $CFG['memcache']['default']['show'] = $CFG['memcache_show'];
 // 1.2 ldap config
 $CFG['ldap_host'] = '192.168.0.22';
-$CFG['ldap_post'] = 389;
+$CFG['ldap_port'] = 389;
 $CFG['ldap_name'] = 'cn=admin,dc=ldap,dc=lixin,dc=edu,dc=cn';
 $CFG['ldap_pass'] = 'dcuxpasswd';
 $CFG['ldap_base'] = 'o=sso,dc=ldap,dc=lixin,dc=edu,dc=cn';

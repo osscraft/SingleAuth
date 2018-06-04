@@ -69,6 +69,7 @@ class SSOToOAuth2 {
     public $authorizeURL = '';
     public $accessTokenURL = '';
     public $logoutURL = '';
+    public $userAgent = 'SSO CURL 1.0';
     public function __construct($clientId, $clientSecret, $access_token = NULL, $refresh_token = NULL) {
         global $CFG;
         $this->authorizeURL = empty($CFG['SSO_AUTHORIZE_URL']) ? $this->authorizeURL : $CFG['SSO_AUTHORIZE_URL'];

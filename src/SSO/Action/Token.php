@@ -35,14 +35,14 @@ class Token extends UAction {
     }
     public function onPost() {
         global $CFG;
-        $userid = $_REQUEST[OAuth2::HTTP_QUERY_PARAM_USER_ID];
+        $userid = empty($_REQUEST[OAuth2::HTTP_QUERY_PARAM_USER_ID]) ? '' : $_REQUEST[OAuth2::HTTP_QUERY_PARAM_USER_ID];
         $userid = $userid ? $userid : false;
-        $username = $_REQUEST[OAuth2::HTTP_QUERY_PARAM_USERNAME];
+        $username = empty($_REQUEST[OAuth2::HTTP_QUERY_PARAM_USERNAME]) ? '' : $_REQUEST[OAuth2::HTTP_QUERY_PARAM_USERNAME];
         $username = $username ? $username : false;
-        $password = $_REQUEST[OAuth2::HTTP_QUERY_PARAM_PASSWORD];
+        $password = empty($_REQUEST[OAuth2::HTTP_QUERY_PARAM_PASSWORD]) ? '' : $_REQUEST[OAuth2::HTTP_QUERY_PARAM_PASSWORD];
         $password = $password ? $password : '';
-        $code = $_REQUEST[OAuth2::HTTP_QUERY_PARAM_CODE];
-        $refreshToken = $_REQUEST[OAuth2::HTTP_QUERY_PARAM_REFRESH_TOKEN];
+        $code = empty($_REQUEST[OAuth2::HTTP_QUERY_PARAM_CODE]) ? '' : $_REQUEST[OAuth2::HTTP_QUERY_PARAM_CODE];
+        $refreshToken = empty($_REQUEST[OAuth2::HTTP_QUERY_PARAM_REFRESH_TOKEN]) ? '' : $_REQUEST[OAuth2::HTTP_QUERY_PARAM_REFRESH_TOKEN];
         $useRefresh = App::get('oauth2.use_refresh_token', true);
         
         $scope = OAuth2::getRequestScope();

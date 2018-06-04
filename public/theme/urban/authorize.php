@@ -96,7 +96,7 @@
         <div class="full-height">
             <div class="center-wrapper">
                 <div class="center-content">
-                    <?php if(empty($user) && empty($isMobile)) {?>
+                    <?php if(empty($user) && empty($isMobile) && !empty($CFG['qr_login_enable'])) {?>
                     <div class="qrlogin-container"><a id="qrlogin" class="qrlogin">二维码登录</a> <a id="qrrefresh" class="qrrefresh">更新</a><div id="qrcode" style="display:none"><img id="code" style="display:none" src="/images/loading.1.gif"/><div></div><span id='scaned' style="display:none;">已扫描，请在手机端确认登录</span></div></div>
                     <?php }?>
                     <div class="row no-margin">
@@ -109,22 +109,20 @@
                                 <p class="text-center mb10"><?php echo $LANG['PORTAL_WELCOME'];?></p>
                                 <div class="text-center mb15">
                                     <p class="mb5">
-                                        <img class="case_cover_img" src="<?php echo empty($client['clientLogoUri'])?"/images/ICON_BackGround.png":$client['clientLogoUri'];?>">
+                                        <img class="case_cover_img" src="<?php echo empty($client['clientLogoUri'])?"/images/ICON_BackGround_Raw.png":$client['clientLogoUri'];?>">
                                         <?php if(!empty($CFG['portal_app_has_title'])) {?><span class="title"><?php echo $client['clientName'];?></span><?php }?>
 										<span class="mask"></span>
                                     </p>
                                 </div>
                                 <div class="form-inputs form-group">
                                 <?php if(!empty($user)) {?>
-                                    <?php if(/*$redirect && */$delay) {?>
+                                    <?php if(!empty($delay)) {?>
                                     <div class="mb5 skip-delay place-holder">
-                                        <span id="skip_delay_seconds"><?php echo $seconds?></span>
+                                        <span id="skip_delay_seconds"><?php echo empty($seconds) ? 0 : $seconds?></span>
                                         <span>秒后跳转，如果没跳转请点击</span>
-                                        <!--<a href="<?php echo $redirect?>">--><a href="javascript:Authorize.login();">这里</a>
-										<!--<input type="hidden" class="hide" id="client_id" value="<?php echo $client_id;?>"/>-->
-										<input type="hidden" class="hide" id="client_type" value="<?php echo $client_type;?>"/>
+                                        <a href="javascript:Authorize.login();">这里</a>
+										<input type="hidden" class="hide" id="client_type" value="<?php echo empty($client_type) ? '' : $client_type;?>"/>
 										<input type="hidden" class="hide" id="skip_delay" value="<?php echo $delay;?>"/>
-										<!--<input type="hidden" class="hide" id="skip_url" value="<?php echo $redirect;?>"/>-->
                                     </div>
                                     <input id="username" name="username" type="text" value="<?php echo $user['username'];?>" class="form-control input-lg" placeholder="用户名" disabled />
                                     <?php } else {?>
