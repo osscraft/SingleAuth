@@ -27,7 +27,7 @@ SET time_zone = "+00:00";
 INSERT INTO `setting` (`k`, `v`, `info`) VALUES
 ('ldap_host', '192.168.0.22', 'ldap config host'),
 ('ldap_name', 'cn=admin,dc=ldap,dc=dcux,dc=com', 'ldap config admin dn'),
-('ldap_pass', 'dcuxpasswd', 'ldap config admin password'),
+('ldap_pass', '123456', 'ldap config admin password'),
 ('ldap_port', '389', 'ldap config port'),
 ('ldap_show', '1', 'ldap config show log'),
 ('theme.admin', 'urban', ''),

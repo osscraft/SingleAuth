@@ -16,7 +16,15 @@
     ],
     "require": {
         "php": ">=5.4.0",
-        "kriswallsmith/assetic": "1.4.0"
+        "sinergi/browser-detector": "6.1.2",
+        "workerman/gatewayclient": "3.0.0",
+        "kriswallsmith/assetic": "1.4.0",
+        "piwik/device-detector": "^3.10",
+        "simplesamlphp/simplesamlphp": "^1.15"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "~4.8",
+        "friendsofphp/php-cs-fixer": "^2.2"
     },
     "extra": {
         "lib-path": "lib"
