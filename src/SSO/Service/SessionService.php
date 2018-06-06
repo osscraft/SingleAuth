@@ -11,45 +11,55 @@ use Lay\Advance\Core\Action;
 
 use Dcux\SSO\Model\Session;
 
-class SessionService extends Service {
-	private $session;
+class SessionService extends Service
+{
+    private $session;
     private $raw = null;
-    public function model() {
+    public function model()
+    {
         return Session::getInstance();
     }
-    protected function __construct() {
-    	parent::__construct();
-    	$this->session = Session::getInstance();
+    protected function __construct()
+    {
+        parent::__construct();
+        $this->session = Session::getInstance();
     }
 
-    public function getOnlineUserCount() {
+    public function getOnlineUserCount()
+    {
         $condition = array();
         $condition['online'] = 1;
         $ret = $this->count($condition);
         return empty($ret) ? 0 : $ret;
     }
     
-    public function open($savePath, $sessionName) {
+    public function open($savePath, $sessionName)
+    {
         $this->model()->db();
         return true;
     }
-    public function close() {
+    public function close()
+    {
         return $this->model()->db()->close();
     }
-    public function read($sessionId) {
+    public function read($sessionId)
+    {
         $ret = $this->raw = $this->get($sessionId);
         return empty($ret) || empty($ret['data']) ? false : $ret['data'];
     }
-    public function readByMysql($sessionId) {
+    public function readByMysql($sessionId)
+    {
         $ret = $this->model()->db()->get($sessionId);
         return empty($ret) || empty($ret['data']) ? false : $ret['data'];
     }
-    public function readByMemcache($sessionId) {
+    public function readByMemcache($sessionId)
+    {
         $cacher = $this->model()->cacher();
         $ret = empty($cacher) ? false : $cacher->get($sessionId);
         return empty($ret) || empty($ret['data']) ? false : $ret['data'];
     }
-    public function write($sessionId, $data) {
+    public function write($sessionId, $data)
+    {
         global $CFG;
         $expires = time() + $CFG['mysql_session_lifetime'];
         $datetime = date('Y-m-d H:i:s');
@@ -60,20 +70,20 @@ class SessionService extends Service {
         $arr['online'] = ! empty($_SESSION['uid']) ? 1 : 0;
         $arr['expires'] = $expires - 15;// 提前15秒过期，以便数据库中的数据清除
 
-        if(!empty($this->raw)) {
+        if (!empty($this->raw)) {
             $arr['time'] = $this->raw['time'];// 存在session数据时，创建时间不变
         } else {
             $arr['time'] = $datetime;// 不存在session数据时，创建时间
         }
 
-        if(!empty($this->raw) && !empty($data) && $data == $this->raw['data']) {//session无变化时
+        if (!empty($this->raw) && !empty($data) && $data == $this->raw['data']) {//session无变化时
             $rexpires = $this->raw['expires'];
-            if(!empty($CFG['mysql_session_keep'])) {
+            if (!empty($CFG['mysql_session_keep'])) {
                 //增加延迟写入时间
-                if(empty($CFG['mysql_session_delay'])) {
+                if (empty($CFG['mysql_session_delay'])) {
                     // 无delay，实时更新
                     $ret = $this->replace($arr);
-                } else if($time > $rexpires - $CFG['mysql_session_delay'] && $time < $rexpires) {
+                } elseif ($time > $rexpires - $CFG['mysql_session_delay'] && $time < $rexpires) {
                     // 在到期与前某时间点之间
                     $ret = $this->replace($arr);
                 } else {
@@ -84,19 +94,21 @@ class SessionService extends Service {
                 // do not write;
                 $ret = true;
             }
-        } else if(! empty($_SESSION)){
+        } elseif (! empty($_SESSION)) {
             $ret = $this->replace($arr);
         }
         
         return empty($ret) ? false : true;
     }
-    public function destroy($sessionId) {
+    public function destroy($sessionId)
+    {
         $ret = $this->del($sessionId);
         return empty($ret) ? false : true;
     }
-    public function gc() {
+    public function gc()
+    {
         global $CFG;
-        if(empty($CFG['cron_open'])) {
+        if (empty($CFG['cron_open'])) {
             $this->clean();
         } else {
             return true;
@@ -106,7 +118,8 @@ class SessionService extends Service {
     /**
      * 清除过期授权码
      */
-    public function clean() {
+    public function clean()
+    {
         $field1 = $this->model()->toField('expires');
         $ret = $this->model()->db()->delete($field1 . ' < UNIX_TIMESTAMP()');
         return empty($ret) ? false : true;

@@ -15,18 +15,21 @@ use Dcux\SSO\Model\Client;
  * @version 1.0
  * @copyright 2005-2012 dcux Inc.
  * @link http://www.dcux.com
- *      
+ *
  */
-class ClientStore extends AbstractStore {
+class ClientStore extends AbstractStore
+{
     /**
      * 读取一条Client
      *
-     * @param Client $client            
+     * @param Client $client
      * @return mixed
      */
-    public function read($args) {
-        if (! $this->connection)
+    public function read($args)
+    {
+        if (! $this->connection) {
             return false;
+        }
         if (is_a($args, 'Dcux\SSO\Model\Client')) {
             $client = $args;
             $field0 = $client->toField('id');
@@ -38,24 +41,24 @@ class ClientStore extends AbstractStore {
             $value2 = $client->getClientSecret();
             $value3 = $client->getClientType();
             if ($value0) {
-                $condition = array (
-                        $field0 => $value0 
+                $condition = array(
+                        $field0 => $value0
                 );
-            } else if ($value1 && $value2) {
-                $condition = array (
+            } elseif ($value1 && $value2) {
+                $condition = array(
                         $field1 => $value1,
                         $field2 => $value2,
-                        $field3 => $value3 
+                        $field3 => $value3
                 );
-            } else if ($value1) {
-                $condition = array (
+            } elseif ($value1) {
+                $condition = array(
                         $field1 => $value1,
-                        $field3 => $value3 
+                        $field3 => $value3
                 );
             } else {
                 $condition = '';
             }
-        } else if (is_array($args) || is_string($args)) {
+        } elseif (is_array($args) || is_string($args)) {
             $client = new Client();
             $condition = $args;
         } else {
@@ -77,9 +80,11 @@ class ClientStore extends AbstractStore {
      *
      * @return mixed
      */
-    public function reads($args, $order = '', $paging = '', $field = '') {
-        if (! $this->connection)
+    public function reads($args, $order = '', $paging = '', $field = '')
+    {
+        if (! $this->connection) {
             return false;
+        }
         if (is_a($args, 'Dcux\SSO\Model\Client')) {
             $client = $args;
             $field0 = $client->toField('id');
@@ -91,22 +96,22 @@ class ClientStore extends AbstractStore {
             $value2 = $client->getClientSecret();
             $value3 = $client->getClientType();
             if ($value0) {
-                $condition = array (
-                        $field0 => $value0 
+                $condition = array(
+                        $field0 => $value0
                 );
-            } else if ($value1 && $value2) {
-                $condition = array (
+            } elseif ($value1 && $value2) {
+                $condition = array(
                         $field1 => $value1,
-                        $field2 => $value2 
+                        $field2 => $value2
                 );
-            } else if ($value1) {
-                $condition = array (
-                        $field1 => $value1 
+            } elseif ($value1) {
+                $condition = array(
+                        $field1 => $value1
                 );
             } else {
                 $condition = '';
             }
-        } else if (is_array($args) || is_string($args)) {
+        } elseif (is_array($args) || is_string($args)) {
             $client = new Client();
             $condition = $args;
         } else {
@@ -127,13 +132,15 @@ class ClientStore extends AbstractStore {
     /**
      * 客户端数
      */
-    public function readCount($args = array()) {
-        if (! $this->connection)
+    public function readCount($args = array())
+    {
+        if (! $this->connection) {
             return false;
+        }
         if (is_a($args, 'Dcux\SSO\Model\Client')) {
             $client = $args;
             $condition = '';
-        } else if (is_array($args) || is_string($args)) {
+        } elseif (is_array($args) || is_string($args)) {
             $client = new Client();
             $condition = $args;
         } else {
@@ -149,12 +156,14 @@ class ClientStore extends AbstractStore {
     /**
      * 创建Client
      */
-    public function write($args) {
-        if (! $this->connection)
+    public function write($args)
+    {
+        if (! $this->connection) {
             return false;
+        }
         if (is_a($args, 'Dcux\SSO\Model\Client')) {
             $client = $args;
-        } else if (is_array($args)) {
+        } elseif (is_array($args)) {
             $client = new Client();
             $return = $client->build($args);
         } else {
@@ -171,9 +180,11 @@ class ClientStore extends AbstractStore {
     /**
      * 修改Client
      */
-    public function modify($args, $values = '') {
-        if (! $this->connection)
+    public function modify($args, $values = '')
+    {
+        if (! $this->connection) {
             return false;
+        }
         if (is_a($args, 'Dcux\SSO\Model\Client')) {
             $client = $args;
             $values = $client->toValues();
@@ -184,18 +195,19 @@ class ClientStore extends AbstractStore {
             $value1 = $client->getClientId();
             $value2 = $client->getClientSecret();
             if ($value0) {
-                $condition = array (
-                        $field0 => $value0 
+                $condition = array(
+                        $field0 => $value0
                 );
             } else {
-                $condition = array (
+                $condition = array(
                         $field1 => $value1,
-                        $field2 => $value2 
+                        $field2 => $value2
                 );
             }
-        } else if (is_array($args)) {
-            if (empty($values))
+        } elseif (is_array($args)) {
+            if (empty($values)) {
                 return false;
+            }
             $client = new Client();
             $condition = $args;
         } else {
@@ -211,9 +223,11 @@ class ClientStore extends AbstractStore {
     /**
      * 删除Client
      */
-    public function remove($args) {
-        if (! $this->connection)
+    public function remove($args)
+    {
+        if (! $this->connection) {
             return false;
+        }
         if (is_a($args, 'Dcux\SSO\Model\Client')) {
             $client = $args;
             $field0 = $client->toField('id');
@@ -223,16 +237,16 @@ class ClientStore extends AbstractStore {
             $value1 = $client->getClientId();
             $value2 = $client->getClientSecret();
             if ($value0) {
-                $condition = array (
-                        $field0 => $value0 
+                $condition = array(
+                        $field0 => $value0
                 );
             } else {
-                $condition = array (
+                $condition = array(
                         $field1 => $value1,
-                        $field2 => $value2 
+                        $field2 => $value2
                 );
             }
-        } else if (is_array($args)) {
+        } elseif (is_array($args)) {
             $client = new Client();
             $condition = $args;
         } else {
@@ -248,13 +262,14 @@ class ClientStore extends AbstractStore {
     /**
      * 读取可在首页产显示所有Client信息
      */
-    public function readsByShow($order = '', $paging = '') {
+    public function readsByShow($order = '', $paging = '')
+    {
         $client = new Client();
         $isShowF = $client->toField('clientIsShow');
         $condition = "WHERE `$isShowF` > '0'";
         $order = $order ? $order : "ORDER BY `$isShowF` DESC";
-        $fields = array_diff($client->toFields(), array (
-                $client->toField('clientSecret') 
+        $fields = array_diff($client->toFields(), array(
+                $client->toField('clientSecret')
         ));
         $result = $this->reads($condition, $order, $paging, $fields);
         return $result;
@@ -262,7 +277,8 @@ class ClientStore extends AbstractStore {
     /**
      * 通过角色加载在首页显示的客户端列表
      */
-    public function readsByRole($role = 0, $order = '', $paging = '') {
+    public function readsByRole($role = 0, $order = '', $paging = '')
+    {
         $client = new Client();
         $fIsShow = $client->toField('clientIsShow');
         $fVisible = $client->toField('clientVisible');
@@ -270,8 +286,8 @@ class ClientStore extends AbstractStore {
         $role = intval($role);
         $condition = "WHERE `$fIsShow` > '0' AND `$fVisible` IN ('0', '$role')";
         $order = $order ? $order : "ORDER BY `$fOrderNum` DESC, `$fIsShow` DESC, `id` DESC";
-        $fields = array_diff($client->toFields(), array (
-                $client->toField('clientSecret') 
+        $fields = array_diff($client->toFields(), array(
+                $client->toField('clientSecret')
         ));
         $result = $this->reads($condition, $order, $paging, $fields);
         return $result;
@@ -279,7 +295,8 @@ class ClientStore extends AbstractStore {
     /**
      * 读取可在首页产显示部分Client信息
      */
-    public function readsByWord($word, $order = '', $paging = '') {
+    public function readsByWord($word, $order = '', $paging = '')
+    {
         $client = new Client();
         $clientId = $client->toField('clientId');
         $clientIsShow = $client->toField('clientIsShow');
@@ -287,18 +304,19 @@ class ClientStore extends AbstractStore {
         $clientDescribe = $client->toField('clientDescribe');
         $word = addslashes($word);
         $condition = "WHERE $clientId LIKE '%$word%' OR ( $clientName LIKE '%$word%' )"; // OR $clientDescribe LIKE '%$word%'
-        $fields = array_diff($client->toFields(), array (
-                $client->toField('clientSecret') 
+        $fields = array_diff($client->toFields(), array(
+                $client->toField('clientSecret')
         ));
         $result = $this->reads($condition, $order, $paging, $fields);
         return $result;
     }
-    public function readsByGroup($group, $order = '', $paging = '') {
+    public function readsByGroup($group, $order = '', $paging = '')
+    {
         if (! is_array($group)) {
             return false;
         }
         $vars = '';
-        foreach ( $group as $k => $item ) {
+        foreach ($group as $k => $item) {
             if ($vars === '') {
                 $vars .= '\'';
                 $vars .= addslashes($item);
@@ -315,30 +333,30 @@ class ClientStore extends AbstractStore {
         $client = new Client();
         $clientId = $client->toField('clientId');
         $condition = "WHERE $clientId IN ( $vars )";
-        $fields = array_diff($client->toFields(), array (
-                $client->toField('clientSecret') 
+        $fields = array_diff($client->toFields(), array(
+                $client->toField('clientSecret')
         ));
         $result = $this->reads($condition, $order, $paging, $fields);
         return $result;
     }
-    public function updateOrderNum($client_id, $order_num) {
+    public function updateOrderNum($client_id, $order_num)
+    {
         if (empty($client_id)) {
             return false;
         }
         $client = new Client();
-        $condition = array (
-                'client_id' => $client_id 
+        $condition = array(
+                'client_id' => $client_id
         );
         $table = $client->toTable();
-        $fields = array (
-                'order_num' 
+        $fields = array(
+                'order_num'
         );
-        $values = array (
-                'order_num' => $order_num 
+        $values = array(
+                'order_num' => $order_num
         );
         $return = $this->connection->update($table, $fields, $values, $condition);
         $success = $this->connection->toResult();
         return $success;
     }
 }
-?>

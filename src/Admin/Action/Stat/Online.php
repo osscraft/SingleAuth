@@ -16,17 +16,21 @@ use Dcux\SSO\Service\StatClientService;
 use Dcux\SSO\Service\StatService;
 use Dcux\SSO\Service\SessionService;
 
-class Online extends AjaxPermission {
+class Online extends AjaxPermission
+{
     protected $statService;
-    public function onCreate() {
+    public function onCreate()
+    {
         parent::onCreate();
         $this->statService = StatService::getInstance();
     }
-    public function onGet() {
+    public function onGet()
+    {
         //$this->template->push($stat);
         $this->onPost();
     }
-    public function onPost() {
+    public function onPost()
+    {
         $key = empty($_REQUEST['key']) ? 'list' : $_REQUEST['key'];
         switch ($key) {
             case 'current':
@@ -38,12 +42,13 @@ class Online extends AjaxPermission {
                 break;
         }
     }
-    protected function currentOnline() {
+    protected function currentOnline()
+    {
         $data = array();
         $i = 0;
         $len = 1;
         $ret = $this->statService->getStatOnlineList($len);
-        if(!empty($ret)) {
+        if (!empty($ret)) {
             foreach ($ret as $k => $v) {
                 $data[$i] = array($len - $i - 1, intval($v['count']));
                 $i++;
@@ -52,12 +57,13 @@ class Online extends AjaxPermission {
         $this->template->push('code', 0);
         $this->template->push('data', $data);
     }
-    protected function listOnline() {
+    protected function listOnline()
+    {
         $data = array();
         $i = 0;
         $len = 360;
         $ret = $this->statService->getStatOnlineList($len);
-        if(!empty($ret)) {
+        if (!empty($ret)) {
             foreach ($ret as $k => $v) {
                 //$data[$i] = array($len - $i - 1, intval($v['count']));
                 $data[$i] = array(strtotime($v['time']) * 1000, intval($v['count']));

@@ -16,9 +16,10 @@ use Lay\Advance\DB\DataBase;
  * @version 1.0
  * @copyright 2005-2012 dcux Inc.
  * @link http://www.dcux.com
- *      
+ *
  */
-class QrCode extends Model {
+class QrCode extends Model
+{
     const STATUS_CREATE = 0;
     const STATUS_SCAN = 1;
     const STATUS_LOGIN = 2;
@@ -26,21 +27,25 @@ class QrCode extends Model {
     protected $time = '';
     protected $expires = 0;
     protected $status = 0;
-    public function schema() {
+    public function schema()
+    {
         return 'sso';
     }
-    public function table() {
+    public function table()
+    {
         return 'qr_code';
     }
-    public function primary() {
+    public function primary()
+    {
         return 'code';
     }
-    public function columns() {
-        return array (
+    public function columns()
+    {
+        return array(
                 'code' => 'code',
                 'time' => 'time',
                 'expires' => 'expires',
-                'status' => 'status' 
+                'status' => 'status'
         );
     }
 }

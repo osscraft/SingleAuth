@@ -7,16 +7,19 @@ use Dcux\SSO\Model\StatClient;
 use Dcux\SSO\Core\Paging;
 use Dcux\Util\Logger;
 
-class StatClientStore extends AbstractStore {
+class StatClientStore extends AbstractStore
+{
     /**
      */
-    public function addByDay($args, $succ = 0) {
+    public function addByDay($args, $succ = 0)
+    {
         // return 'a.'.$succ;
-        if (! $this->connection)
+        if (! $this->connection) {
             return false;
+        }
         if (is_a($args, 'Dcux\SSO\Model\StatClient')) {
             $statClient = $args;
-        } else if (is_array($args)) {
+        } elseif (is_array($args)) {
             $statClient = new StatClient();
             $return = $statClient->build($args);
         } else {
@@ -38,21 +41,23 @@ class StatClientStore extends AbstractStore {
             return $success;
         }
     }
-    public function get($args, $order = '', $paging = '') {
-        if (! $this->connection)
+    public function get($args, $order = '', $paging = '')
+    {
+        if (! $this->connection) {
             return false;
+        }
         if (is_a($args, 'Dcux\SSO\Model\StatClient')) {
             $statClient = $args;
             $field1 = $statClient->toField('id');
             $value1 = $statClient->getId();
             if ($value1) {
-                $condition = array (
-                        $field1 => $value1 
+                $condition = array(
+                        $field1 => $value1
                 );
             } else {
                 $condition = '';
             }
-        } else if (is_array($args) || is_string($args)) {
+        } elseif (is_array($args) || is_string($args)) {
             $statClient = new StatClient();
             $condition = $args;
         } else {
@@ -75,10 +80,12 @@ class StatClientStore extends AbstractStore {
         unset($statClient);
         return $rows;
     }
-    public function modify($args, $succ = 0) {
-        if (! $this->connection)
+    public function modify($args, $succ = 0)
+    {
+        if (! $this->connection) {
             return false;
-            // return $args;
+        }
+        // return $args;
         if (is_array($args)) {
             $statClient = new StatClient();
             $statClient->build($args);
@@ -86,18 +93,18 @@ class StatClientStore extends AbstractStore {
             $value1 = $statClient->getId();
             $field2 = $statClient->toField('count');
             $field3 = $statClient->toField('count_visit');
-            $condition = array (
-                    $field1 => $value1 
+            $condition = array(
+                    $field1 => $value1
             );
             // return $statClient;
             if ($succ == 1) {
-                $values = array (
-                        $field2 => ($args['count'] + 1) 
+                $values = array(
+                        $field2 => ($args['count'] + 1)
                 );
             } else {
                 // return false;
-                $values = array (
-                        $field3 => ($args['count_visit'] + 1) 
+                $values = array(
+                        $field3 => ($args['count_visit'] + 1)
                 );
                 // $values=array($field3=>($args['count_visit']+1));
             }
@@ -111,19 +118,22 @@ class StatClientStore extends AbstractStore {
         $success = $this->connection->toResult();
         return $success;
     }
-    public function insert($args, $succ) {
-        if (! $this->connection)
+    public function insert($args, $succ)
+    {
+        if (! $this->connection) {
             return false;
+        }
         if (is_a($args, 'Dcux\SSO\Model\StatClient')) {
             $statClient = $args;
-        } else if (is_array($args)) {
+        } elseif (is_array($args)) {
             $statClient = new StatClient();
             $return = $statClient->build($args);
         } else {
             return false;
         }
-        if ($succ)
+        if ($succ) {
             $statClient->setCount(1);
+        }
         $statClient->setCountVisit(1);
         // return $statClient;
         $table = $statClient->toTable();
@@ -133,13 +143,15 @@ class StatClientStore extends AbstractStore {
         $success = $this->connection->toResult();
         return $success;
     }
-    public function readCount($args) {
-        if (! $this->connection)
+    public function readCount($args)
+    {
+        if (! $this->connection) {
             return false;
+        }
         if (is_a($args, 'Dcux\SSO\Model\StatClient')) {
             $statClient = $args;
             $condition = '';
-        } else if (is_array($args) || is_string($args)) {
+        } elseif (is_array($args) || is_string($args)) {
             $statClient = new StatClient();
             $condition = $args;
         } else {
@@ -159,9 +171,10 @@ class StatClientStore extends AbstractStore {
      * @param boolean $include_today
      * @return multitype
      */
-    public function readPeriodByClient($clientId, $period = 7, $include_today = true) {
+    public function readPeriodByClient($clientId, $period = 7, $include_today = true)
+    {
         if (empty($clientId)) {
-            return array ();
+            return array();
         }
         $statClient = new StatClient();
         $table = $statClient->toTable();
@@ -179,39 +192,43 @@ class StatClientStore extends AbstractStore {
             $ret = $this->connection->toArray(1);
             return $ret[0];
         } else {
-            return array ();
+            return array();
         }
     }
-	/**
-	*统计某天或某几天内客户端访问信息
-	*@param mixed $args
+    /**
+    *统计某天或某几天内客户端访问信息
+    *@param mixed $args
     *@param number $num
-	*@return multitype
-	**/
-	public function clientsCount($args='',$num=10){
-		if(!$this->connection) return false;
-		$statClient=new StatClient();
-		$table = $statClient->toTable();
-		if(is_array($args)&&$args['startDate']&&$args['endDate']){
-			$startDate=$args['startDate'];
-			$endDate=$args['endDate'];
-			if($startDate>$endDate)return false;
-			if($args['client_id']){
-				$client_id=$args['client_id'];
-				$sql="SELECT `client_id`,`date`,`count` FROM `$table` WHERE `client_id`='$client_id' AND `date` >='$startDate' AND `date`<='$endDate' LIMIT 0,$num";
-			}else{
-				$sql="SELECT `client_id`, sum(`count`) AS num FROM `$table` WHERE `date`>='$startDate' AND `date`<='$endDate' GROUP BY `client_id` ORDER BY `num` DESC LIMIT 0,$num";
-			}	
-			$ret = $this->connection->query($sql);
-			if ($ret) {
-				$ret = $this->connection->toArray();
-				return $ret;
-			} else {
-				return array ();
-			}
-		}else{
-			return array();
-		}
-	}
+    *@return multitype
+    **/
+    public function clientsCount($args='', $num=10)
+    {
+        if (!$this->connection) {
+            return false;
+        }
+        $statClient=new StatClient();
+        $table = $statClient->toTable();
+        if (is_array($args)&&$args['startDate']&&$args['endDate']) {
+            $startDate=$args['startDate'];
+            $endDate=$args['endDate'];
+            if ($startDate>$endDate) {
+                return false;
+            }
+            if ($args['client_id']) {
+                $client_id=$args['client_id'];
+                $sql="SELECT `client_id`,`date`,`count` FROM `$table` WHERE `client_id`='$client_id' AND `date` >='$startDate' AND `date`<='$endDate' LIMIT 0,$num";
+            } else {
+                $sql="SELECT `client_id`, sum(`count`) AS num FROM `$table` WHERE `date`>='$startDate' AND `date`<='$endDate' GROUP BY `client_id` ORDER BY `num` DESC LIMIT 0,$num";
+            }
+            $ret = $this->connection->query($sql);
+            if ($ret) {
+                $ret = $this->connection->toArray();
+                return $ret;
+            } else {
+                return array();
+            }
+        } else {
+            return array();
+        }
+    }
 }
-?>

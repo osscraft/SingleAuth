@@ -11,38 +11,41 @@ use Dcux\Core\App;
 use Dcux\Core\Singleton;
 use Dcux\Util\Utility;
 use Dcux\SSO\Service\SettingService;
+
 /**
  * 配置数据访问类
  *
  * @author Dcux Li
  */
-class Configuration extends Singleton {
+class Configuration extends Singleton
+{
     // use Singleton;
-    private static $_config = array ();
+    private static $_config = array();
     private static $_cachefile = 'sso.config.php';
     private static $_cachedir = __DIR__;
-    private static $_caches = array ();
+    private static $_caches = array();
     private static $_dirty = false;
     
     /**
      * 初始化配置项
-     * 
+     *
      * @return void
      */
-    public static function initialize() {
+    public static function initialize()
+    {
         $path = App::$_rootpath;
         // 设置缓存文件目录
-        self::setCacheDir(sys_get_temp_dir());        
+        self::setCacheDir(sys_get_temp_dir());
         // 注册shutdown事件
         // register_shutdown_function(array('Dcux\Core\Configuration', 'updateCache'));
         // 没有缓存配置，加载配置
         //empty($config) && self::load();
-		self::load();
-		// 加载配置缓存
-		self::loadCache();
-		/*if(is_array($config) && !empty ($config)){
-			$CFG = $config;
-		}*/
+        self::load();
+        // 加载配置缓存
+        self::loadCache();
+        /*if(is_array($config) && !empty ($config)){
+            $CFG = $config;
+        }*/
     }
     /**
      * 加载并设置配置
@@ -53,30 +56,31 @@ class Configuration extends Singleton {
      *            标记是否是配置文件
      * @return void
      */
-    public static function configure($configuration, $isFile = true, $setCache = false) {
+    public static function configure($configuration, $isFile = true, $setCache = false)
+    {
         $_ROOTPATH = &App::$_rootpath;
         if (is_array($configuration) && ! $isFile) {
-            foreach ( $configuration as $key => $item ) {
+            foreach ($configuration as $key => $item) {
                 if (is_string($key) && $key) { // key is not null
                     self::set($key, $item);
                     $setCache && self::setCache($key, $item);
                 }
             }
-        } else if (is_array($configuration)) {
+        } elseif (is_array($configuration)) {
             if (! empty($configuration)) {
-                foreach ( $configuration as $index => $configfile ) {
+                foreach ($configuration as $index => $configfile) {
                     self::configure($configfile);
                 }
             }
-        } else if (is_string($configuration)) {
+        } elseif (is_string($configuration)) {
             // Logger::info('configure file:' . $configuration, 'CONFIGURE');
             if (is_file($configuration)) {
                 $tmparr = include_once $configuration;
-            } else if (is_file($_ROOTPATH . $configuration)) {
+            } elseif (is_file($_ROOTPATH . $configuration)) {
                 $tmparr = include_once $_ROOTPATH . $configuration;
             } else {
                 // Logger::warn($configuration . ' is not a real file', 'CONFIGURE');
-                $tmparr = array ();
+                $tmparr = array();
             }
             
             if (empty($tmparr)) {
@@ -93,7 +97,8 @@ class Configuration extends Singleton {
      *
      * @return void
      */
-    public static function load() {
+    public static function load()
+    {
         $path = App::$_rootpath;
         $envfile = $path . DIRECTORY_SEPARATOR . 'config' . DIRECTORY_SEPARATOR . 'env.php';
         self::configure($envfile);
@@ -106,7 +111,8 @@ class Configuration extends Singleton {
      *
      * @return void
      */
-    public static function loadCache() {
+    public static function loadCache()
+    {
         global $CFG;// 兼容
         $rootpath = App::$_rootpath;
         $cachename = realpath(self::$_cachedir . DIRECTORY_SEPARATOR . self::$_cachefile);
@@ -115,10 +121,10 @@ class Configuration extends Singleton {
         } else {
             $settings = SettingService::read();
             self::$_caches=array();
-            foreach($settings as $key => $val){
-                self::setCache($val['k'],$val['v']);
+            foreach ($settings as $key => $val) {
+                self::setCache($val['k'], $val['v']);
             }
-			self::updateCache();
+            self::updateCache();
         }
         if (is_array(self::$_caches) && ! empty(self::$_caches)) {
             // 使用传递的数组递归替换第一个数组的元素
@@ -132,7 +138,8 @@ class Configuration extends Singleton {
      *
      * @return void
      */
-    public static function cleanCache() {
+    public static function cleanCache()
+    {
         self::$_caches = array();
         $cachename = realpath(self::$_cachedir . DIRECTORY_SEPARATOR . self::$_cachefile);
         if (is_file($cachename)) {
@@ -144,14 +151,15 @@ class Configuration extends Singleton {
      *
      * @return boolean
      */
-    public static function updateCache($force = false) {
+    public static function updateCache($force = false)
+    {
         if (! empty(self::$_dirty) || $force) {
             // 先读取，再merge，再存储
             $cachename = self::$_cachedir . DIRECTORY_SEPARATOR . self::$_cachefile;
             // 写入
             $content = Utility::array2PHPContent(self::$_caches);
             $handle = fopen($cachename, 'w');
-			$return = @chmod($cachename, 0777);
+            $return = @chmod($cachename, 0777);
             $result = fwrite($handle, $content);
             $return = fflush($handle);
             $return = fclose($handle);
@@ -166,7 +174,8 @@ class Configuration extends Singleton {
      *
      * @return boolean
      */
-    public static function setCacheDir($dirpath) {
+    public static function setCacheDir($dirpath)
+    {
         if ($dir = realpath($dirpath)) {
             self::$_cachedir = $dir;
         }
@@ -176,7 +185,8 @@ class Configuration extends Singleton {
      *
      * @return string
      */
-    public static function getCacheDir() {
+    public static function getCacheDir()
+    {
         return self::$_cachedir;
     }
     /**
@@ -188,7 +198,8 @@ class Configuration extends Singleton {
      *            类文件路径
      * @return void
      */
-    public static function setCache($keystr, $value) {
+    public static function setCache($keystr, $value)
+    {
         self::$_dirty = true;
         //self::$_caches[$key] = $value;
         if (! self::checkKey($keystr)) {
@@ -202,23 +213,23 @@ class Configuration extends Singleton {
                 } else {
                     $node = &self::$_caches;
                     if (is_array($keystr) && $keystr) {
-                        foreach ( $keystr as $i => $key ) {
+                        foreach ($keystr as $i => $key) {
                             self::setCache($key, isset($value[$i]) ? $value[$i] : false);
                         }
-                    } else if (is_string($keystr) && $keystr) {
+                    } elseif (is_string($keystr) && $keystr) {
                         $keys = explode('.', $keystr);
                         $count = count($keys);
-                        foreach ( $keys as $index => $key ) {
+                        foreach ($keys as $index => $key) {
                             if (isset($node[$key]) && $index === $count - 1) {
                                 // warning has been configured by this name
                                 // Logger::warn('$configuration["' . implode('"]["', $keys) . '"] has been configured.', 'CONFIGURATION');
                                 $node[$key] = $value;
-                            } else if (isset($node[$key])) {
+                            } elseif (isset($node[$key])) {
                                 $node = &$node[$key];
-                            } else if ($index === $count - 1) {
+                            } elseif ($index === $count - 1) {
                                 $node[$key] = $value;
                             } else {
-                                $node[$key] = array ();
+                                $node[$key] = array();
                                 $node = &$node[$key];
                             }
                         }
@@ -234,18 +245,19 @@ class Configuration extends Singleton {
      *            类名
      * @return mixed
      */
-    public static function getCache($key = '') {
+    public static function getCache($key = '')
+    {
         if (is_string($key) && $key && isset(self::$_caches[$key]) && self::checkKey($keystr)) {
             //return self::$_caches[$key];
             if (is_array($keystr) && $keystr) {
-                $node = array ();
-                foreach ( $keystr as $i => $key ) {
+                $node = array();
+                foreach ($keystr as $i => $key) {
                     $node[$i] = self::getCache($key);
                 }
-            } else if (is_string($keystr) && $keystr) {
+            } elseif (is_string($keystr) && $keystr) {
                 $node = &self::$_caches;
                 $keys = explode('.', $keystr);
-                foreach ( $keys as $key ) {
+                foreach ($keys as $key) {
                     if (isset($node[$key])) {
                         $node = &$node[$key];
                     } else {
@@ -268,17 +280,18 @@ class Configuration extends Singleton {
      *            要获取的节点键名
      * @return mixed
      */
-    public static function get($keystr = '', $default = null) {
+    public static function get($keystr = '', $default = null)
+    {
         if (self::checkKey($keystr)) {
             if (is_array($keystr) && $keystr) {
-                $node = array ();
-                foreach ( $keystr as $i => $key ) {
+                $node = array();
+                foreach ($keystr as $i => $key) {
                     $node[$i] = self::get($key);
                 }
-            } else if (is_string($keystr) && $keystr) {
+            } elseif (is_string($keystr) && $keystr) {
                 $node = &self::$_config;
                 $keys = explode('.', $keystr);
-                foreach ( $keys as $key ) {
+                foreach ($keys as $key) {
                     if (isset($node[$key])) {
                         $node = &$node[$key];
                     } else {
@@ -302,7 +315,8 @@ class Configuration extends Singleton {
      *            要设置的节点值
      * @return void
      */
-    public static function set($keystr, $value) {
+    public static function set($keystr, $value)
+    {
         if (! self::checkKey($keystr)) {
             // Logger::warn('given key isnot supported;string,int is ok.', 'CONFIGURATION');
         } else {
@@ -314,23 +328,23 @@ class Configuration extends Singleton {
                 } else {
                     $node = &self::$_config;
                     if (is_array($keystr) && $keystr) {
-                        foreach ( $keystr as $i => $key ) {
+                        foreach ($keystr as $i => $key) {
                             self::set($key, isset($value[$i]) ? $value[$i] : false);
                         }
-                    } else if (is_string($keystr) && $keystr) {
+                    } elseif (is_string($keystr) && $keystr) {
                         $keys = explode('.', $keystr);
                         $count = count($keys);
-                        foreach ( $keys as $index => $key ) {
+                        foreach ($keys as $index => $key) {
                             if (isset($node[$key]) && $index === $count - 1) {
                                 // warning has been configured by this name
                                 // Logger::warn('$configuration["' . implode('"]["', $keys) . '"] has been configured.', 'CONFIGURATION');
                                 $node[$key] = $value;
-                            } else if (isset($node[$key])) {
+                            } elseif (isset($node[$key])) {
                                 $node = &$node[$key];
-                            } else if ($index === $count - 1) {
+                            } elseif ($index === $count - 1) {
                                 $node[$key] = $value;
                             } else {
-                                $node[$key] = array ();
+                                $node[$key] = array();
                                 $node = &$node[$key];
                             }
                         }
@@ -346,15 +360,16 @@ class Configuration extends Singleton {
      *            节点键名
      * @return boolean
      */
-    private static function checkKey($key) {
+    private static function checkKey($key)
+    {
         if (is_array($key)) {
-            foreach ( $key as $i => $k ) {
+            foreach ($key as $i => $k) {
                 if (! self::checkKey($k)) {
                     return false;
                 }
             }
             return true;
-        } else if (is_string($key) || is_int($key)) {
+        } elseif (is_string($key) || is_int($key)) {
             return true;
         } else {
             return false;
@@ -367,15 +382,16 @@ class Configuration extends Singleton {
      *            节点值
      * @return boolean
      */
-    private static function checkValue($value) {
+    private static function checkValue($value)
+    {
         if (is_array($value)) {
-            foreach ( $value as $i => $var ) {
+            foreach ($value as $i => $var) {
                 if (! self::checkValue($var)) {
                     return false;
                 }
             }
             return true;
-        } else if (is_bool($value) || is_string($value) || is_numeric($value)) {
+        } elseif (is_bool($value) || is_string($value) || is_numeric($value)) {
             return true;
         } else {
             return false;
@@ -390,7 +406,8 @@ class Configuration extends Singleton {
      *            节点值
      * @return boolean
      */
-    private static function checkKeyValue($key, $value) {
+    private static function checkKeyValue($key, $value)
+    {
         if (is_array($key)) {
             if (is_array($value)) {
                 return true;

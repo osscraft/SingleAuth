@@ -7,8 +7,10 @@ use Dcux\SSO\Kernel\CAction;
 use Dcux\Autoloader;
 use Dcux\Core\Configuration;
 
-class Clean extends CAction {
-    public function onGet() {
+class Clean extends CAction
+{
+    public function onGet()
+    {
         $this->template->push('isok', true);
         // 前端缓存
         $this->cleanCache();

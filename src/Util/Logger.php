@@ -5,7 +5,8 @@ namespace Dcux\Util;
 use Dcux\Core\Singleton;
 use Dcux\Core\App;
 
-class Logger extends Singleton {
+class Logger extends Singleton
+{
     // use Singleton;
     /**
      * 定义不打印输出或不记录日志的级别
@@ -54,30 +55,33 @@ class Logger extends Singleton {
     /**
      * 构造方法
      */
-    protected function __construct() {
+    protected function __construct()
+    {
     }
     /**
      * set log dir
-     * 
-     * @param string $dir            
+     *
+     * @param string $dir
      */
-    public function directory($dir) {
+    public function directory($dir)
+    {
         if ($path = realpath($dir)) {
             $this->dir = $path;
         }
     }
     /**
      * set log dir
-     * 
-     * @param string $dir            
+     *
+     * @param string $dir
      */
-    public function level($level) {
+    public function level($level)
+    {
         if (is_bool($level)) {
             $this->level = $level;
-        } else if (is_array($level)) {
+        } elseif (is_array($level)) {
             $level = isset($level['level']) ? $level['level'] : isset($level[0]) ? $level[0] : true;
             $this->initialize($level);
-        } else if (is_int($level)) {
+        } elseif (is_int($level)) {
             $this->level = $level;
         } else {
             $this->level = true;
@@ -90,7 +94,8 @@ class Logger extends Singleton {
      *            级别，如：true; false; array(true); array(Logger::L_NONE)
      * @return void
      */
-    public function initialize() {
+    public function initialize()
+    {
         $this->directory(App::$_docpath); // 初始化日志文档目录
         $this->level(App::get('logger', true));
     }
@@ -103,18 +108,20 @@ class Logger extends Singleton {
      *            给出的级别数值
      * @return boolean
      */
-    private function regular($set, $lv = 1) {
+    private function regular($set, $lv = 1)
+    {
         $ret = $lv & $set;
         return $ret === $lv ? true : false;
     }
     /**
      *
-     * @param mixed $var            
-     * @param string $name            
-     * @param int $level            
-     * @param string $line_delimiter            
+     * @param mixed $var
+     * @param string $name
+     * @param int $level
+     * @param string $line_delimiter
      */
-    public function write($var, $name = 'sso', $level = 0, $line_delimiter = "\n") {
+    public function write($var, $name = 'sso', $level = 0, $line_delimiter = "\n")
+    {
         if ($this->level === true || ($this->level && $this->regular(intval($this->level), $level))) {
             $lv = strtolower($this->parseLevel($level));
             $file = $this->dir . DIRECTORY_SEPARATOR . 'log' . DIRECTORY_SEPARATOR . "$name.$lv.log";
@@ -136,7 +143,8 @@ class Logger extends Singleton {
      *            是否强制打印输出，默认非
      * @return void
      */
-    public static function debug($msg, $tag = 'sso') {
+    public static function debug($msg, $tag = 'sso')
+    {
         self::getInstance()->write($msg, $tag, self::L_DEBUG);
     }
     /**
@@ -148,7 +156,8 @@ class Logger extends Singleton {
      *            标签名
      * @return void
      */
-    public static function info($msg, $tag = 'sso') {
+    public static function info($msg, $tag = 'sso')
+    {
         self::getInstance()->write($msg, $tag, self::L_INFO);
     }
     /**
@@ -160,7 +169,8 @@ class Logger extends Singleton {
      *            标签名
      * @return void
      */
-    public static function warning($msg, $tag = 'sso') {
+    public static function warning($msg, $tag = 'sso')
+    {
         self::warn($msg, $tag);
     }
     /**
@@ -172,7 +182,8 @@ class Logger extends Singleton {
      *            标签名
      * @return void
      */
-    public static function warn($msg, $tag = 'sso') {
+    public static function warn($msg, $tag = 'sso')
+    {
         self::getInstance()->write($msg, $tag, self::L_WARN);
     }
     /**
@@ -185,7 +196,8 @@ class Logger extends Singleton {
      * @return void
      * @throws Exception
      */
-    public static function error($msg, $tag = 'sso') {
+    public static function error($msg, $tag = 'sso')
+    {
         self::getInstance()->write($msg, $tag, self::L_ERROR);
     }
     /**
@@ -197,7 +209,8 @@ class Logger extends Singleton {
      *            标签名
      * @return void
      */
-    public static function log($msg, $tag = 'sso') {
+    public static function log($msg, $tag = 'sso')
+    {
         self::getInstance()->write($msg, $tag, self::L_LOG);
     }
     
@@ -214,7 +227,8 @@ class Logger extends Singleton {
      *            省略部分替代字符串
      * @return string
      */
-    protected function cutString($string, $front = 10, $follow = 0, $dot = '...') {
+    protected function cutString($string, $front = 10, $follow = 0, $dot = '...')
+    {
         $strlen = strlen($string);
         if ($strlen < $front + $follow) {
             return $string;
@@ -239,26 +253,27 @@ class Logger extends Singleton {
      *            级别
      * @return string
      */
-    protected function parseColor($lv) {
+    protected function parseColor($lv)
+    {
         switch ($lv) {
-            case Logger::L_DEBUG :
-            case 'DEBUG' :
+            case Logger::L_DEBUG:
+            case 'DEBUG':
                 $lv = 'color:#0066FF';
                 break;
-            case Logger::L_INFO :
-            case 'INFO' :
+            case Logger::L_INFO:
+            case 'INFO':
                 $lv = 'color:#006600';
                 break;
-            case Logger::L_WARN :
-            case 'WARN' :
+            case Logger::L_WARN:
+            case 'WARN':
                 $lv = 'color:#FF9900';
                 break;
-            case Logger::L_ERROR :
-            case 'ERROR' :
+            case Logger::L_ERROR:
+            case 'ERROR':
                 $lv = 'color:#FF0000';
                 break;
-            case Logger::L_LOG :
-            case 'LOG' :
+            case Logger::L_LOG:
+            case 'LOG':
                 $lv = 'color:#CCCCCC';
                 break;
         }
@@ -271,36 +286,37 @@ class Logger extends Singleton {
      *            级别
      * @return mixed
      */
-    protected function parseLevel($lv) {
+    protected function parseLevel($lv)
+    {
         switch ($lv) {
-            case Logger::L_DEBUG :
+            case Logger::L_DEBUG:
                 $lv = 'DEBUG';
                 break;
-            case Logger::L_INFO :
+            case Logger::L_INFO:
                 $lv = 'INFO';
                 break;
-            case Logger::L_WARN :
+            case Logger::L_WARN:
                 $lv = 'WARN';
                 break;
-            case Logger::L_ERROR :
+            case Logger::L_ERROR:
                 $lv = 'ERROR';
                 break;
-            case Logger::L_LOG :
+            case Logger::L_LOG:
                 $lv = 'LOG';
                 break;
-            case 'DEBUG' :
+            case 'DEBUG':
                 $lv = Logger::L_DEBUG;
                 break;
-            case 'INFO' :
+            case 'INFO':
                 $lv = Logger::L_INFO;
                 break;
-            case 'WARN' :
+            case 'WARN':
                 $lv = Logger::L_WARN;
                 break;
-            case 'ERROR' :
+            case 'ERROR':
                 $lv = Logger::L_ERROR;
                 break;
-            case 'LOG' :
+            case 'LOG':
                 $lv = Logger::L_LOG;
                 break;
         }

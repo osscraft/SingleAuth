@@ -20,52 +20,56 @@ use Dcux\SSO\Core\Util;
 use Dcux\SSO\SDK\SSOToOAuth2;
 use Dcux\SSO\SDK\SSOClient;
 
-class Index extends MenuAction {
+class Index extends MenuAction
+{
     protected $userService;
-    public function cmd() {
+    public function cmd()
+    {
         return 'index';
     }
-    public function onCreate() {
+    public function onCreate()
+    {
         parent::onCreate();
         $this->userService = UserService::getInstance();
     }
-    public function onGet() {
+    public function onGet()
+    {
         global $CFG;
-        $out = array ();
+        $out = array();
         $oauth = new SSOToOAuth2($CFG['SSO_CLIENT_ID'], $CFG['SSO_CLIENT_SECRET']);
 
         $out['URL'] = $oauth->getAuthorizeURL($CFG['SSO_CALLBACK']);
-		
+        
         if (isset($_REQUEST['code'])) {
-            $keys = array ();
+            $keys = array();
             $keys['code'] = $_REQUEST['code'];
             $keys['redirect_uri'] = $CFG['SSO_CALLBACK'];
             $ret = $oauth->getAccessToken('code', $keys);
             if ($ret && !empty($token['error'])) {
                 $error = $token['error'];
-            } else if($ret) {
+            } elseif ($ret) {
                 $token = $_SESSION['token'] = $ret;
             }
-        } else if(!empty($_SESSION['token'])) {
+        } elseif (!empty($_SESSION['token'])) {
             $token = $_SESSION['token'];
         }
         // redirect if empty code
-        if(!empty($token) && isset($_REQUEST['code'])) {
+        if (!empty($token) && isset($_REQUEST['code'])) {
             /*CLOSE THE SESSION WITH USER DATA*/
             //session_write_close();
             /*AND STARTING A NEW SESSION*/
             //session_start();
             $this->template->redirect('index.php');
-        } else if(! empty($token) && empty($_SESSION['user'])) {
+        } elseif (! empty($token) && empty($_SESSION['user'])) {
             $_SESSION['token'] = $token;
             // new SSOClient instance
             $oauth->access_token = empty($token['access_token']) ? '' : $token['access_token'];
             $oauth->refresh_token = empty($token['refresh_token']) ? '' : $token['refresh_token'];
             $client = new SSOClient($CFG['SSO_CLIENT_ID'], $CFG['SSO_CLIENT_SECRET'], empty($token['access_token']) ? '' : $token['access_token'], empty($token['refresh_token']) ? '' : $token['refresh_token']);
-			//$count = UserService::counts(array('uid'=> array('0', '>')));
+            //$count = UserService::counts(array('uid'=> array('0', '>')));
             $root = $this->userService->get($CFG['root_uid']);
-			if(empty($root)) {
-                $_SESSION['user'] = $root = array (
+            if (empty($root)) {
+                $_SESSION['user'] = $root = array(
                         "uid" => $CFG['root_uid'],
                         "username" => $CFG['root_username'],
                         "isAdmin" => '2'
@@ -82,13 +86,13 @@ class Index extends MenuAction {
                     if (empty($_user)) {
                         $out['SIGN'] = 'invalid_user';
                         $error = $out['REQUEST_ERROR'] = $CFG['LANG']['DENIED_USER'] . "，" . $CFG['LANG']['PLEASE_LOGOUT'];
-                    } else if(!empty($_user) && $_user['isAdmin'] < 1) {
+                    } elseif (!empty($_user) && $_user['isAdmin'] < 1) {
                         $out['SIGN'] = 'invalid_user';
                         $error = $out['REQUEST_ERROR'] = $CFG['LANG']['DENIED_USER'] . "，" . $CFG['LANG']['PLEASE_LOGOUT'];
                     } else {
                         $_SESSION['user'] = $_user;
                     }
-                } else if(!empty($ldapuser)) {
+                } elseif (!empty($ldapuser)) {
                     // invalid token
                     if ($ldapuser['error'] == 'invalid_access_token') {
                         $out['SIGN'] = 'invalid_access_token';
@@ -120,22 +124,26 @@ class Index extends MenuAction {
             $this->template->file('error.php');
         }
     }
-    public function onPost() {
+    public function onPost()
+    {
         $this->onGet();
     }
-    protected function userDenied() {
+    protected function userDenied()
+    {
         $this->template->push(array(
                 'SIGN' => 'invalid_access_token',
-                'REQUEST_ERROR' => $CFG['LANG']['DENIED_USER'] . "，" . $CFG['LANG']['PLEASE_LOGOUT'] 
+                'REQUEST_ERROR' => $CFG['LANG']['DENIED_USER'] . "，" . $CFG['LANG']['PLEASE_LOGOUT']
         ));
     }
-    protected function invalidAccessToken($err) {
+    protected function invalidAccessToken($err)
+    {
         $this->template->push(array(
                 'SIGN' => 'invalid_token',
                 'REQUEST_ERROR' => $err
         ));
     }
-    protected function errorResponse($error, $error_description = null, $error_uri = null) {
+    protected function errorResponse($error, $error_description = null, $error_uri = null)
+    {
         $this->template->push(array(
                 'SIGN' => $error,
                 'REQUEST_ERROR' => empty($error_description) ? $error : $error_description

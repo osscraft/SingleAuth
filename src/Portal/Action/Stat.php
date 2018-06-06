@@ -15,45 +15,49 @@ use Dcux\SSO\Service\StatClientService;
 use Dcux\SSO\Service\StatService;
 use Dcux\SSO\Service\SessionService;
 
-class Stat extends PAction {
+class Stat extends PAction
+{
     protected $clientService;
     protected $userManager;
     protected $statClientService;
     protected $statService;
     protected $sessionService;
-    public function onCreate() {
+    public function onCreate()
+    {
         parent::onCreate();
         $this->clientService = ClientService::getInstance();
-		$this->userService = UserService::getInstance();
+        $this->userService = UserService::getInstance();
         $this->statClientService = StatClientService::getInstance();
         $this->statService = StatService::getInstance();
         $this->sessionService = SessionService::getInstance();
     }
-    public function onGet() {
+    public function onGet()
+    {
         //$this->template->push($stat);
         $this->onPost();
     }
-    public function onPost() {
+    public function onPost()
+    {
         $key = empty($_REQUEST['key']) ? false : $_REQUEST['key'];
-        if(empty($key)) {
-            if(empty($_SESSION['uid'])) {
+        if (empty($key)) {
+            if (empty($_SESSION['uid'])) {
                 $this->loadDefaultStat();
-            } else if($_SESSION['role'] == '教师') {
+            } elseif ($_SESSION['role'] == '教师') {
                 $this->loadTeacherStat();
-            } else if($_SESSION['role'] == '学生') {
+            } elseif ($_SESSION['role'] == '学生') {
                 $this->loadStudentStat();
-            } else if($_SESSION['role'] == '其他') {
+            } elseif ($_SESSION['role'] == '其他') {
                 $this->loadOtherStat();
             }
             // SSO管理中的用户
-            if(!empty($_SESSION['user']) && !empty($_SESSION['user']['isAdmin'])) {
+            if (!empty($_SESSION['user']) && !empty($_SESSION['user']['isAdmin'])) {
                 $this->loadAdminStat();
             }
-        } else if($key == 'client_top'){
+        } elseif ($key == 'client_top') {
             $this->loadClientTop();
-        } else if($key == 'browser_top'){
+        } elseif ($key == 'browser_top') {
             $this->loadBrowser();
-        } else if($key == 'online'){
+        } elseif ($key == 'online') {
             $this->loadOnline();
         }
         //$stat['sid'] = Security::generateSessionToken($user);
@@ -62,7 +66,8 @@ class Stat extends PAction {
         //$stat['clients'] = ClientService::getInstance()->updateClientOrderNum();
     }
 
-    protected function loadBrowser() {
+    protected function loadBrowser()
+    {
         $ret = $this->statService->getStatBrowserDistribution();
         $conduct = array();
         foreach ($ret as $v) {
@@ -82,9 +87,10 @@ class Stat extends PAction {
         $this->template->push('code', 0);
         $this->template->push('data', $data);
     }
-    protected function loadClientTop() {
+    protected function loadClientTop()
+    {
         $period = empty($_REQUEST['period']) ? 30 : intval($_REQUEST['period']);
-        // include 
+        // include
         $startDate = empty($_REQUEST['startDate']) ? date('Y-m-d', time() - 86400 * $period + 86400) : $_REQUEST['startDate'];
         // include
         $endDate = empty($_REQUEST['endDate']) ? date('Y-m-d') : $_REQUEST['endDate'];
@@ -110,7 +116,8 @@ class Stat extends PAction {
         $this->template->push('code', 0);
         $this->template->push('data', $data);
     }
-    protected function loadOnline() {
+    protected function loadOnline()
+    {
         $online = $this->sessionService->getOnlineUserCount();
         // push data
         $this->template->push('code', 0);

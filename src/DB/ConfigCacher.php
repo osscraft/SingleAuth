@@ -9,7 +9,8 @@ use Dcux\Util\Logger;
 use Dcux\Core\Configuration;
 use Dcux\DB\Querying;
 
-class ConfigCacher extends Cacher {
+class ConfigCacher extends Cacher
+{
     /**
      * 数据库连接源
      *
@@ -22,52 +23,62 @@ class ConfigCacher extends Cacher {
      * @var mixed $result
      */
     protected $result;
-    protected function __construct() {
+    protected function __construct()
+    {
     }
     /**
      * connect memcache database.
      * new instance.
      */
-	public function connect() {
+    public function connect()
+    {
         return false;
-	}
+    }
     /**
      * 选择数据库名称
      *
      * @return mixed
      */
-    public function choose($dbname) {
-    	return true;
+    public function choose($dbname)
+    {
+        return true;
     }
     /**
      * another connect
      * new instance.
      */
-    public function alter($name = 'default') {
+    public function alter($name = 'default')
+    {
         return false;
     }
-	public function close() {
-	}
-    public final function get($id, $fields = array()) {
+    public function close()
+    {
+    }
+    final public function get($id, $fields = array())
+    {
         return false;
     }
-    public final function add(array $info) {
+    final public function add(array $info)
+    {
         return $this->remove();
     }
-    public final function del($id) {
+    final public function del($id)
+    {
         return $this->remove();
     }
-    public final function upd($id, array $info) {
+    final public function upd($id, array $info)
+    {
         return false;
     }
-    protected function remove() {
+    protected function remove()
+    {
         Configuration::cleanCache();
         $db = $this->model->db();
-        if($db instanceof Querying) {
+        if ($db instanceof Querying) {
             $settings = $this->model->db()->select(array(), array(), array('k' => 'ASC'), array(), false);
             //Configuration::$_caches=array();
-            foreach($settings as $key => $val){
-                Configuration::setCache($val['k'],$val['v']);
+            foreach ($settings as $key => $val) {
+                Configuration::setCache($val['k'], $val['v']);
             }
             Configuration::updateCache(true);
         }

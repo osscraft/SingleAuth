@@ -14,14 +14,18 @@ use Dcux\Admin\Kernel\MenuPermission;
 use Dcux\SSO\Service\StatUserDetailService;
 use Dcux\SSO\Service\ClientService;
 
-class Rawlog extends MenuPermission {
-    public function cmd() {
+class Rawlog extends MenuPermission
+{
+    public function cmd()
+    {
         return 'statistics.rawlog';
     }
-    public function onGet() {
+    public function onGet()
+    {
         $this->template->file('stat/rawlog.php');
     }
-    public function onPost() {
+    public function onPost()
+    {
         $this->onGet();
     }
 }

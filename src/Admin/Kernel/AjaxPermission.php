@@ -8,9 +8,11 @@ use Lay\Advance\Core\Configuration;
 
 use Dcux\Admin\Kernel\Permission;
 
-abstract class AjaxPermission extends Permission {
+abstract class AjaxPermission extends Permission
+{
     // override onRender
-    public function cmd() {
+    public function cmd()
+    {
         return '';
     }
 }

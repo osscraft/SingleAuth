@@ -6,7 +6,8 @@ use Lay\Advance\Core\Identification;
 use Lay\Advance\DB\Mysql;
 use Lay\Advance\DB\DataBase;
 
-class MysqlUser extends Model {
+class MysqlUser extends Model
+{
     protected $uid = '';
     protected $username = '';
     protected $password = '';
@@ -17,28 +18,34 @@ class MysqlUser extends Model {
         $cacher->setModel($this);
         return $cacher;
     }*/
-    public function db() {
-        if(empty(self::$db)) {
+    public function db()
+    {
+        if (empty(self::$db)) {
             self::$db = new Mysql();
             self::$db->setModel($this);
             self::$db->alter('identify');
         }
         return self::$db;
     }
-    public function rules() {
+    public function rules()
+    {
         return array();
     }
-    public function schema() {
+    public function schema()
+    {
         return 'sso';
     }
-    public function table() {
+    public function table()
+    {
         return 'users';
     }
-    public function primary() {
+    public function primary()
+    {
         return 'uid';
     }
-    public function columns() {
-        return array (
+    public function columns()
+    {
+        return array(
             'uid' => 'uid',
             'username' => 'username',
             'password' => 'password',

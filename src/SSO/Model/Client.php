@@ -16,9 +16,10 @@ use Lay\Advance\Core\Volatile;
  * @version 1.0
  * @copyright 2005-2012 dcux Inc.
  * @link http://www.dcux.com
- *      
+ *
  */
-class Client extends ModelUnique implements Volatile {
+class Client extends ModelUnique implements Volatile
+{
     protected $id = 0;
     protected $clientId = '';
     protected $clientName = '';
@@ -34,30 +35,37 @@ class Client extends ModelUnique implements Volatile {
     protected $clientOrderNum = 0;
     protected $tokenLifetime = 0;
     protected $owner = '';
-    public function lifetime() {
+    public function lifetime()
+    {
         return 86400;
     }
     // 不使用缓存
-    public function cacher() {
+    public function cacher()
+    {
         $cacher = DataBase::factory('memcache');
         $cacher->setModel($this);
         return $cacher;
     }
-    public function schema() {
+    public function schema()
+    {
         return 'sso';
     }
-    public function table() {
+    public function table()
+    {
         return 'clients';
     }
-    public function primary() {
+    public function primary()
+    {
         return 'id';
     }
-    public function unique() {
+    public function unique()
+    {
         return 'client_id';
         //return array('id', 'client_id');
     }
-    public function columns() {
-        return array (
+    public function columns()
+    {
+        return array(
                 'id' => 'id',
                 'clientName' => 'client_name',
                 'clientDescribe' => 'client_describe',
@@ -76,4 +84,3 @@ class Client extends ModelUnique implements Volatile {
         );
     }
 }
-?>

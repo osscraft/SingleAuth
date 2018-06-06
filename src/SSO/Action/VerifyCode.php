@@ -5,12 +5,14 @@ namespace Dcux\SSO\Action;
 use Dcux\SSO\Kernel\UAction;
 use Dcux\SSO\Core\MemSession;
 
-class VerifyCode extends UAction {
-    public function onGet() {
+class VerifyCode extends UAction
+{
+    public function onGet()
+    {
         if ($_REQUEST['key'] == 'verifyCode') {
             \Dcux\SSO\Kernel\VerifyCode::getCode(4, 100, 45);
             exit();
-        } else if ($_REQUEST['key'] == 'checkCode') {
+        } elseif ($_REQUEST['key'] == 'checkCode') {
             // MemSession::getSession();
             $action = $_REQUEST['act'];
             $code = trim($_REQUEST['verifyCode']);
@@ -29,7 +31,8 @@ class VerifyCode extends UAction {
             }
         }
     }
-    public function onPost() {
+    public function onPost()
+    {
         $this->onGet();
     }
 }

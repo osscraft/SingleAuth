@@ -2,7 +2,8 @@
 
 namespace Dcux\Core;
 
-interface Templatelizable extends Variously {
+interface Templatelizable extends Variously
+{
     /**
      * push variables with a name
      *
@@ -15,20 +16,20 @@ interface Templatelizable extends Variously {
     /**
      * set template filename
      *
-     * @param string $filename            
+     * @param string $filename
      */
     public function file($filename);
     /**
      * set template theme name
      *
-     * @param string $theme            
+     * @param string $theme
      */
     public function theme($theme);
     /**
      * 此方法只是标记了跳转，在输出时才真正地进行跳转
-     * 
-     * @param string $url            
-     * @param array $params            
+     *
+     * @param string $url
+     * @param array $params
      */
     public function redirect($url, array $params = array(), $lazy = true);
     /**

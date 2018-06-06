@@ -16,13 +16,15 @@ use Dcux\SSO\Service\StatUserService;
 use Dcux\SSO\Service\StatUserDetailService;
 use Dcux\SSO\Service\IdentifyService;
 
-class Token extends UAction {
+class Token extends UAction
+{
     protected $clientService;
     protected $scopeService;
     protected $oauth2CodeService;
     protected $oauth2TokenService;
     protected $identify;
-    public function onCreate() {
+    public function onCreate()
+    {
         $this->clientService = ClientService::getInstance();
         $this->scopeService = ScopeService::getInstance();
         $this->oauth2CodeService = OAuth2CodeService::getInstance();
@@ -30,10 +32,12 @@ class Token extends UAction {
         $this->identify = IdentifyService::getInstance();
         parent::onCreate();
     }
-    public function onGet() {
+    public function onGet()
+    {
         $this->onPost();
     }
-    public function onPost() {
+    public function onPost()
+    {
         global $CFG;
         $userid = empty($_REQUEST[OAuth2::HTTP_QUERY_PARAM_USER_ID]) ? '' : $_REQUEST[OAuth2::HTTP_QUERY_PARAM_USER_ID];
         $userid = $userid ? $userid : false;
@@ -74,14 +78,14 @@ class Token extends UAction {
                     } else {
                         $this->errorResponse('invalid_grant');
                     }
-                } else if ($requestType == OAuth2::REQUEST_TYPE_PASSWORD && $password) {
+                } elseif ($requestType == OAuth2::REQUEST_TYPE_PASSWORD && $password) {
                     // log visit count
                     $this->logVisit($client, $responseType);
                     // $user = $this->userService->checkUser($password, $userid, $username);
                     list($scopeStr, $scopeArr) = $this->scopeService->filter($client['clientScope']);
                     $user = $this->identify->verifyResourceOwner($username, $password, $client['clientScope']);
                     if ($user) {
-                        list ( $scopeStr, $scopeArr ) = $this->scopeService->filter($client['clientScope']);
+                        list($scopeStr, $scopeArr) = $this->scopeService->filter($client['clientScope']);
                         $this->updateSessionUser($user);
                         $params = $this->genTokenParam($user, $client, $scopeStr);
                         $this->template->push($params);
@@ -90,12 +94,12 @@ class Token extends UAction {
                         $this->errorResponse('invalid_grant');
                         $this->logLogin($client, $username, false);
                     }
-                } else if ($requestType == OAuth2::REQUEST_TYPE_REFRESH_TOKEN && $refreshToken) {
+                } elseif ($requestType == OAuth2::REQUEST_TYPE_REFRESH_TOKEN && $refreshToken) {
                     // log visit count
                     $this->logVisit($client, $responseType);
                     $oauth2token = $this->oauth2TokenService->get($refreshToken);
                     if ($oauth2token && $oauth2token['type'] == OAuth2::TOKEN_TYPE_REFRESH) {
-                        list ( $scopeStr, $scopeArr ) = $this->scopeService->filter($oauth2token['scope']);
+                        list($scopeStr, $scopeArr) = $this->scopeService->filter($oauth2token['scope']);
                         // $user = $this->userService->get($oauth2token['username']);
                         $user = $this->identify->verifyResourceOwner($username, $password, $client['clientScope']);
                         $params = $this->genAccessTokenParam($user, $client, $scopeStr);
@@ -113,7 +117,8 @@ class Token extends UAction {
             $this->errorResponse('invalid_request');
         }
     }
-    protected function genTokenParam($user, $client, $scope) {
+    protected function genTokenParam($user, $client, $scope)
+    {
         // $scope = is_string($scope) ? : (is_array($scope)?implode(',', array_keys($scope)):'');
         $params = $this->genAccessTokenParam($user, $client, $scope);
         if (App::get('use_refresh_token', true)) {
@@ -122,36 +127,40 @@ class Token extends UAction {
         }
         return $params;
     }
-    protected function genAccessTokenParam($user, $client, $scope) {
+    protected function genAccessTokenParam($user, $client, $scope)
+    {
         $redirectURI = $client['redirectURI'];
         // $scope = is_string($scope) ? : (is_array($scope)?implode(',', array_keys($scope)):'');
         $accessToken = $this->oauth2TokenService->gen($user, $client, $scope);
         return $accessToken;
     }
-    protected function genRefreshTokenParam($user, $client, $scope) {
+    protected function genRefreshTokenParam($user, $client, $scope)
+    {
         // $scope = is_string($scope) ? : (is_array($scope)?implode(',', array_keys($scope)):'');
         $refreshToken = $this->oauth2TokenService->genRefresh($user, $client, $scope);
-        $params = array ();
+        $params = array();
         if ($refreshToken) {
             $params[OAuth2::HTTP_QUERY_PARAM_REFRESH_TOKEN] = $refreshToken['token'];
             // $params['refresh_expires'] = $refreshToken['expires'];
         }
         return $params;
     }
-    protected function genCodeParam($user, $client, $scope) {
+    protected function genCodeParam($user, $client, $scope)
+    {
         // $scope = is_string($scope) ? : (is_array($scope)?implode(',', array_keys($scope)):'');
         $oauth2code = $this->oauth2CodeService->gen($user, $client, $scope);
-        $params = array ();
+        $params = array();
         if (is_array($oauth2code)) {
             $params[OAuth2::HTTP_QUERY_PARAM_CODE] = $oauth2code['code'];
-        } else if (is_string($oauth2code)) {
+        } elseif (is_string($oauth2code)) {
             $params[OAuth2::HTTP_QUERY_PARAM_CODE] = $oauth2code;
         }
         return $params;
     }
     // 清除使用过的code
-    public function releaseCode($code, $app) {
-        if(!empty($code)) {
+    public function releaseCode($code, $app)
+    {
+        if (!empty($code)) {
             $this->oauth2CodeService->del($code);
         }
     }

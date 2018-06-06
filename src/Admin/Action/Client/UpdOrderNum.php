@@ -5,11 +5,13 @@ namespace Dcux\Admin\Action\Client;
 use Dcux\Admin\Kernel\AAction;
 use Dcux\SSO\Manager\ClientManager;
 
-class UpdOrderNum extends AAction {
-    public function onGet() {
+class UpdOrderNum extends AAction
+{
+    public function onGet()
+    {
         global $CFG;
         $st = time() + microtime();
-        $out = array ();
+        $out = array();
         $_REQUEST['key'] = empty($_REQUEST['key']) ? 'list' : $_REQUEST['key'];
         
         if (empty($_SESSION['token']) || empty($_SESSION['user'])) {
@@ -31,7 +33,8 @@ class UpdOrderNum extends AAction {
         
         return;
     }
-    public function onPost() {
+    public function onPost()
+    {
         $this->onGet();
     }
 }

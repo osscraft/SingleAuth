@@ -2,7 +2,8 @@
 
 namespace Dcux\Core;
 
-interface Actionizable {
+interface Actionizable
+{
     /**
      * 创建事件触发方法
      */

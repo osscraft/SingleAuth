@@ -4,7 +4,8 @@ namespace Lay\Advance\Core;
 use Lay\Advance\Core\Bean;
 use Lay\Advance\DB\CRUDable;
 
-interface Modelizable extends CRUDable {
+interface Modelizable extends CRUDable
+{
     public function save();
     /**
      * 返回模型对应数据表名或其他数据库中的集合名称

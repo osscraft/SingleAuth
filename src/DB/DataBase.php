@@ -12,8 +12,10 @@ use Dcux\DB\ConfigCacher;
 use Dcux\DB\Ldap;
 use Dcux\Core\Singleton;
 
-abstract class DataBase extends Singleton implements CRUDable {
-    public static function factory($name = 'mysql') {
+abstract class DataBase extends Singleton implements CRUDable
+{
+    public static function factory($name = 'mysql')
+    {
         switch ($name) {
             case 'memcache':
             case 'memcached':
@@ -43,7 +45,7 @@ abstract class DataBase extends Singleton implements CRUDable {
      * 模型对象
      * @var Model $model 模型对象
      */
-	protected $model;
+    protected $model;
     /**
      * 数据库连接
      * @var mixed $link
@@ -54,39 +56,42 @@ abstract class DataBase extends Singleton implements CRUDable {
      * @param Model $model 模型对象
      * @return void
      */
-    public final function setModel(Model $model) {
+    final public function setModel(Model $model)
+    {
         $this->model = $model;
     }
     /**
      * 获取模型对象
      * @return Model
      */
-    public final function getModel() {
+    final public function getModel()
+    {
         return $this->model;
     }
-    public final function getLink() {
+    final public function getLink()
+    {
         return $this->link;
     }
     /**
      * 连接数据库
      * @return boolean
      */
-    public abstract function connect();
+    abstract public function connect();
     /**
      * 选择数据库名称
      *
      * @return mixed
      */
-    public abstract function choose($dbname);
+    abstract public function choose($dbname);
     /**
      * 选择数据库
      * @return boolean
      */
-    public abstract function alter($name = '');
+    abstract public function alter($name = '');
     /**
      * close connection
      * @return boolean
      */
-    public abstract function close();
+    abstract public function close();
 }
 // PHP END

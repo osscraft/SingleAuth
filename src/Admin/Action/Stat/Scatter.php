@@ -14,22 +14,27 @@ use Dcux\Admin\Kernel\MenuPermission;
 use Dcux\SSO\Service\StatUserDetailService;
 use Dcux\SSO\Service\ClientService;
 
-class Scatter extends MenuPermission {
-	protected $clientService;
-    public function cmd() {
+class Scatter extends MenuPermission
+{
+    protected $clientService;
+    public function cmd()
+    {
         return 'statistics.scatter';
     }
-    public function onCreate() {
-    	parent::onCreate();
-    	$this->clientService = ClientService::getInstance();
+    public function onCreate()
+    {
+        parent::onCreate();
+        $this->clientService = ClientService::getInstance();
     }
-    public function onGet() {
-    	$clients = $this->clientService->getClientListAll();
-    	$clients = empty($clients) ? array() : $clients;
-    	$this->template->push('clients', $clients);
+    public function onGet()
+    {
+        $clients = $this->clientService->getClientListAll();
+        $clients = empty($clients) ? array() : $clients;
+        $this->template->push('clients', $clients);
         $this->template->file('stat/scatter.php');
     }
-    public function onPost() {
+    public function onPost()
+    {
         $this->onGet();
     }
 }

@@ -5,20 +5,23 @@ use Lay\Advance\Core\Service;
 
 use Dcux\Cli\Model\TransferUsers;
 
-class TransferUsersService extends Service {
-	private $users;
-    protected function __construct() {
+class TransferUsersService extends Service
+{
+    private $users;
+    protected function __construct()
+    {
         parent::__construct();
         $this->users = TransferUsers::getInstance();
-
     }
-	public static function getInstance() {
+    public static function getInstance()
+    {
         $instance = parent::getInstance();
-		return $instance;
+        return $instance;
     }
-    // base user 
-	public function model(){
-		return $this->users;
-	}
+    // base user
+    public function model()
+    {
+        return $this->users;
+    }
 }
 // PHP END

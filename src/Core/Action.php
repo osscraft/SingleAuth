@@ -13,7 +13,8 @@ use Dcux\Util\Logger;
 use Dcux\Util\Utility;
 use Dcux\Autoloader;
 
-abstract class Action extends Singleton implements Actionizable {
+abstract class Action extends Singleton implements Actionizable
+{
     // use Singleton;
     /**
      * 事件常量，创建时
@@ -97,7 +98,7 @@ abstract class Action extends Singleton implements Actionizable {
      *
      * @var array
      */
-    protected $services = array ();
+    protected $services = array();
     /**
      * 模板引擎对象
      *
@@ -110,14 +111,16 @@ abstract class Action extends Singleton implements Actionizable {
      *
      * @return Action
      */
-    protected function __construct() {
+    protected function __construct()
+    {
     }
     /**
      * App初始化
      *
      * @return void
      */
-    public function initialize() {
+    public function initialize()
+    {
         $this->request = Request::getInstance();
         $this->response = Response::getInstance();
         $this->template = Template::getInstance();
@@ -127,33 +130,34 @@ abstract class Action extends Singleton implements Actionizable {
      *
      * @return void
      */
-    public function lifecycle() {
+    public function lifecycle()
+    {
         $class= get_class($this);
         // on create
         $this->onCreate();
-        App::$_event->fire($class, Action::E_CREATE, array (
-                $this 
+        App::$_event->fire($class, Action::E_CREATE, array(
+                $this
         ));
         $valid = $this->onValidate();
-        App::$_event->fire($class, Action::E_VALIDATE, array (
+        App::$_event->fire($class, Action::E_VALIDATE, array(
                 $this, $valid
         ));
-        if(!empty($valid)) {
+        if (!empty($valid)) {
             $method = $this->request->getMethod();
             $method = empty($method) ? 'get' : $method;
             // on
             $this->{'on' . ucfirst(strtolower($method))}();
-            App::$_event->fire($class, Action::E_STATE, array (
-                    $this 
+            App::$_event->fire($class, Action::E_STATE, array(
+                    $this
             ));
-            App::$_event->fire($class, $this->method2Event($method), array (
-                    $this 
+            App::$_event->fire($class, $this->method2Event($method), array(
+                    $this
             ));
         }
         // render
         $this->onRender();
-        App::$_event->fire($class, Action::E_RENDER, array (
-                $this 
+        App::$_event->fire($class, Action::E_RENDER, array(
+                $this
         ));
     }
     /**
@@ -161,28 +165,29 @@ abstract class Action extends Singleton implements Actionizable {
      *
      * @return void
      */
-    private function method2Event($method) {
+    private function method2Event($method)
+    {
         switch (strtoupper($method)) {
-            case 'POST' :
+            case 'POST':
                 $event = Action::E_POST;
                 break;
-            case 'PUT' :
+            case 'PUT':
                 $event = Action::E_PUT;
                 break;
-            case 'DELETE' :
+            case 'DELETE':
                 $event = Action::E_DELETE;
                 break;
-            case 'PATCH' :
+            case 'PATCH':
                 $event = Action::E_PATCH;
                 break;
-            case 'HEAD' :
+            case 'HEAD':
                 $event = Action::E_HEAD;
                 break;
-            case 'OPTIONS' :
+            case 'OPTIONS':
                 $event = Action::E_OPTIONS;
                 break;
-            case 'GET' :
-            default :
+            case 'GET':
+            default:
                 $event = Action::E_GET;
                 break;
         }
@@ -194,7 +199,8 @@ abstract class Action extends Singleton implements Actionizable {
      *
      * @return HttpRequest
      */
-    public function getRequest() {
+    public function getRequest()
+    {
         return $this->request;
     }
     /**
@@ -202,7 +208,8 @@ abstract class Action extends Singleton implements Actionizable {
      *
      * @return HttpReponse
      */
-    public function getResponse() {
+    public function getResponse()
+    {
         return $this->response;
     }
     /**
@@ -210,16 +217,18 @@ abstract class Action extends Singleton implements Actionizable {
      *
      * @return Template
      */
-    public function getTemplate() {
+    public function getTemplate()
+    {
         return $this->template;
     }
     /**
      * 获取Service对象
      *
-     * @param string $classname            
+     * @param string $classname
      * @return Service
      */
-    public function service($classname) {
+    public function service($classname)
+    {
         if (! array_key_exists($classname, $this->services) && class_exists($classname)) {
             $this->services[$classname] = $classname::getInstance();
         }
@@ -229,70 +238,80 @@ abstract class Action extends Singleton implements Actionizable {
     /**
      * 创建事件触发方法
      */
-    public function onCreate() {
+    public function onCreate()
+    {
     }
     /**
      * 执行onGet,onPost等方法前的验证方法;如果返回true，执行onGet,onPost等方法.
      * 默认返回true
      * @return boolean
      */
-    public function onValidate() {
+    public function onValidate()
+    {
         return true;
     }
     /**
      * GET事件触发方法
      */
-    public function onGet() {
+    public function onGet()
+    {
     }
     /**
      * POST事件触发方法
      */
-    public function onPost() {
+    public function onPost()
+    {
     }
-    public function onPut() {
+    public function onPut()
+    {
     }
-    public function onDelete() {
+    public function onDelete()
+    {
     }
-    public function onPatch() {
+    public function onPatch()
+    {
     }
-    public function onHead() {
+    public function onHead()
+    {
     }
-    public function onOptions() {
+    public function onOptions()
+    {
     }
-    public function onRender() {
+    public function onRender()
+    {
         header('X-Powered-By: dcux');
         $rep = $this->request->getExtension();
         switch ($rep) {
-            case 'json' :
+            case 'json':
                 $this->template->json();
                 break;
-            case 'xml' :
+            case 'xml':
                 $this->template->xml();
                 break;
-            case 'css' :
+            case 'css':
                 $this->template->cssp();
                 break;
-            case 'csv' :
+            case 'csv':
                 $this->template->csv();
                 break;
            /* case 'src' :
                 $pathname = Autoloader::getClass(get_class($this));
                 highlight_file($pathname);
                 break;*/
-            case 'png' :
-            case 'jpg' :
-            case 'jpeg' :
-            case 'gif' :
+            case 'png':
+            case 'jpg':
+            case 'jpeg':
+            case 'gif':
                 $this->template->image($rep);
                 break;
-            case '' :
-            case 'html' :
-            case 'htm' :
-            case 'php' :
+            case '':
+            case 'html':
+            case 'htm':
+            case 'php':
                 $this->template->display();
                 break;
-            case 'js' :
-            case 'jsonp' :
+            case 'js':
+            case 'jsonp':
             default:
                 $this->template->jsonp();
                 break;

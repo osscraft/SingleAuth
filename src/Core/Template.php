@@ -13,7 +13,8 @@ use Dcux\Core\Templatelizable;
 use Exception;
 use Iterator;
 
-class Template extends Singleton implements Templatelizable {
+class Template extends Singleton implements Templatelizable
+{
     // use Singleton;//php 5.4
     /**
      * HttpRequest对象
@@ -38,49 +39,49 @@ class Template extends Singleton implements Templatelizable {
      *
      * @var array $vars
      */
-    protected $vars = array ();
+    protected $vars = array();
     /**
      * resources
      *
      * @var array $resources
      */
-    protected $resources = array ();
+    protected $resources = array();
     /**
      * HTTP headers
      *
      * @var array $headers
      */
-    protected $headers = array ();
+    protected $headers = array();
     /**
      * HTML metas
      *
      * @var array $metas
      */
-    protected $metas = array ();
+    protected $metas = array();
     /**
      * HTML scripts
      *
      * @var array $jses
      */
-    protected $jses = array ();
+    protected $jses = array();
     /**
      * HTML scripts in the end
      *
      * @var array $javascript
      */
-    protected $javascript = array ();
+    protected $javascript = array();
     /**
      * http attachments
      *
      * @var array $attachments
      */
-    protected $attachments = array ();
+    protected $attachments = array();
     /**
      * HTML css links
      *
      * @var array $csses
      */
-    protected $csses = array ();
+    protected $csses = array();
     /**
      * template files directory
      *
@@ -128,7 +129,8 @@ class Template extends Singleton implements Templatelizable {
     /**
      * 构造方法
      */
-    protected final function __construct() {
+    final protected function __construct()
+    {
         $this->request = Request::getInstance()->getHttpRequest();
         $this->response = Response::getInstance()->getHttpResponse();
         $this->directory(App::$_docpath); // 初始化文档目录
@@ -138,42 +140,47 @@ class Template extends Singleton implements Templatelizable {
         
         $this->listen();
     }
-    protected final function listen() {
-        App::$_event->listen(App::$_app, App::E_FINISH, array (
+    final protected function listen()
+    {
+        App::$_event->listen(App::$_app, App::E_FINISH, array(
                 $this,
-                'spit' 
+                'spit'
         ));
     }
     /**
      * get template file path
-     * 
+     *
      * @return string
      */
-    public function getFile() {
+    public function getFile()
+    {
         return $this->file;
     }
     /**
      * get template dir path
-     * 
+     *
      * @return string
      */
-    public function getDir() {
+    public function getDir()
+    {
         return $this->dir;
     }
     /**
      * set template theme
-     * 
+     *
      * @return string
      */
-    public function setTheme($theme) {
+    public function setTheme($theme)
+    {
         $this->theme($theme);
     }
     /**
      * get template theme
-     * 
+     *
      * @return string
      */
-    public function getTheme() {
+    public function getTheme()
+    {
         return $this->theme;
     }
     /**
@@ -182,7 +189,8 @@ class Template extends Singleton implements Templatelizable {
      * @param string $header
      *            http header string
      */
-    public function header($header) {
+    public function header($header)
+    {
         $this->headers[] = $header;
     }
     /**
@@ -193,23 +201,24 @@ class Template extends Singleton implements Templatelizable {
      * @param mixed $value
      *            value of variable
      */
-    public function push($name, $value = null) {
+    public function push($name, $value = null)
+    {
         if (is_array($name) && ! Utility::isAssocArray($name)) {
-            foreach ( $name as $val ) {
+            foreach ($name as $val) {
                 $this->push($val, $value);
             }
-        } else if (is_array($name)) {
+        } elseif (is_array($name)) {
             // ignore $value
-            foreach ( $name as $key => $val ) {
+            foreach ($name as $key => $val) {
                 $this->push($key, $val);
             }
-        } else if ($name instanceof Iterator) {
+        } elseif ($name instanceof Iterator) {
             $this->push(iterator_to_array($name));
-        } else if (is_object($name)) {
+        } elseif (is_object($name)) {
             $this->push(get_object_vars($name));
-        } else if (! is_null($value) && is_string($name)) {
+        } elseif (! is_null($value) && is_string($name)) {
             $this->vars[$name] = $value;
-        } else if (is_null($value) && is_scalar($name)) {
+        } elseif (is_null($value) && is_scalar($name)) {
             $this->vars[] = $name;
         }
     }
@@ -219,8 +228,9 @@ class Template extends Singleton implements Templatelizable {
      * @param string $lan
      *            language
      */
-    public function language($lan = 'zh-cn') {
-        $supports = App::get('languages', array ( 'zh-cn' ));
+    public function language($lan = 'zh-cn')
+    {
+        $supports = App::get('languages', array( 'zh-cn' ));
         $support = App::get('language', 'zh-cn');
         $this->lan = in_array($lan, ( array ) $supports) ? $lan : $support;
     }
@@ -230,7 +240,8 @@ class Template extends Singleton implements Templatelizable {
      * @param string $lan
      *            language
      */
-    public function resource() {
+    public function resource()
+    {
         $respath = $this->dir . DIRECTORY_SEPARATOR . 'resource' . DIRECTORY_SEPARATOR . $this->lan . '.php';
         if ($path = realpath($respath)) {
             $this->resources = include $path;
@@ -238,10 +249,11 @@ class Template extends Singleton implements Templatelizable {
     }
     /**
      * set template dir
-     * 
-     * @param string $dir            
+     *
+     * @param string $dir
      */
-    public function directory($dir) {
+    public function directory($dir)
+    {
         if ($path = realpath($dir)) {
             $this->dir = $path;
         }
@@ -249,9 +261,10 @@ class Template extends Singleton implements Templatelizable {
     /**
      * set template filename
      *
-     * @param string $filename            
+     * @param string $filename
      */
-    public function file($filename) {
+    public function file($filename)
+    {
         $filepath = $this->dir . DIRECTORY_SEPARATOR . 'theme' . DIRECTORY_SEPARATOR . $this->theme . DIRECTORY_SEPARATOR . $filename;
         if ($path = realpath($filepath)) {
             $this->file = $path;
@@ -260,32 +273,35 @@ class Template extends Singleton implements Templatelizable {
     /**
      * set template theme name
      *
-     * @param string $theme            
+     * @param string $theme
      */
-    public function theme($theme) {
+    public function theme($theme)
+    {
         $themepath = $this->dir . DIRECTORY_SEPARATOR . 'theme' . DIRECTORY_SEPARATOR . $theme;
-        if(is_dir(realpath($themepath))) {
+        if (is_dir(realpath($themepath))) {
             $this->theme = $theme;
         }
     }
     /**
      * clean template variables
      */
-    public function distinct() {
-        $this->vars = array ();
+    public function distinct()
+    {
+        $this->vars = array();
     }
     /**
      * clean template file and variables
      */
-    public function clean() {
+    public function clean()
+    {
         $this->file = '';
-        $this->vars = array ();
-        $this->headers = array ();
-        $this->metas = array ();
-        $this->jses = array ();
-        $this->javascript = array ();
-        $this->attachments = array ();
-        $this->csses = array ();
+        $this->vars = array();
+        $this->headers = array();
+        $this->metas = array();
+        $this->jses = array();
+        $this->javascript = array();
+        $this->attachments = array();
+        $this->csses = array();
     }
     /**
      * set meta infomation
@@ -293,10 +309,11 @@ class Template extends Singleton implements Templatelizable {
      * @param array $meta
      *            array for html meta tag
      */
-    public function meta($meta) {
+    public function meta($meta)
+    {
         $metas = &$this->metas;
         if (is_array($meta)) {
-            foreach ( $meta as $i => $m ) {
+            foreach ($meta as $i => $m) {
                 $metas[] = $m;
             }
         } else {
@@ -309,10 +326,11 @@ class Template extends Singleton implements Templatelizable {
      * @param string $js
      *            javascript file src path in html tag script
      */
-    public function js($js) {
+    public function js($js)
+    {
         $jses = &$this->jses;
         if (is_array($js)) {
-            foreach ( $js as $i => $j ) {
+            foreach ($js as $i => $j) {
                 $jses[] = $j;
             }
         } else {
@@ -325,10 +343,11 @@ class Template extends Singleton implements Templatelizable {
      * @param string $js
      *            javascript file src path in html tag script
      */
-    public function javascript($js) {
+    public function javascript($js)
+    {
         $javascript = &$this->javascript;
         if (is_array($js)) {
-            foreach ( $js as $i => $j ) {
+            foreach ($js as $i => $j) {
                 $javascript[] = $j;
             }
         } else {
@@ -341,10 +360,11 @@ class Template extends Singleton implements Templatelizable {
      * @param string $css
      *            css file link path
      */
-    public function css($css) {
+    public function css($css)
+    {
         $csses = &$this->csses;
         if (is_array($css)) {
-            foreach ( $css as $i => $c ) {
+            foreach ($css as $i => $c) {
                 $csses[] = $c;
             }
         } else {
@@ -357,7 +377,8 @@ class Template extends Singleton implements Templatelizable {
      *
      * @return array
      */
-    public function headers() {
+    public function headers()
+    {
         $h = &$this->headers;
         return $h;
     }
@@ -367,26 +388,28 @@ class Template extends Singleton implements Templatelizable {
      *
      * @return array
      */
-    public function vars() {
+    public function vars()
+    {
         $v = &$this->vars;
         return $v;
     }
     /**
      * 默认是懒方法，只是标记了跳转，在输出时才真正地进行跳转
-     * 
+     *
      * @param string $url
      * @param array $params
      * @param boolean $lazy
-     * @param int $delay             
+     * @param int $delay
      */
-    public function redirect($url, array $params = array(), $lazy = true, $delay = 0, $delay_script = '') {
+    public function redirect($url, array $params = array(), $lazy = true, $delay = 0, $delay_script = '')
+    {
         $this->redirect = $url . ($params ? '?' . http_build_query($params) : '');
         $this->delay($delay, $delay_script);
-        if(empty($lazy)) {
-            if($this->delay > 0) {
+        if (empty($lazy)) {
+            if ($this->delay > 0) {
                 $delay = $this->delay;
                 $seconds = floor($this->delay / 1000);
-                if(empty($this->delay_script) || !is_file($this->delay_script)) {
+                if (empty($this->delay_script) || !is_file($this->delay_script)) {
                     echo '<meta charset="UTF-8"><meta http-equiv="refresh" content="'.$seconds.';url='.$this->redirect.'">';
                 } else {
                     // $this->distinct();
@@ -400,7 +423,7 @@ class Template extends Singleton implements Templatelizable {
             } else {
                 header("Location: {$this->redirect}");
                 // more headers
-                foreach ( $this->headers as $header ) {
+                foreach ($this->headers as $header) {
                     header($header);
                 }
             }
@@ -409,20 +432,22 @@ class Template extends Singleton implements Templatelizable {
     }
     /**
      * 设置跳转延迟，毫秒数
-     * 
+     *
      * @param int $delay
      * @param string $delay_script
      */
-    public function delay($delay = 0, $delay_script = '') {
-        if($delay > 0) {
+    public function delay($delay = 0, $delay_script = '')
+    {
+        if ($delay > 0) {
             $this->delay = intval($delay);
         }
         $filepath = $this->dir . DIRECTORY_SEPARATOR . 'theme' . DIRECTORY_SEPARATOR . $this->theme . DIRECTORY_SEPARATOR . $delay_script;
-        if(!empty($delay_script) && $path = realpath($filepath)) {
+        if (!empty($delay_script) && $path = realpath($filepath)) {
             $this->delay_script = $delay_script;
         }
     }
-    public function image($type = 'png') {
+    public function image($type = 'png')
+    {
         // if dirty data exists
         $this->swallow();
         // if redirecting
@@ -437,7 +462,7 @@ class Template extends Singleton implements Templatelizable {
             // header json data
             header('Content-Type: image/'.$type);
             // more headers
-            foreach ( $this->headers as $header ) {
+            foreach ($this->headers as $header) {
                 header($header);
             }
             // set css data string
@@ -449,7 +474,8 @@ class Template extends Singleton implements Templatelizable {
     /**
      * output as json string
      */
-    public function cssp() {
+    public function cssp()
+    {
         // if dirty data exists
         $this->swallow();
         // if redirecting
@@ -464,7 +490,7 @@ class Template extends Singleton implements Templatelizable {
             // header json data
             header('Content-Type: text/css');
             // more headers
-            foreach ( $this->headers as $header ) {
+            foreach ($this->headers as $header) {
                 header($header);
             }
             // set css data string
@@ -476,7 +502,8 @@ class Template extends Singleton implements Templatelizable {
     /**
      * output as json string
      */
-    public function jsonp() {
+    public function jsonp()
+    {
         // if dirty data exists
         $this->swallow();
         // if redirecting
@@ -491,7 +518,7 @@ class Template extends Singleton implements Templatelizable {
             // header json data
             header('Content-Type: application/javascript');
             // more headers
-            foreach ( $this->headers as $header ) {
+            foreach ($this->headers as $header) {
                 header($header);
             }
             // set javascript data string
@@ -503,7 +530,8 @@ class Template extends Singleton implements Templatelizable {
     /**
      * output as json string
      */
-    public function json() {
+    public function json()
+    {
         // if dirty data exists
         $this->swallow();
         // if redirecting
@@ -518,15 +546,15 @@ class Template extends Singleton implements Templatelizable {
             // header json data
             header('Content-Type: application/json');
             // more headers
-            foreach ( $this->headers as $header ) {
+            foreach ($this->headers as $header) {
                 header($header);
             }
             //过滤$CFG
-            if(!empty($this->vars['CFG'])) {
+            if (!empty($this->vars['CFG'])) {
                 unset($this->vars['CFG']);
             }
             // if cli add time
-            if(Utility::isCli()) {
+            if (Utility::isCli()) {
                 echo "[". date('Y-m-d H:i:s') . "] ";
             }
             // set varibales data
@@ -538,7 +566,7 @@ class Template extends Singleton implements Templatelizable {
             // send
             echo $results;
             // if cli add \n
-            if(Utility::isCli()) {
+            if (Utility::isCli()) {
                 echo "\n";
             }
         }
@@ -546,7 +574,8 @@ class Template extends Singleton implements Templatelizable {
     /**
      * output as xml string
      */
-    public function xml() {
+    public function xml()
+    {
         // if dirty data exists
         $this->swallow();
         // if redirecting
@@ -561,11 +590,11 @@ class Template extends Singleton implements Templatelizable {
             // header xml data
             header('Content-Type: text/xml');
             //过滤$CFG
-            if(!empty($this->vars['CFG'])) {
+            if (!empty($this->vars['CFG'])) {
                 unset($this->vars['CFG']);
             }
             // more headers
-            foreach ( $this->headers as $header ) {
+            foreach ($this->headers as $header) {
                 header($header);
             }
             // set varibales data
@@ -577,7 +606,8 @@ class Template extends Singleton implements Templatelizable {
     /**
      * output as csv string
      */
-    public function csv() {
+    public function csv()
+    {
         // if dirty data exists
         $this->swallow();
         // if redirecting
@@ -592,11 +622,11 @@ class Template extends Singleton implements Templatelizable {
             // header xml data
             header('Content-Type: application/csv');
             //过滤$CFG
-            if(!empty($this->vars['CFG'])) {
+            if (!empty($this->vars['CFG'])) {
                 unset($this->vars['CFG']);
             }
             // more headers
-            foreach ( $this->headers as $header ) {
+            foreach ($this->headers as $header) {
                 header($header);
             }
             // set varibales data
@@ -610,7 +640,8 @@ class Template extends Singleton implements Templatelizable {
      *
      * @return void
      */
-    public function display() {
+    public function display()
+    {
         // if dirty data exists
         $this->swallow();
         // if redirecting
@@ -621,11 +652,11 @@ class Template extends Singleton implements Templatelizable {
                 header($header);
             }*/
             $this->redirect($this->redirect, array(), false);
-        } else if ($this->file) {
+        } elseif ($this->file) {
             // header html data
             header('Content-Type: text/html; charset=utf-8');
             // more headers
-            foreach ( $this->headers as $header ) {
+            foreach ($this->headers as $header) {
                 header($header);
             }
             // get output data
@@ -641,11 +672,12 @@ class Template extends Singleton implements Templatelizable {
      *
      * @return array
      */
-    public function output() {
+    public function output()
+    {
         // if plain data exists
         if ($this->plain) {
             $results = $this->plain;
-        } else if ($this->file) {
+        } elseif ($this->file) {
             ob_start();
             $_l_ = &$this->lan;
             $_v_ = &$this->vars;
@@ -657,7 +689,7 @@ class Template extends Singleton implements Templatelizable {
             $_h_ = &$this->headers;
             $_r_ = &$this->resources;
             extract($_v_);
-            include ($this->file);
+            include($this->file);
             // ob_flush();
             $results = $this->plain = ob_get_contents();
             ob_end_clean();
@@ -672,7 +704,8 @@ class Template extends Singleton implements Templatelizable {
      *
      * @return void
      */
-    public function swallow() {
+    public function swallow()
+    {
         // ob_start();
         // if dirty data exists
         // ob_flush();
@@ -680,11 +713,11 @@ class Template extends Singleton implements Templatelizable {
         if (! empty($cache)) {
             if (empty($this->dirty)) {
                 $this->dirty = $cache;
-            } else if (is_array($this->dirty)) {
+            } elseif (is_array($this->dirty)) {
                 $this->dirty[] = $cache;
             } else {
                 $dirty = $this->dirty;
-                $this->dirty = array ();
+                $this->dirty = array();
                 $this->dirty[] = $dirty;
                 $this->dirty[] = $cache;
             }
@@ -696,11 +729,12 @@ class Template extends Singleton implements Templatelizable {
      *
      * @return void
      */
-    public function spit() {
+    public function spit()
+    {
         // ob_start();
         if (! empty($this->dirty) && is_array($this->dirty)) {
             echo json_encode($this->dirty);
-        } else if (! empty($this->dirty)) {
+        } elseif (! empty($this->dirty)) {
             echo $this->dirty;
         }
         // ob_flush();

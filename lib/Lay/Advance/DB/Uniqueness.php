@@ -2,7 +2,8 @@
 
 namespace Lay\Advance\DB;
 
-interface Uniqueness {
+interface Uniqueness
+{
     /**
      * @param array|string $unique
      */

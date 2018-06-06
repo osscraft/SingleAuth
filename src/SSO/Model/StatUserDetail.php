@@ -3,7 +3,8 @@ namespace Dcux\SSO\Model;
 
 use Lay\Advance\core\Model;
 
-class StatUserDetail extends Model{
+class StatUserDetail extends Model
+{
     const LOGIN_BY_PASSWORD = 0;
     const LOGIN_BY_SESSION = 1;
     const LOGIN_BY_SID = 2;
@@ -25,15 +26,17 @@ class StatUserDetail extends Model{
      * 返回模型对应数据表名或其他数据库中的集合名称
      * @return string
      */
-    public function table(){
-		return "stat_user_detail";
-	}
+    public function table()
+    {
+        return "stat_user_detail";
+    }
     /**
      * 返回模型属性名与对应数据表字段的映射关系数组
      * @return array
      */
-    public function columns(){
-		return array (
+    public function columns()
+    {
+        return array(
                 'id' => 'id',
                 'time' => 'time',
                 'username' => 'username',
@@ -47,21 +50,23 @@ class StatUserDetail extends Model{
                 'ua'=>'ua',
                 'referer'=>'referer'
         );
-	}
+    }
     /**
      * 返回模型属性名对应数据表主键字段名
      * @return array
      */
-    public function primary(){
-		return "id";
-	}
+    public function primary()
+    {
+        return "id";
+    }
 
     /**
      * 返回模型对应数据表所在数据库名
      * @return string
      */
-    public function schema(){
-		return "sso";
-	}
+    public function schema()
+    {
+        return "sso";
+    }
 }
 // PHP END

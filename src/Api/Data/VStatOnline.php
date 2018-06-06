@@ -8,18 +8,21 @@ use Dcux\Api\Data\VObject;
 use Dcux\SSO\Model\StatBrowser;
 use stdClass;
 
-class VStatOnline extends VObject {
-	protected $id = 0;
+class VStatOnline extends VObject
+{
+    protected $id = 0;
     protected $time = '';
     protected $count = 0;
-    public function rules() {
-    	return array(
+    public function rules()
+    {
+        return array(
                 'id' => Component::TYPE_INTEGER,
                 'time' => Component::TYPE_DATETIME,
                 'count' => Component::TYPE_INTEGER
-    	);
+        );
     }
-	public static function parseSimple($statOnline) {
+    public static function parseSimple($statOnline)
+    {
         return parent::parse($statOnline);
     }
 }

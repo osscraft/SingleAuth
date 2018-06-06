@@ -9,26 +9,28 @@ use Dcux\Core\Errode;
 use Dcux\Util\Logger;
 use Exception;
 
-class Autoloader {
+class Autoloader
+{
     private static $_classpath = __DIR__;
-    private static $_classes = array ();
+    private static $_classes = array();
     private static $_cachedir = __DIR__;
     private static $_cachefile = 'sso.classes.php';
-    private static $_caches = array ();
+    private static $_caches = array();
     private static $_dirty = false;
     /**
      *
      * @return void
      */
-    public static function register() {
+    public static function register()
+    {
         // time
         date_default_timezone_set('Asia/Shanghai');
         // 添加第三方库类文件目录
         self::addPath(dirname(__DIR__) . DIRECTORY_SEPARATOR . 'lib');
         // 使用自定义的autoload方法
-        spl_autoload_register(array (
+        spl_autoload_register(array(
                 'Dcux\Autoloader',
-                'autoload' 
+                'autoload'
         ));
         // autoload by composer
         //require_once dirname(__DIR__) . DIRECTORY_SEPARATOR . 'vendor/autoload.php';
@@ -37,9 +39,9 @@ class Autoloader {
         // 加载类文件路径缓存
         self::loadCache();
         // 注册shutdown事件
-        register_shutdown_function(array (
+        register_shutdown_function(array(
                 'Dcux\Autoloader',
-                'updateCache' 
+                'updateCache'
         ));
         // Illuminate Suppport helpers
         // require_once dirname(__DIR__) . DIRECTORY_SEPARATOR . 'lib/Illuminate/Support/helpers.php';
@@ -50,12 +52,13 @@ class Autoloader {
     }
     /**
      * 自定义添加类文件路径
-     * 
-     * @param string $classname            
-     * @param string $filepath            
+     *
+     * @param string $classname
+     * @param string $filepath
      * @return void
      */
-    public static function customize($classname, $filepath, $force = false) {
+    public static function customize($classname, $filepath, $force = false)
+    {
         $classes = &self::$_classes;
         if (is_file($filepath) && (! array_key_exists($classname, $classes) || $force)) {
             self::setCache($classname, realpath($filepath));
@@ -63,14 +66,15 @@ class Autoloader {
     }
     /**
      * 增加一个类文件根目录
-     * 
+     *
      * @param string $classpath
      *            类目录字符串
      * @return void
      */
-    public static function addPath($classpath) {
+    public static function addPath($classpath)
+    {
         if (is_dir($classpath)) {
-            $classpaths = empty(self::$_classpath) ? array () : explode(';', self::$_classpath);
+            $classpaths = empty(self::$_classpath) ? array() : explode(';', self::$_classpath);
             $classpaths[] = realpath($classpath);
             $classpaths = array_unique($classpaths);
             self::$_classpath = implode(';', $classpaths);
@@ -81,15 +85,16 @@ class Autoloader {
     }
     /**
      *
-     * @param string $classname            
+     * @param string $classname
      * @return void
      */
-    public static function autoload($classname) {
+    public static function autoload($classname)
+    {
         if (empty(self::$_classpath)) {
             self::check($classname);
         } else {
             $paths = explode(';', self::$_classpath);
-            foreach ( $paths as $path ) {
+            foreach ($paths as $path) {
                 self::load($classname, $path);
             }
             if (! self::exists($classname, false)) {
@@ -101,14 +106,15 @@ class Autoloader {
      *
      * @return void
      */
-    private static function load($classname, $classpath = '', $suffixes = array('.php', '.class.php')) {
+    private static function load($classname, $classpath = '', $suffixes = array('.php', '.class.php'))
+    {
         $classes = &self::$_classes;
         // 全名映射查找
         if (array_key_exists($classname, $classes)) {
             if (is_file($classes[$classname])) {
                 require_once $classes[$classname];
                 return true;
-            } else if (is_file($classpath . $classes[$classname])) {
+            } elseif (is_file($classpath . $classes[$classname])) {
                 require_once $classpath . $classes[$classname];
                 return true;
             }
@@ -127,7 +133,7 @@ class Autoloader {
                 // 命名空间文件夹查找
                 if (is_dir($path)) {
                     $tmppath = $path . DIRECTORY_SEPARATOR . $name;
-                    foreach ( $suffixes as $i => $suffix ) {
+                    foreach ($suffixes as $i => $suffix) {
                         if (is_file($tmppath . $suffix)) {
                             $filepath = realpath($tmppath . $suffix);
                             self::setCache($classname, $filepath);
@@ -145,7 +151,7 @@ class Autoloader {
             $tmparr = array_values($matches[1]);
             $prefix = array_shift($tmparr);
             // 直接以类名作为文件名查找
-            foreach ( $suffixes as $i => $suffix ) {
+            foreach ($suffixes as $i => $suffix) {
                 $tmppath = $classpath . DIRECTORY_SEPARATOR . $classname;
                 if (is_file($tmppath . $suffix)) {
                     $filepath = realpath($tmppath . $suffix);
@@ -159,13 +165,13 @@ class Autoloader {
         // 如果以上没有匹配，则使用类名递归文件夹查找，如使用小写请保持（如果第一递归文件夹使用了小写，即之后的文件夹名称保持小写）
         if (! self::exists($classname, false) && ! empty($matches)) {
             $path = $lowerpath = $classpath;
-            foreach ( $matches[1] as $index => $item ) {
+            foreach ($matches[1] as $index => $item) {
                 $path .= DIRECTORY_SEPARATOR . $item;
                 $lowerpath .= DIRECTORY_SEPARATOR . strtolower($item);
                 // Logger::info('$lowerpath:' . $lowerpath.':$classname:'.$classname);
                 if (($isdir = is_dir($path)) || is_dir($lowerpath)) { // 顺序文件夹查找
                     $tmppath = ($isdir ? $path : $lowerpath) . DIRECTORY_SEPARATOR . $classname;
-                    foreach ( $suffixes as $i => $suffix ) {
+                    foreach ($suffixes as $i => $suffix) {
                         if (is_file($tmppath . $suffix)) {
                             $filepath = realpath($tmppath . $suffix);
                             self::setCache($classname, $filepath);
@@ -175,8 +181,8 @@ class Autoloader {
                         }
                     }
                     continue;
-                } else if ($index == count($matches[1]) - 1) {
-                    foreach ( $suffixes as $i => $suffix ) {
+                } elseif ($index == count($matches[1]) - 1) {
+                    foreach ($suffixes as $i => $suffix) {
                         if (($isfile = is_file($path . $suffix)) || is_file($lowerpath . $suffix)) {
                             $filepath = realpath(($isfile ? $path : $lowerpath) . $suffix);
                             self::setCache($classname, $filepath);
@@ -199,13 +205,14 @@ class Autoloader {
      *
      * @return void
      */
-    private static function loadCache() {
+    private static function loadCache()
+    {
         $cachename = realpath(self::$_cachedir . DIRECTORY_SEPARATOR . self::$_cachefile);
         if (is_file($cachename)) {
             self::$_caches = include $cachename;
             self::$_caches = empty(self::$_caches) || !is_array(self::$_caches) ? array() : self::$_caches;
         } else {
-            self::$_caches = array ();
+            self::$_caches = array();
         }
         if (is_array(self::$_caches) && ! empty(self::$_caches)) {
             self::$_classes = array_merge(self::$_classes, self::$_caches);
@@ -216,7 +223,8 @@ class Autoloader {
      *
      * @return void
      */
-    public static function cleanCache() {
+    public static function cleanCache()
+    {
         $cachename = realpath(self::$_cachedir . DIRECTORY_SEPARATOR . self::$_cachefile);
         self::$_dirty = false;
         is_file($cachename) && @unlink($cachename);
@@ -226,7 +234,8 @@ class Autoloader {
      *
      * @return boolean
      */
-    public static function updateCache() {
+    public static function updateCache()
+    {
         if (! empty(self::$_dirty)) {
             // 先读取，再merge，再存储
             $cachename = self::$_cachedir . DIRECTORY_SEPARATOR . self::$_cachefile;
@@ -254,7 +263,8 @@ class Autoloader {
      *
      * @return boolean
      */
-    public static function setCacheDir($dirpath) {
+    public static function setCacheDir($dirpath)
+    {
         if ($dir = realpath($dirpath)) {
             self::$_cachedir = $dir;
         }
@@ -264,7 +274,8 @@ class Autoloader {
      *
      * @return string
      */
-    public static function getCacheDir() {
+    public static function getCacheDir()
+    {
         return self::$_cachedir;
     }
     /**
@@ -276,7 +287,8 @@ class Autoloader {
      *            类文件路径
      * @return void
      */
-    public static function setCache($classname, $filepath) {
+    public static function setCache($classname, $filepath)
+    {
         self::$_dirty = true;
         self::$_caches[$classname] = realpath($filepath);
     }
@@ -287,7 +299,8 @@ class Autoloader {
      *            类名
      * @return mixed
      */
-    public static function getCache($classname = '') {
+    public static function getCache($classname = '')
+    {
         if (is_string($classname) && $classname && isset(self::$_caches[$classname])) {
             return self::$_caches[$classname];
         } else {
@@ -301,7 +314,8 @@ class Autoloader {
      *            类名
      * @return mixed
      */
-    public static function getClass($classname = '') {
+    public static function getClass($classname = '')
+    {
         if (is_string($classname) && $classname && isset(self::$_classes[$classname])) {
             return self::$_classes[$classname];
         } else {
@@ -314,11 +328,12 @@ class Autoloader {
      * @return void
      * @throws Exception
      */
-    private static function check($classname) {
+    private static function check($classname)
+    {
         // 判断是否还有其他自动加载函数，如没有则抛出异常
         $funs = spl_autoload_functions();
         $count = count($funs);
-        foreach ( $funs as $i => $fun ) {
+        foreach ($funs as $i => $fun) {
             if ($fun[0] == 'Dcux\Autoloader' && $fun[1] == 'autoload' && $count == $i + 1) {
                 throw new Error(Errode::file_not_found());
                 //throw new Exception($classname . ' not found by autoload function');
@@ -334,7 +349,8 @@ class Autoloader {
      *            是否自动加载
      * @return boolean
      */
-    public static function exists($classname, $autoload = true) {
+    public static function exists($classname, $autoload = true)
+    {
         if (version_compare(PHP_VERSION, '5.4') >= 0) {
             return class_exists($classname, $autoload) || interface_exists($classname, $autoload) || trait_exists($classname, $autoload);
         } else {

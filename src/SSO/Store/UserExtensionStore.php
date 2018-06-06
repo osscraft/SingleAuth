@@ -17,30 +17,33 @@ use Dcux\Util\Logger;
  * @version 1.0
  * @copyright 2005-2012 dcux Inc.
  * @link http://www.dcux.com
- *      
+ *
  */
-class UserExtensionStore extends AbstractStore {
+class UserExtensionStore extends AbstractStore
+{
     /**
      * 读取一条UserExtension
      *
-     * @param UserExtension $user            
+     * @param UserExtension $user
      * @return mixed
      */
-    public function read($args) {
-        if (! $this->connection)
+    public function read($args)
+    {
+        if (! $this->connection) {
             return false;
+        }
         if (is_a($args, 'Dcux\SSO\Model\UserExtension')) {
             $user = $args;
             $field1 = $user->toField('uid');
             $value1 = $user->getUid();
             if ($value1) {
-                $condition = array (
-                        $field1 => $value1 
+                $condition = array(
+                        $field1 => $value1
                 );
             } else {
                 $condition = '';
             }
-        } else if (is_array($args) || is_string($args)) {
+        } elseif (is_array($args) || is_string($args)) {
             $user = new UserExtension();
             $condition = $args;
         } else {
@@ -62,13 +65,15 @@ class UserExtensionStore extends AbstractStore {
      *
      * @return mixed
      */
-    public function reads($args, $order = '', $paging = '') {
-        if (! $this->connection)
+    public function reads($args, $order = '', $paging = '')
+    {
+        if (! $this->connection) {
             return false;
+        }
         if (is_a($args, 'Dcux\SSO\Model\UserExtension')) {
             $user = $args;
             $condition = '';
-        } else if (is_array($args) || is_string($args)) {
+        } elseif (is_array($args) || is_string($args)) {
             $user = new UserExtension();
             $condition = $args;
         } else {
@@ -91,13 +96,15 @@ class UserExtensionStore extends AbstractStore {
      *
      * @return mixed
      */
-    public function readCount($args) {
-        if (! $this->connection)
+    public function readCount($args)
+    {
+        if (! $this->connection) {
             return false;
+        }
         if (is_a($args, 'Dcux\SSO\Model\UserExtension')) {
             $user = $args;
             $condition = '';
-        } else if (is_array($args) || is_string($args)) {
+        } elseif (is_array($args) || is_string($args)) {
             $user = new UserExtension();
             $condition = $args;
         } else {
@@ -115,12 +122,14 @@ class UserExtensionStore extends AbstractStore {
      *
      * @return mixed
      */
-    public function write($args) {
-        if (! $this->connection)
+    public function write($args)
+    {
+        if (! $this->connection) {
             return false;
+        }
         if (is_a($args, 'Dcux\SSO\Model\UserExtension')) {
             $user = $args;
-        } else if (is_array($args)) {
+        } elseif (is_array($args)) {
             $user = new UserExtension();
             $return = $user->build($args);
         } else {
@@ -139,12 +148,14 @@ class UserExtensionStore extends AbstractStore {
      *
      * @return mixed
      */
-    public function replace($args) {
-        if (! $this->connection)
+    public function replace($args)
+    {
+        if (! $this->connection) {
             return false;
+        }
         if (is_a($args, 'Dcux\SSO\Model\UserExtension')) {
             $user = $args;
-        } else if (is_array($args)) {
+        } elseif (is_array($args)) {
             $user = new UserExtension();
             $return = $user->build($args);
         } else {
@@ -164,20 +175,23 @@ class UserExtensionStore extends AbstractStore {
      *
      * @return mixed
      */
-    public function modify($args, $values = '') {
-        if (! $this->connection)
+    public function modify($args, $values = '')
+    {
+        if (! $this->connection) {
             return false;
+        }
         if (is_a($args, 'Dcux\SSO\Model\UserExtension')) {
             $user = $args;
             $values = $user->toValues();
             $field1 = $user->toField('uid');
             $value1 = $user->getUid();
-            $condition = array (
-                    $field1 => $value1 
+            $condition = array(
+                    $field1 => $value1
             );
-        } else if (is_array($args)) {
-            if (empty($values))
+        } elseif (is_array($args)) {
+            if (empty($values)) {
                 return false;
+            }
             $user = new UserExtension();
             $condition = $args;
         } else {
@@ -196,18 +210,20 @@ class UserExtensionStore extends AbstractStore {
      *
      * @return mixed
      */
-    public function remove($args) {
-        if (! $this->connection)
+    public function remove($args)
+    {
+        if (! $this->connection) {
             return false;
+        }
         if (is_a($args, 'Dcux\SSO\Model\UserExtension')) {
             $user = $args;
             $values = $user->toValues();
             $field1 = $user->toField('uid');
             $value1 = $user->getUid();
-            $condition = array (
-                    $field1 => $value1 
+            $condition = array(
+                    $field1 => $value1
             );
-        } else if (is_array($args)) {
+        } elseif (is_array($args)) {
             $user = new UserExtension();
             $condition = $args;
         } else {
@@ -219,9 +235,11 @@ class UserExtensionStore extends AbstractStore {
         $success = $this->connection->toResult();
         return $success;
     }
-    public function replaceLast($args) {
-        if (! $this->connection)
+    public function replaceLast($args)
+    {
+        if (! $this->connection) {
             return false;
+        }
         if (is_array($args)) {
             $user = new UserExtension();
         } else {
@@ -236,4 +254,3 @@ class UserExtensionStore extends AbstractStore {
         return $success;
     }
 }
-?>

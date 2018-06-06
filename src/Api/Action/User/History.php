@@ -20,54 +20,60 @@ use Respect\Validation\Validator;
 
 // @see http://sso.project.dcux.com/api/user/history?sid=mPWsTPVEh75pDQai93VLOh9tRtPJyiYGxw==&uid=liaiyong&since=2015-7-30.2
 
-class History extends TokenApi {
-	public function onCreate() {
-		parent::onCreate();
-		$this->statUserDetailService = StatUserDetailService::getInstance();
-		$this->statUserService = StatUserService::getInstance();
-	}
-	public function onGet() {
-		$this->onPost();
-	}
-	public function onPost() {
-		//$type = $this->params['type'];
+class History extends TokenApi
+{
+    public function onCreate()
+    {
+        parent::onCreate();
+        $this->statUserDetailService = StatUserDetailService::getInstance();
+        $this->statUserService = StatUserService::getInstance();
+    }
+    public function onGet()
+    {
+        $this->onPost();
+    }
+    public function onPost()
+    {
+        //$type = $this->params['type'];
 
-		$arr = array();
-		$order = $this->getOrderDetail(array('id' => 'DESC'));
-		$limit = $this->getLimit();
-		$sincer = $this->getSincer();
-		$uid = $this->params['uid'];
-		$condition  = array();
-		$condition['uid'] = $uid;
-		$condition['username'] = $uid;
-		if(!empty($sincer)) {
-			$condition['date'] = array($sincer, '<=');
-		}
+        $arr = array();
+        $order = $this->getOrderDetail(array('id' => 'DESC'));
+        $limit = $this->getLimit();
+        $sincer = $this->getSincer();
+        $uid = $this->params['uid'];
+        $condition  = array();
+        $condition['uid'] = $uid;
+        $condition['username'] = $uid;
+        if (!empty($sincer)) {
+            $condition['date'] = array($sincer, '<=');
+        }
 
-		$total = $this->statUserService->count($condition);
-		$list = $this->statUserService->getConditionList($condition, $order, $limit);
-		$this->setDefaultSincer($this->firstDate($list));// before genSince;
-		$ret = VStatUser::parseList($list, $total, $this->genHasNext($total), $this->genSince());
+        $total = $this->statUserService->count($condition);
+        $list = $this->statUserService->getConditionList($condition, $order, $limit);
+        $this->setDefaultSincer($this->firstDate($list));// before genSince;
+        $ret = VStatUser::parseList($list, $total, $this->genHasNext($total), $this->genSince());
 
-		$this->success($ret);
-	}
-	protected function firstDate($list) {
-		reset($list);
-		$first = current($list);
-		return empty($first) ? false : $first['date'];
-	}
+        $this->success($ret);
+    }
+    protected function firstDate($list)
+    {
+        reset($list);
+        $first = current($list);
+        return empty($first) ? false : $first['date'];
+    }
 
-	protected function params() {
-		return array(
-			'type' => array('default' => 1),
-			'uid' => array(
-				'validator' => array(Validator::notEmpty(), Validator::equals($this->getUid()))
-			),
-			'num' => array(
-				'validator' => array(Validator::notEmpty(), Validator::max($this->max_num, true)),
-				'default' => $this->def_num
-			)
-		);
-	}
+    protected function params()
+    {
+        return array(
+            'type' => array('default' => 1),
+            'uid' => array(
+                'validator' => array(Validator::notEmpty(), Validator::equals($this->getUid()))
+            ),
+            'num' => array(
+                'validator' => array(Validator::notEmpty(), Validator::max($this->max_num, true)),
+                'default' => $this->def_num
+            )
+        );
+    }
 }
 // PHP END

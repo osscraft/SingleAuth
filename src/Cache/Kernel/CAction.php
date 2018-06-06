@@ -11,7 +11,8 @@ use Dcux\Cache\Kernel\App;
 use Assetic\Filter\CssMinFilter;
 use Assetic\Filter\JSMinFilter;
 
-abstract class CAction extends Action {
+abstract class CAction extends Action
+{
     /**
      * array(
      *     array('filename' => '/foo/foo.js', 'content' => 'var foo = 1;'),
@@ -21,43 +22,49 @@ abstract class CAction extends Action {
      */
     protected $cachefiles = array();
     
-    public function onCreate() {
+    public function onCreate()
+    {
         parent::onCreate();
         App::$_event->listen(App::$_app, App::E_FINISH, array($this, 'cache'));
     }
-    protected function push($cache) {
-        if(is_array($cache) && !empty($cache)) {
+    protected function push($cache)
+    {
+        if (is_array($cache) && !empty($cache)) {
             $this->cachefiles[] = $cache;
         }
     }
-    protected function getOption($opt = array()) {
+    protected function getOption($opt = array())
+    {
         return array();
     }
-    protected function getCssOption($opt = array()) {
+    protected function getCssOption($opt = array())
+    {
         global $CFG;
         $opts = empty($CFG['frontcache']['css']['minimize']) ? array() : array(new CssMinFilter());
         return $opts;
     }
-    protected function getJsOption($opt = array()) {
+    protected function getJsOption($opt = array())
+    {
         global $CFG;
         $opts = empty($CFG['frontcache']['js']['minimize']) ? array() : array(new JSMinFilter());
         return $opts;
     }
-    public function cache() {
+    public function cache()
+    {
         global $CFG;
         $image_exts = array('png', 'jpg');
-        if(!empty($this->cachefiles)) {
+        if (!empty($this->cachefiles)) {
             foreach ($this->cachefiles as $cache) {
                 $f = empty($cache['filename']) ? false : $cache['filename'];
                 $c = empty($cache['content']) ? false : $cache['content'];
                 $e = Utility::getExtension($f);
-                if(empty($c) || empty($f)) {
+                if (empty($c) || empty($f)) {
                     continue;
-                } else if(!empty($e) && $e == 'js' && empty($CFG['frontcache']['js']['open'])) {
+                } elseif (!empty($e) && $e == 'js' && empty($CFG['frontcache']['js']['open'])) {
                     continue;
-                } else if(!empty($e) && $e == 'css' && empty($CFG['frontcache']['css']['open'])) {
+                } elseif (!empty($e) && $e == 'css' && empty($CFG['frontcache']['css']['open'])) {
                     continue;
-                } else if(!empty($e) && in_array($e, $image_exts) && empty($CFG['frontcache']['css']['image'])) {
+                } elseif (!empty($e) && in_array($e, $image_exts) && empty($CFG['frontcache']['css']['image'])) {
                     continue;
                 }
                 // ...
@@ -70,7 +77,8 @@ abstract class CAction extends Action {
     /**
      * 清除前端缓存
      */
-    public function cleanCache() {
+    public function cleanCache()
+    {
         // to do remove js ,css ...
         $cachedir = App::$_docpath . DIRECTORY_SEPARATOR . 'cache/js';
         Utility::rmdir($cachedir, true);

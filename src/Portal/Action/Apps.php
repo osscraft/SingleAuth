@@ -9,10 +9,12 @@ use Lay\Advance\Core\Configuration;
 use Dcux\Portal\Kernel\PAction;
 use Dcux\SSO\Service\ClientService;
 
-class Apps extends PAction {
-    public function onGet() {
+class Apps extends PAction
+{
+    public function onGet()
+    {
         $out = array();
-        if(empty($_REQUEST['fromsession'])) {
+        if (empty($_REQUEST['fromsession'])) {
             $role = empty($_REQUEST['role']) ? 0 : $_REQUEST['role'];
             $role = empty($role) ? 0 : ($role == 'teacher' ? 1 : ($role == 'student' ? 2 : ($role == 'other' ? 3 : 0)));
         } else {
@@ -34,7 +36,8 @@ class Apps extends PAction {
         //$rsp['msg'] = '';
         $this->template->push($rsp);
     }
-    public function onPost() {
+    public function onPost()
+    {
         $this->onGet();
     }
 }

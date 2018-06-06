@@ -6,23 +6,27 @@ use Dcux\Admin\Kernel\AjaxPermission;
 use Dcux\Admin\Action\Setting;
 use Dcux\SSO\Service\SettingService;
 
-class Del extends AjaxPermission {
-	protected $settingService;
-	public function onCreate() {
-		$this->settingService = SettingService::getInstance();
-	}
-    public function onGet() {
+class Del extends AjaxPermission
+{
+    protected $settingService;
+    public function onCreate()
+    {
+        $this->settingService = SettingService::getInstance();
+    }
+    public function onGet()
+    {
         $this->onPost();
     }
-    public function onPost() {
+    public function onPost()
+    {
         $k = empty($_REQUEST['k']) ? 0 : $_REQUEST['k'];
 
-        if(empty($k)) {
+        if (empty($k)) {
             $this->template->push('code', 501001);
             $this->template->push('error', 'invalid k');
         } else {
             $ret = $this->settingService->del($k);
-            if(empty($ret)) {
+            if (empty($ret)) {
                 $this->template->push('code', 50002);
                 $this->template->push('error', 'delete failure');
             } else {

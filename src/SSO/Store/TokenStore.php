@@ -16,31 +16,34 @@ use Dcux\SSO\Core\Paging;
  * @version 1.0
  * @copyright 2005-2012 dcux Inc.
  * @link http://www.dcux.com
- *      
+ *
  */
-class TokenStore extends AbstractStore {
+class TokenStore extends AbstractStore
+{
     /**
      * 读取一条Token
      */
-    public function read($args) {
-        if (! $this->connection)
+    public function read($args)
+    {
+        if (! $this->connection) {
             return false;
+        }
         if (is_a($args, 'Dcux\SSO\Model\Token')) {
             $token = $args;
             $field1 = $token->toField('clientId');
             $field2 = $token->toField('username');
             $value1 = $token->getClientId();
             $value2 = $token->getUsername();
-            $condition = array (
+            $condition = array(
                     $field1 => $value1,
-                    $field2 => $value2 
+                    $field2 => $value2
             );
             unset($field1);
             unset($value1);
             unset($field2);
             unset($value2);
             unset($args);
-        } else if (is_array($args) || is_string($args)) {
+        } elseif (is_array($args) || is_string($args)) {
             $token = new Token();
             $condition = $args;
         } else {
@@ -60,37 +63,40 @@ class TokenStore extends AbstractStore {
     /**
      * 读取多条Token
      */
-    public function reads($args, $order = '', $paging = '') {
-        if (! $this->connection)
+    public function reads($args, $order = '', $paging = '')
+    {
+        if (! $this->connection) {
             return false;
+        }
         if (is_a($args, 'Dcux\SSO\Model\Token')) {
             $token = $args;
             $field1 = $token->toField('clientId');
             $field2 = $token->toField('username');
             $value1 = $token->getClientId();
             $value2 = $token->getUsername();
-            if ($value1 && $value2)
-                $condition = array (
+            if ($value1 && $value2) {
+                $condition = array(
                         $field1 => $value1,
-                        $field2 => $value2 
+                        $field2 => $value2
                 );
-            else if ($value1)
-                $condition = array (
-                        $field1 => $value1 
+            } elseif ($value1) {
+                $condition = array(
+                        $field1 => $value1
                 );
-            else if ($value2)
-                $condition = array (
-                        $field2 => $value2 
+            } elseif ($value2) {
+                $condition = array(
+                        $field2 => $value2
                 );
-            else
+            } else {
                 $condition = '';
+            }
             
             unset($field1);
             unset($value1);
             unset($field2);
             unset($value2);
             unset($args);
-        } else if (is_array($args) || is_string($args)) {
+        } elseif (is_array($args) || is_string($args)) {
             $token = new Token();
             $condition = $args;
         } else {
@@ -110,36 +116,39 @@ class TokenStore extends AbstractStore {
     /**
      * Token数
      */
-    public function readCount($args) {
-        if (! $this->connection)
+    public function readCount($args)
+    {
+        if (! $this->connection) {
             return false;
+        }
         if (is_a($args, 'Dcux\SSO\Model\Token')) {
             $token = $args;
             $field1 = $token->toField('clientId');
             $field2 = $token->toField('username');
             $value1 = $token->getClientId();
             $value2 = $token->getUsername();
-            if ($value1 && $value2)
-                $condition = array (
+            if ($value1 && $value2) {
+                $condition = array(
                         $field1 => $value1,
-                        $field2 => $value2 
+                        $field2 => $value2
                 );
-            else if ($value1)
-                $condition = array (
-                        $field1 => $value1 
+            } elseif ($value1) {
+                $condition = array(
+                        $field1 => $value1
                 );
-            else if ($value2)
-                $condition = array (
-                        $field2 => $value2 
+            } elseif ($value2) {
+                $condition = array(
+                        $field2 => $value2
                 );
-            else
+            } else {
                 $condition = '';
+            }
             unset($field1);
             unset($value1);
             unset($field2);
             unset($value2);
             unset($args);
-        } else if (is_array($args) || is_string($args)) {
+        } elseif (is_array($args) || is_string($args)) {
             $token = new Token();
             $condition = $args;
         } else {
@@ -156,12 +165,14 @@ class TokenStore extends AbstractStore {
     /**
      * 创建Token
      */
-    public function write($args) {
-        if (! $this->connection)
+    public function write($args)
+    {
+        if (! $this->connection) {
             return false;
+        }
         if (is_a($args, 'Dcux\SSO\Model\Token')) {
             $token = $args;
-        } else if (is_array($args)) {
+        } elseif (is_array($args)) {
             $token = new Token();
             $return = $token->build($args);
         } else {
@@ -178,9 +189,11 @@ class TokenStore extends AbstractStore {
     /**
      * 修改Token
      */
-    public function modify($args, $values = '') {
-        if (! $this->connection)
+    public function modify($args, $values = '')
+    {
+        if (! $this->connection) {
             return false;
+        }
         if (is_a($args, 'Dcux\SSO\Model\Token')) {
             $token = $args;
             $values = $token->toValues();
@@ -188,13 +201,14 @@ class TokenStore extends AbstractStore {
             $field2 = $token->toField('username');
             $value1 = $token->getClientId();
             $value2 = $token->getUsername();
-            $condition = array (
+            $condition = array(
                     $field1 => $value1,
-                    $field2 => $value2 
+                    $field2 => $value2
             );
-        } else if (is_array($args)) {
-            if (empty($values))
+        } elseif (is_array($args)) {
+            if (empty($values)) {
                 return false;
+            }
             $token = new Token();
             $condition = $args;
         } else {
@@ -210,20 +224,22 @@ class TokenStore extends AbstractStore {
     /**
      * 删除Token
      */
-    public function remove($args) {
-        if (! $this->connection)
+    public function remove($args)
+    {
+        if (! $this->connection) {
             return false;
+        }
         if (is_a($args, 'Dcux\SSO\Model\Token')) {
             $token = $args;
             $field1 = $token->toField('clientId');
             $field3 = $token->toField('username');
             $value1 = $token->getTokenId();
             $value3 = $token->getUsername();
-            $condition = array (
+            $condition = array(
                     $field1 => $value1,
-                    $field3 => $value3 
+                    $field3 => $value3
             );
-        } else if (is_array($args)) {
+        } elseif (is_array($args)) {
             $token = new Token();
             $condition = $args;
         } else {
@@ -238,14 +254,15 @@ class TokenStore extends AbstractStore {
     /**
      * 删除过期token
      */
-    public function expires() {
+    public function expires()
+    {
         global $CFG;
         $token = new Token();
         $field1 = $token->toField('expires');
         if ($field1) {
             if ($CFG['DATA_TYPE'] == $CFG['DATA_MEMORY']) {
                 $condition = 'expires';
-            } else if ($CFG['DATA_TYPE'] == $CFG['DATA_MYSQL']) {
+            } elseif ($CFG['DATA_TYPE'] == $CFG['DATA_MYSQL']) {
                 $condition = 'WHERE ' . $field1 . ' < UNIX_TIMESTAMP()';
             }
         } else {
@@ -258,4 +275,3 @@ class TokenStore extends AbstractStore {
         return $success;
     }
 }
-?>

@@ -15,22 +15,27 @@ use Dcux\Admin\Kernel\MenuPermission;
 use Dcux\SSO\Service\StatUserDetailService;
 use Dcux\SSO\Service\ClientService;
 
-class Client extends MenuPermission {
-	protected $clientService;
-    public function cmd() {
+class Client extends MenuPermission
+{
+    protected $clientService;
+    public function cmd()
+    {
         return 'statistics.client';
     }
-    public function onCreate() {
-    	parent::onCreate();
-    	$this->clientService = ClientService::getInstance();
+    public function onCreate()
+    {
+        parent::onCreate();
+        $this->clientService = ClientService::getInstance();
     }
-    public function onGet() {
-    	$clients = $this->clientService->getClientListAll(array(), array('clientOrderNum' => 'DESC'));
-    	$clients = empty($clients) ? array() : $clients;
-    	$this->template->push('clients', $clients);
+    public function onGet()
+    {
+        $clients = $this->clientService->getClientListAll(array(), array('clientOrderNum' => 'DESC'));
+        $clients = empty($clients) ? array() : $clients;
+        $this->template->push('clients', $clients);
         $this->template->file('stat/clientdate.php');
     }
-    public function onPost() {
+    public function onPost()
+    {
         $this->onGet();
     }
 }

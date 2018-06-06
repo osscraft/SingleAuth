@@ -5,27 +5,33 @@ use Lay\Advance\Core\ModelLdap;
 use Lay\Advance\DB\DataBase;
 use Lay\Advance\Core\Volatile;
 
-class LdapUser extends ModelLdap implements Volatile {
+class LdapUser extends ModelLdap implements Volatile
+{
     protected $uid = '';
     protected $username = '';
     protected $role = '';
-    public function cacher() {
+    public function cacher()
+    {
         $cacher = DataBase::factory('memcache');
         $cacher->setModel($this);
         return $cacher;
     }
-    public function lifetime() {
+    public function lifetime()
+    {
         return 86400;
     }
-    public function objectClass() {
+    public function objectClass()
+    {
         return array(
             'top', 'user'
         );
     }
-    public function rules() {
+    public function rules()
+    {
         return array();
     }
-    public function table() {
+    public function table()
+    {
         $role = $this->role;
         switch ($role) {
             case '教师':
@@ -36,11 +42,13 @@ class LdapUser extends ModelLdap implements Volatile {
                 return 'ou=other';
         }
     }
-    public function primary() {
+    public function primary()
+    {
         return 'uid';
     }
-    public function columns() {
-        return array (
+    public function columns()
+    {
+        return array(
             'uid' => 'uid',
             'username' => 'username',
             'role' => 'role'

@@ -17,32 +17,37 @@ use Respect\Validation\Validator;
 
 // @see http://sso.project.dcux.com/api/app/info?token=c1ddfc5bc7c988afe1332d48c6a56342&cid=ufsso_dcux_portal
 
-class Info extends TokenApi {
-	public function onCreate() {
-		parent::onCreate();
-		$this->clientService = ClientService::getInstance();
-	}
-	public function onGet() {
-		$cid = $this->params['cid'];
+class Info extends TokenApi
+{
+    public function onCreate()
+    {
+        parent::onCreate();
+        $this->clientService = ClientService::getInstance();
+    }
+    public function onGet()
+    {
+        $cid = $this->params['cid'];
 
-		$exsits = $this->clientService->getByUnique($cid);
+        $exsits = $this->clientService->getByUnique($cid);
 
-		if(!empty($exsits)) {
-			$vc = VClient::parse($exsits);//print_r($vsud);exit;
-			$this->success($vc);
-		} else {
-			$this->failure(Errode::client_not_exists());
-		}
-	}
-	public function onPost() {
-		$this->onGet();
-	}
-	protected function params() {
-		return array(
-			'cid' => array(
-				'validator' => array(Validator::notEmpty())
-			)
-		);
-	}
+        if (!empty($exsits)) {
+            $vc = VClient::parse($exsits);//print_r($vsud);exit;
+            $this->success($vc);
+        } else {
+            $this->failure(Errode::client_not_exists());
+        }
+    }
+    public function onPost()
+    {
+        $this->onGet();
+    }
+    protected function params()
+    {
+        return array(
+            'cid' => array(
+                'validator' => array(Validator::notEmpty())
+            )
+        );
+    }
 }
 // PHP END

@@ -14,15 +14,17 @@ use Dcux\SSO\Core\TBean;
  * @version 1.0
  * @copyright 2005-2012 dcux Inc.
  * @link http://www.dcux.com
- *      
+ *
  */
-class LogClient extends TBean {
+class LogClient extends TBean
+{
     /**
      * 构造方法
      *
      * @return LogClient
      */
-    public function __construct($uid = 0, $timeReported = '', $facilityHost = '', $clientId = '', $clientType = '', $reponseType = '', $grantType = '', $redirectURI = '', $success = 0) {
+    public function __construct($uid = 0, $timeReported = '', $facilityHost = '', $clientId = '', $clientType = '', $reponseType = '', $grantType = '', $redirectURI = '', $success = 0)
+    {
         $this->config['uid'] = 0 + $uid; // uid
         $this->config['timeReported'] = $timeReported; // 日志记录时间
         $this->config['facilityHost'] = $facilityHost; // facilityHost
@@ -36,14 +38,17 @@ class LogClient extends TBean {
         $this->config['os'] = $os; // 操作系统
         $this->config['browser'] = $browser; // 浏览器
     }
-    public function table() {
+    public function table()
+    {
         return 'log_client';
     }
-    public function pk() {
+    public function pk()
+    {
         return 'uid';
     }
-    public function columns() {
-        return array (
+    public function columns()
+    {
+        return array(
                 'uid' => 'uid',
                 'timeReported' => 'timereported',
                 'facilityHost' => 'facilityhost',
@@ -55,8 +60,7 @@ class LogClient extends TBean {
                 'success' => 'success',
                 'ip' => 'ip',
                 'os' => 'os',
-                'browser' => 'browser' 
+                'browser' => 'browser'
         );
     }
 }
-?>

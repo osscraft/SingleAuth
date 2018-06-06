@@ -2,7 +2,8 @@
 
 namespace Lay\Advance\Http;
 
-class Http {
+class Http
+{
     const OK = 200;
     const CREATED = 201;
     const ACCEPTED = 202;
@@ -32,7 +33,7 @@ class Http {
     const BAD_GATEWAY = 502;
     const SERVICE_UNAVAILABLE = 503;
     const GATEWAY_TIMEOUT = 504;
-    protected static $status = array (
+    protected static $status = array(
             100 => 'Continue',
             101 => 'Switching Protocols',
             200 => 'OK',
@@ -71,12 +72,14 @@ class Http {
             501 => 'Not Implemented',
             502 => 'Bad Gateway',
             503 => 'Service Unavailable',
-            504 => 'Gateway Time-out' 
+            504 => 'Gateway Time-out'
     );
-    static public function getStatusMessage($code) {
+    public static function getStatusMessage($code)
+    {
         return self::$status[$code];
     }
-    static public function getStatusHeader($code) {
+    public static function getStatusHeader($code)
+    {
         $message = self::$status[$code];
         return strpos(PHP_SAPI, 'cgi') === 0 ? sprintf('Status: %d %s', $code, $message) : sprintf('HTTP/1.1 %d %s', $code, $message);
     }

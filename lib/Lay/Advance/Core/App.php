@@ -1,6 +1,7 @@
 <?php
 
 namespace Lay\Advance\Core;
+
 // 核心类
 use Lay\Advance\Core\Singleton;
 use Lay\Advance\Core\EventEmitter;
@@ -15,7 +16,8 @@ use Lay\Advance\Core\Error;
 use Exception;
 use ErrorException;
 
-abstract class App extends Singleton {
+abstract class App extends Singleton
+{
     // use Singleton;
     const E_BEFORE = 'app:event:before';
     const E_RUN = 'app:event:run';
@@ -32,10 +34,11 @@ abstract class App extends Singleton {
     public static $_app;
     /**
      * 运行，创建App并启动App的生命同期
-     * 
+     *
      * @return void
      */
-    public static function start($rootpath = '', $docpath = '', $conf_service = '') {
+    public static function start($rootpath = '', $docpath = '', $conf_service = '')
+    {
         // ob start
         ob_start();
         error_reporting(E_ALL ^ E_NOTICE);
@@ -44,7 +47,7 @@ abstract class App extends Singleton {
         // app instance
         self::$_app = self::getInstance();
         // set error handler
-        if(!Utility::isCli()) {
+        if (!Utility::isCli()) {
             set_error_handler(array(self::$_app, 'error_handler'));
         }
         // initialize root path
@@ -85,31 +88,36 @@ abstract class App extends Singleton {
      * 异常托管Action类
      */
     protected $trustee = '';
-    protected $routers = array ();
-    public function getApiname() {
+    protected $routers = array();
+    public function getApiname()
+    {
         return $this->apiname;
     }
-    public function getExtension() {
+    public function getExtension()
+    {
         return $this->extension;
     }
-    public function getClassname() {
+    public function getClassname()
+    {
         return $this->classname;
     }
-    public function getRouters() {
+    public function getRouters()
+    {
         return $this->routers;
     }
     /**
      * App初始化,根据实际需求将成员变量classname赋值
-     * 
+     *
      * @return void
      */
-    public abstract function initialize();
+    abstract public function initialize();
     /**
      * App生命同期
-     * 
+     *
      * @return void
      */
-    public function lifecycle($fire = true) {
+    public function lifecycle($fire = true)
+    {
         $class = get_class($this);
         try {
             // before
@@ -130,27 +138,29 @@ abstract class App extends Singleton {
             self::$_event->fire($class, self::E_ERROR, array($this));
         }
     }
-    protected function before() {
+    protected function before()
+    {
         try {
-            if(empty($this->classname) || !class_exists($this->classname)) {
+            if (empty($this->classname) || !class_exists($this->classname)) {
                 $this->classname = $this->trustee;
             }
-        } catch(\Exception $err) {
+        } catch (\Exception $err) {
             throw new Error(Errode::file_not_found(), 0, $err);
         }
     }
     // override detect classname
-    protected function detect($webpath, $prefix = '\\Dcux\\SSO\\Action\\') {
+    protected function detect($webpath, $prefix = '\\Dcux\\SSO\\Action\\')
+    {
         $webpath = realpath($webpath) . DIRECTORY_SEPARATOR;
         $script = realpath($_SERVER['SCRIPT_FILENAME']);
-        if(!isset($_SERVER['PATH_INFO']) || Utility::isCli()) {
+        if (!isset($_SERVER['PATH_INFO']) || Utility::isCli()) {
             $name = basename(str_replace(DIRECTORY_SEPARATOR, '.', substr($script, strlen($webpath))), '.php');
             $this->apiname = $apiname = "/".trim(str_replace('\\', '/', $name), '/');
             $this->extension = 'php';
         } else {
             $pathinfo = pathinfo(empty($_SERVER['PATH_INFO']) ? '/' : $_SERVER['PATH_INFO']);
             extract($pathinfo);
-            if(empty($extension)) {
+            if (empty($extension)) {
                 $this->apiname = $apiname = $_SERVER['PATH_INFO'];
             } else {
                 $_dirname = str_replace('\\', '/', $dirname);
@@ -169,14 +179,15 @@ abstract class App extends Singleton {
         return $classname;
     }
     // main run
-    protected function run() {
+    protected function run()
+    {
         $classname = $this->classname;
         $routers = $this->routers;
         if (empty($routers)) {
             if (class_exists($classname) && self::$_action = $classname::getInstance()) {
                 self::$_action->initialize();
                 self::$_action->lifecycle();
-            } else if (! empty($classname)) {
+            } elseif (! empty($classname)) {
                 throw new Error(Errode::class_not_found($classname));
             } else {
                 throw new Error(Errode::invalid_action_class());
@@ -185,13 +196,13 @@ abstract class App extends Singleton {
             // use Klein(https://github.com/chriso/klein.php)
             $this->klein = $klein = new Klein();
             
-            foreach ( $this->routers as $k => $config ) {
-                $klein->respond($k, function ($req, $res) use($klein, $config) {
+            foreach ($this->routers as $k => $config) {
+                $klein->respond($k, function ($req, $res) use ($klein, $config) {
                     $classname = $config['classname'];
                     if (class_exists($classname) && self::$_action = $classname::getInstance()) {
                         self::$_action->initialize();
                         self::$_action->lifecycle();
-                    } else if (! empty($classname)) {
+                    } elseif (! empty($classname)) {
                         throw new Error(Errode::class_not_found($classname));
                     } else {
                         throw new Error(Errode::invalid_action_class());
@@ -201,9 +212,11 @@ abstract class App extends Singleton {
             $klein->dispatch();
         }
     }
-    protected function after() {
+    protected function after()
+    {
     }
-    protected function finish() {
+    protected function finish()
+    {
         if (function_exists('fastcgi_finish_request')) {
             // ngnix fastcgi
             fastcgi_finish_request();
@@ -212,37 +225,40 @@ abstract class App extends Singleton {
     /**
      * PHP捕获异常句柄
      */
-    public function error_handler($errno, $errstr, $errfile, $errline) {
+    public function error_handler($errno, $errstr, $errfile, $errline)
+    {
         // handle error
-        //$err = 
+        //$err =
         $this->error(new \Exception($errstr, $errno));
     }
     /**
      * 运行异常
      */
-    protected function error($err) {
+    protected function error($err)
+    {
         self::$_logger->error($this->errorIterator($err));
         try {
-            if(empty($this->trustee)) {
+            if (empty($this->trustee)) {
                 self::$_trustee = !empty(self::$_trustee) ? self::$_trustee : Trustee::getInstance();
-            } else if(is_subclass_of($this->trustee, 'Lay\Advance\Core\Action')) {
+            } elseif (is_subclass_of($this->trustee, 'Lay\Advance\Core\Action')) {
                 $trustee = $this->trustee;
                 self::$_trustee = $trustee::getInstance();
             }
             self::$_trustee->initialize();
             self::$_trustee->lifecycle();
-        } catch(\Exception $e) {
+        } catch (\Exception $e) {
             throw $err;
         }
     }
-    protected function errorIterator($err) {
+    protected function errorIterator($err)
+    {
         $log = '';
-        if($err instanceof Exception) {
+        if ($err instanceof Exception) {
             $pre = $err->getPrevious();
             $log .= $err->getMessage() . '(' . $err->getCode() . ")\n";
             $log .= $err->getFile() . '(' . $err->getLine() . ")\n";
             $log .= $err->getTraceAsString() . "\n";
-            if(!empty($pre)) {
+            if (!empty($pre)) {
                 $log .= "Previous: " . $this->errorIterator($pre);
             }
         }
@@ -258,7 +274,8 @@ abstract class App extends Singleton {
      *            键值
      * @return void
      */
-    public static function set($keystr, $value) {
+    public static function set($keystr, $value)
+    {
         Configuration::set($keystr, $value);
     }
     /**
@@ -270,7 +287,8 @@ abstract class App extends Singleton {
      *            不存在时的默认值，默认null
      * @return mixed
      */
-    public static function get($keystr = '', $default = null) {
+    public static function get($keystr = '', $default = null)
+    {
         return Configuration::get($keystr, $default);
     }
 }

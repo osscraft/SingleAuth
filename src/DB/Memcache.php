@@ -7,7 +7,8 @@ use Dcux\DB\Uniqueness;
 use Dcux\Core\Volatile;
 use Dcux\Util\Logger;
 
-class Memcache extends Cacher implements Uniqueness {
+class Memcache extends Cacher implements Uniqueness
+{
     const NON_TTL = 0;//没有过期时间
     const MIN_TTL = 100;
     const MAX_TTL = 2592000;//最大时间
@@ -37,7 +38,8 @@ class Memcache extends Cacher implements Uniqueness {
     protected $result;
     protected $lifetime = 0;
     protected $show;
-    protected function __construct() {
+    protected function __construct()
+    {
         global $CFG;
         $this->host  = $CFG['memcache_host'];
         $this->port  = $CFG['memcache_port'];
@@ -49,26 +51,29 @@ class Memcache extends Cacher implements Uniqueness {
      * connect memcache database.
      * new instance.
      */
-	public function connect() {
+    public function connect()
+    {
         $this->link = new \Memcache();
         $this->link->connect($this->host, $this->port);
         return $this->link;
-	}
+    }
     /**
      * 选择数据库名称
      *
      * @return mixed
      */
-    public function choose($dbname) {
-    	return true;
+    public function choose($dbname)
+    {
+        return true;
     }
     /**
      * another connect
      * new instance.
      */
-    public function alter($name = 'default') {
+    public function alter($name = 'default')
+    {
         global $CFG;
-        if(!empty($name) &&!empty($CFG['memcache']) && !empty($CFG['memcache'][$name])) {
+        if (!empty($name) &&!empty($CFG['memcache']) && !empty($CFG['memcache'][$name])) {
             $this->host = $CFG['memcache'][$name]['host'];
             $this->port = $CFG['memcache'][$name]['port'];
             $this->lifetime = !isset($CFG['memcache'][$name]['lifetime']) ? self::MAX_TTL : $CFG['memcache'][$name]['lifetime'];
@@ -81,31 +86,35 @@ class Memcache extends Cacher implements Uniqueness {
         }
         return $this->connect();
     }
-	public function close() {
+    public function close()
+    {
         if ($this->link) {
             $ret = $this->link->close();
             $this->link = null;
             return $ret;
         }
-	}
-    public final function query($cmd, $key, $data = '', $lifetime = 0) {
+    }
+    final public function query($cmd, $key, $data = '', $lifetime = 0)
+    {
         $cmd = empty($cmd) ? false : strtoupper($cmd);
-        if(!empty($cmd) && !empty($key)) {
+        if (!empty($cmd) && !empty($key)) {
             $link = !empty($this->link) ?: $this->connect();
             switch ($cmd) {
                 case 'GET':
                     $this->result = $ret = $this->link->get($key);
-                    if($cmd && $this->show)
+                    if ($cmd && $this->show) {
                         Logger::info("$cmd $key $ret", 'memcache');
+                    }
                     break;
                 case 'SET':
                     $this->result = $this->link->set($key, $data, 0, $lifetime);
-                    if($cmd && $this->show)
+                    if ($cmd && $this->show) {
                         Logger::info("$cmd $key $data $lifetime", 'memcache');
+                    }
                     break;
                 case 'DELETE':
                     $this->result = $this->link->delete($key);
-                    if($cmd && $this->show) {
+                    if ($cmd && $this->show) {
                         Logger::info("$cmd $key", 'memcache');
                     }
                     break;
@@ -115,8 +124,9 @@ class Memcache extends Cacher implements Uniqueness {
             return false;
         }
     }
-    public final function get($id, $fields = array()) {
-        if(!empty($id)) {
+    final public function get($id, $fields = array())
+    {
+        if (!empty($id)) {
             $model = $this->model;
             $columns = $this->model->columns();
             $pk = $this->model->primary();
@@ -129,11 +139,13 @@ class Memcache extends Cacher implements Uniqueness {
             return false;
         }
     }
-    public final function add(array $info) {
+    final public function add(array $info)
+    {
         return false;
     }
-    public final function del($id) {
-        if(!empty($id)) {
+    final public function del($id)
+    {
+        if (!empty($id)) {
             $model = $this->model;
             $columns = $this->model->columns();
             $pk = $this->model->primary();
@@ -145,15 +157,16 @@ class Memcache extends Cacher implements Uniqueness {
             return false;
         }
     }
-    public final function upd($id, array $info) {
-        if(!empty($id)) {
+    final public function upd($id, array $info)
+    {
+        if (!empty($id)) {
             $model = $this->model;
             $columns = $this->model->columns();
             $pk = $this->model->primary();
             $table = $this->model->table();
             $key = "$table:$pk:$id";
             // life time
-            if($this->model instanceof Volatile) {
+            if ($this->model instanceof Volatile) {
                 $this->model->build($info);
                 $lifetime = $this->model->lifetime();
             } else {
@@ -169,11 +182,12 @@ class Memcache extends Cacher implements Uniqueness {
     /**
      * @param array|string $unique
      */
-    public final function updByUnique($unique, array $info) {
+    final public function updByUnique($unique, array $info)
+    {
         $key = $this->makeUniqueKey($unique);
-        if(!empty($key)) {
+        if (!empty($key)) {
             // life time
-            if($this->model instanceof Volatile) {
+            if ($this->model instanceof Volatile) {
                 $lifetime = $this->model->lifetime();
             } else {
                 $lifetime = $this->lifetime;
@@ -190,9 +204,10 @@ class Memcache extends Cacher implements Uniqueness {
     /**
      * @param array|string $unique
      */
-    public final function getByUnique($unique) {
+    final public function getByUnique($unique)
+    {
         $key = $this->makeUniqueKey($unique);
-        if(!empty($key)) {
+        if (!empty($key)) {
             $ret = $this->query('get', $key);
             $ret = $this->decode($ret);
             return empty($ret) ? false : $ret;
@@ -200,26 +215,28 @@ class Memcache extends Cacher implements Uniqueness {
             return false;
         }
     }
-    public final function delByUnique($unique) {
+    final public function delByUnique($unique)
+    {
         $key = $this->makeUniqueKey($unique);
-        if(!empty($key)) {
+        if (!empty($key)) {
             return $this->query('delete', $key);
         } else {
             return false;
         }
     }
-    public function makeUniqueKey($unique) {
+    public function makeUniqueKey($unique)
+    {
         $model = $this->model;
         $table = $this->model->table();
         $columns = $this->model->columns();
         $uk = $this->model->unique();
-        if(!empty($uk) && is_array($uk) && is_array($unique)) {
+        if (!empty($uk) && is_array($uk) && is_array($unique)) {
             $arr = array();
             foreach ($uk as $k) {
                 $p = array_search($k, $columns);
-                if(!empty($unique[$k])) {
+                if (!empty($unique[$k])) {
                     $arr[] = $unique[$k];
-                } else if(!empty($unique[$p])) {
+                } elseif (!empty($unique[$p])) {
                     $arr[] = $unique[$p];
                 } else {
                     return false;
@@ -228,7 +245,7 @@ class Memcache extends Cacher implements Uniqueness {
             $uk = implode('.', $uk);
             $unique = implode('.', $arr);
             $key = "$table:$uk:$unique";
-        } else if(!empty($uk) && is_string($uk) && is_string($unique)) {
+        } elseif (!empty($uk) && is_string($uk) && is_string($unique)) {
             $key = "$table:$uk:$unique";
         } else {
             return false;

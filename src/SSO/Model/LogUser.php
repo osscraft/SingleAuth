@@ -14,15 +14,17 @@ use Dcux\SSO\Core\TBean;
  * @version 1.0
  * @copyright 2005-2012 dcux Inc.
  * @link http://www.dcux.com
- *      
+ *
  */
-class LogUser extends TBean {
+class LogUser extends TBean
+{
     /**
      * 构造方法
      *
      * @return LogUser
      */
-    public function __construct($uid = 0, $timeReported = '', $facilityHost = '', $clientId = '', $username = '', $success = 0, $ip = 0, $os = 0, $browser = 0) {
+    public function __construct($uid = 0, $timeReported = '', $facilityHost = '', $clientId = '', $username = '', $success = 0, $ip = 0, $os = 0, $browser = 0)
+    {
         $this->config['uid'] = 0 + $id; // uid
         $this->config['timeReported'] = $timeReported; // 日志记录时间
         $this->config['facilityHost'] = $facilityHost; // facilityHost
@@ -33,14 +35,17 @@ class LogUser extends TBean {
         $this->config['os'] = $os; // 操作系统
         $this->config['browser'] = $browser; // 浏览器
     }
-    public function table() {
+    public function table()
+    {
         return 'log_user';
     }
-    public function pk() {
+    public function pk()
+    {
         return 'uid';
     }
-    public function columns() {
-        return array (
+    public function columns()
+    {
+        return array(
                 'uid' => 'uid',
                 'timeReported' => 'timereported',
                 'facilityHost' => 'facilityhost',
@@ -49,8 +54,7 @@ class LogUser extends TBean {
                 'success' => 'success',
                 'ip' => 'ip',
                 'os' => 'os',
-                'browser' => 'browser' 
+                'browser' => 'browser'
         );
     }
 }
-?>

@@ -17,17 +17,20 @@ use Dcux\SSO\Model\StatBrowser;
 use Dcux\SSO\Model\StatFailure;
 use Dcux\SSO\Model\StatOnline;
 
-class StatService extends Service {
+class StatService extends Service
+{
     private $statClient;
     private $statUser;
     private $statUserDetail;
     private $statBrowser;
     private $statFailure;
     private $statOnline;
-    public function model() {
+    public function model()
+    {
         return StatUserDetail::getInstance();
     }
-    protected function __construct() {
+    protected function __construct()
+    {
         parent::__construct();
         $this->statClient = StatClient::getInstance();
         $this->statUser = StatUser::getInstance();
@@ -37,16 +40,20 @@ class StatService extends Service {
         $this->statOnline = StatOnline::getInstance();
     }
 
-    public function addStatOnline($args = array()) {
+    public function addStatOnline($args = array())
+    {
         return $this->statOnline->add($args);
     }
-    public function addStatFailure($args = array()) {
+    public function addStatFailure($args = array())
+    {
         return $this->statFailure->replace($args);
     }
-    public function addStatUser($args = array()) {
+    public function addStatUser($args = array())
+    {
         return $this->statUser->replace($args);
     }
-    public function addStatClient($args = array()) {
+    public function addStatClient($args = array())
+    {
         return $this->statClient->replace($args);
     }
     /**
@@ -54,18 +61,18 @@ class StatService extends Service {
      * @param mixed $args
      * @return array
      */
-    public function addStatUserDetail($args = array()) {
+    public function addStatUserDetail($args = array())
+    {
         // TODO
-
     }
     /**
      * 以天为单位,增涨一条用户登录记数
      * @param mixed $args
      * @return array
      */
-    public function increaseStatUser($args = array()) {
+    public function increaseStatUser($args = array())
+    {
         // TODO
-
     }
     /**
      * 增加客户端访问记数,以天为单位
@@ -73,21 +80,22 @@ class StatService extends Service {
      * @param number $succ
      * @return array
      */
-    public function increaseStatClient($args = array()) {
+    public function increaseStatClient($args = array())
+    {
         // TODO
-
     }
     /**
      * 增涨浏览器使用记数
      * @return array
      */
-    public function increaseStatBrowser() {
+    public function increaseStatBrowser()
+    {
         $cond = array();
         $arr = array();
         $browser = Utility::browser(true);
-        if(!empty($browser) && !empty($browser[0])) {
+        if (!empty($browser) && !empty($browser[0])) {
             $count = count($browser);
-            if($count > 1) {
+            if ($count > 1) {
                 $version = array_pop($browser);
                 $name = implode(' ', $browser);
             } else {
@@ -98,7 +106,7 @@ class StatService extends Service {
             $cond['version'] = $arr['version'] = $version;
             //先查找，再更新
             $ret = $this->statBrowser->db()->select(array(), $cond);
-            if(!empty($ret)) {
+            if (!empty($ret)) {
                 // +1
                 $ret = $this->statBrowser->db()->increase('count', 1, $cond);
             } else {
@@ -116,16 +124,17 @@ class StatService extends Service {
      * @param number $num 天数
      * @return array
      */
-    public function getStatClientCount($args = array(),$num=10) {
+    public function getStatClientCount($args = array(), $num=10)
+    {
         // TODO
-
     }
     /**
      * 获取浏览器使用分布
      * @return array
      */
-    public function getStatBrowserDistribution() {
-    	$ret = $this->statBrowser->db()->select(array(), array(), array(), array(), false);
+    public function getStatBrowserDistribution()
+    {
+        $ret = $this->statBrowser->db()->select(array(), array(), array(), array(), false);
         return empty($ret) ? array() : $ret;
     }
 
@@ -135,7 +144,8 @@ class StatService extends Service {
      * @param number $period 周期天数
      * @return array
      */
-    public function getStatClientByPeriod($clientId, $period = 7) {
+    public function getStatClientByPeriod($clientId, $period = 7)
+    {
         $date = date('Y-m-d', time() - 86400);
         $date_offset = date('Y-m-d', time() - 86400 * ($period + 1));
         $fields = "SUM(`count`) as `count`, SUM(`count_visit`) as `count_visit`";
@@ -151,7 +161,8 @@ class StatService extends Service {
             return array();
         }
     }
-    public function getStatOnlineList($len = 60) {
+    public function getStatOnlineList($len = 60)
+    {
         $order = array('id' => 'DESC');
         $limit = array($len);
         $ret = $this->statOnline->db()->select(array(), array(), $order, $limit, false);
@@ -161,7 +172,8 @@ class StatService extends Service {
     /**
      * 获取某天的记录
      */
-    public function getStatUserDetailDaily($date, $limit = array(1000), $condition = array(), $fields = array()) {
+    public function getStatUserDetailDaily($date, $limit = array(1000), $condition = array(), $fields = array())
+    {
         $min = $date . ' 00:00:00';
         $max = $date . ' 23:59:59';
         $condition['time.0'] = array($min, '>=');
@@ -173,7 +185,8 @@ class StatService extends Service {
     /**
      * 获取某天记录总数
      */
-    public function getStatUserDetailDailyTotal($date, $condition = array()) {
+    public function getStatUserDetailDailyTotal($date, $condition = array())
+    {
         $min = $date . ' 00:00:00';
         $max = $date . ' 23:59:59';
         $condition['time.0'] = array($min, '>=');
@@ -184,15 +197,16 @@ class StatService extends Service {
     /**
      * 统计某天记录数
      */
-    public function getStatCountClientDaily($date, $clientId = '') {
+    public function getStatCountClientDaily($date, $clientId = '')
+    {
         $condition = array();
-        if(!empty($clientId)) {
+        if (!empty($clientId)) {
             $condition['clientId'] = $clientId;
         }
         $total = $this->getStatUserDetailDailyTotal($date, $condition);
         $num = 1000;
         $data = array();
-        for ($i = 0; $i < $total; $i = $i + $num) { 
+        for ($i = 0; $i < $total; $i = $i + $num) {
             $ret = $this->getStatUserDetailDaily($date, array($i, $num), $condition, array('time'));
             foreach ($ret as $r) {
                 $data[] = $r;
@@ -200,8 +214,9 @@ class StatService extends Service {
         }
         return $data;
     }
-    public function getStatUserTop($num, $cond = array()) {
-        if($num < 1 || empty($cond['startDate']) || empty($cond['endDate'])){
+    public function getStatUserTop($num, $cond = array())
+    {
+        if ($num < 1 || empty($cond['startDate']) || empty($cond['endDate'])) {
             return array();
         }
         $startDate = $cond['startDate'];
@@ -214,8 +229,9 @@ class StatService extends Service {
         $ret = $this->statUser->db()->select($fields, $condition, array('count' => 'DESC'), array(0, $num));
         return $ret;
     }
-    public function getStatUserTopToday($num, $cond = array()) {
-        if($num < 1){
+    public function getStatUserTopToday($num, $cond = array())
+    {
+        if ($num < 1) {
             return array();
         }
         $startDate = date('Y-m-d 00:00:00') ;
@@ -229,8 +245,9 @@ class StatService extends Service {
         $ret = $this->statUserDetail->db()->select($fields, $condition, '`count` DESC', array(0, $num));
         return $ret;
     }
-    public function getStatClientTop($num = 5, $cond = array()) {
-        if($num < 1 || empty($cond['startDate']) || empty($cond['endDate'])){
+    public function getStatClientTop($num = 5, $cond = array())
+    {
+        if ($num < 1 || empty($cond['startDate']) || empty($cond['endDate'])) {
             return array();
         }
         $startDate = $cond['startDate'];
@@ -244,8 +261,9 @@ class StatService extends Service {
         //$list = $this->getStatUserDetailDaily($date, );
         return $ret;
     }
-    public function getStatClientTopToday($num = 5, $condition = array()) {
-        if($num < 1){
+    public function getStatClientTopToday($num = 5, $condition = array())
+    {
+        if ($num < 1) {
             return array();
         }
         $startDate = date('Y-m-d 00:00:00') ;
@@ -259,26 +277,32 @@ class StatService extends Service {
         $ret = $this->statUserDetail->db()->select($fields, $condition, '`count` DESC', array(0, $num));
         return $ret;
     }
-	
-	
-	public function getBrowsers($condition = array(),$order = array(),$limit = array()){
-		return $this->statBrowser->db()->select(array(),$condition,$order,$limit,false);
-	}
-	public function countBrowsers($condition = array()){
-		return $this->statBrowser->db()->count($condition);
-	}
-	
-	public function getCurrentOnline(){
-		return $this->getStatOnlineList(1);
-	}
-	public function getListOnline($condition = array(),$order = array(),$limit = array()){
-		return $this->statOnline->db()->select(array(),$condition,$order,$limit,false);
-	}
-	public function countOnlines($condition = array()){
-		return $this->statOnline->db()->count($condition);
-	}
+    
+    
+    public function getBrowsers($condition = array(), $order = array(), $limit = array())
+    {
+        return $this->statBrowser->db()->select(array(), $condition, $order, $limit, false);
+    }
+    public function countBrowsers($condition = array())
+    {
+        return $this->statBrowser->db()->count($condition);
+    }
+    
+    public function getCurrentOnline()
+    {
+        return $this->getStatOnlineList(1);
+    }
+    public function getListOnline($condition = array(), $order = array(), $limit = array())
+    {
+        return $this->statOnline->db()->select(array(), $condition, $order, $limit, false);
+    }
+    public function countOnlines($condition = array())
+    {
+        return $this->statOnline->db()->count($condition);
+    }
 
-    public function getStatUserDetailList($condition = array(), $order = array(), $limit = array()) {
+    public function getStatUserDetailList($condition = array(), $order = array(), $limit = array())
+    {
         $ret = $this->statUserDetail->db()->select(array(), $condition, $order, $limit);
         return empty($ret) ? array() : $ret;
     }

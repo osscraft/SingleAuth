@@ -17,28 +17,33 @@ use Respect\Validation\Validator;
 
 // @see http://sso.project.dcux.com/api/oauth2/revoke?token=c1ddfc5bc7c988afe1332d48c6a56342&cid=ufsso_dcux_portal
 
-class Revoke extends TokenApi {
-	public function onCreate() {
-		parent::onCreate();
-		$this->oauth2TokenService = OAuth2TokenService::getInstance();
-	}
-	public function onGet() {
-		$tokenArr = $this->getToken();
-		$token = empty($tokenArr['oauthToken']) ? '' : $tokenArr['oauthToken'];
+class Revoke extends TokenApi
+{
+    public function onCreate()
+    {
+        parent::onCreate();
+        $this->oauth2TokenService = OAuth2TokenService::getInstance();
+    }
+    public function onGet()
+    {
+        $tokenArr = $this->getToken();
+        $token = empty($tokenArr['oauthToken']) ? '' : $tokenArr['oauthToken'];
 
-		$ret = $this->oauth2TokenService->del($token);
-		if(!empty($ret)) {
-			$this->success('success');
-		} else {
-			$this->failure('failure');
-		}
-	}
-	public function onPost() {
-		$this->onGet();
-	}
-	protected function params() {
-		return array(
-		);
-	}
+        $ret = $this->oauth2TokenService->del($token);
+        if (!empty($ret)) {
+            $this->success('success');
+        } else {
+            $this->failure('failure');
+        }
+    }
+    public function onPost()
+    {
+        $this->onGet();
+    }
+    protected function params()
+    {
+        return array(
+        );
+    }
 }
 // PHP END

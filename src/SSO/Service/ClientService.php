@@ -16,89 +16,106 @@ use Dcux\SSO\Model\Client;
 use Dcux\SSO\Service\StatService;
 use Dcux\SSO\Service\UserService;
 
-class ClientService extends Service {
+class ClientService extends Service
+{
     protected $userService;
-    protected function __construct() {
+    protected function __construct()
+    {
         parent::__construct();
         $this->userService = UserService::getInstance();
     }
-    public function model() {
+    public function model()
+    {
         return Client::getInstance();
     }
-    public function get($id, $secret = false) {
+    public function get($id, $secret = false)
+    {
         $ret = parent::get($id);
-        if(empty($secret)) {
+        if (empty($secret)) {
             unset($ret['clientSecret']);
         }
         return $ret;
     }
-    public function getByUnique($unique, $secret = false) {
+    public function getByUnique($unique, $secret = false)
+    {
         $ret = parent::getByUnique($unique);
-        if(empty($secret)) {
+        if (empty($secret)) {
             unset($ret['clientSecret']);
         }
         return $ret;
     }
 
-    public static function readClient($id, $secret = false) {
+    public static function readClient($id, $secret = false)
+    {
         return self::getInstance()->get($id, $secret);
     }
-    public static function readClientByRole($role) {
+    public static function readClientByRole($role)
+    {
         return self::getInstance()->getClientListByRole($role);
     }
-    public static function readClientMessages() {
+    public static function readClientMessages()
+    {
         return self::getInstance()->getClientListByShow();
     }
-    public static function readClientByWord($word) {
+    public static function readClientByWord($word)
+    {
         return self::getInstance()->getClientListByWord($word);
     }
-    public static function readClientsByGroup($group) {
+    public static function readClientsByGroup($group)
+    {
         return self::getInstance()->getClientListByUnique($group);
     }
-    public static function readClientPaging() {
+    public static function readClientPaging()
+    {
         $p = new Paging();
         return $p->build($_REQUEST);
     }
-    public static function readClientList($paging = array()) {
+    public static function readClientList($paging = array())
+    {
         $paging = $paging instanceof Paging ? $paging : self::readClientPaging();
         return self::getInstance()->getClientListPaging(array(), array('id' => 'ASC'), $paging->toLimit());
     }
-    public static function readClientTotal($paging = array()) {
+    public static function readClientTotal($paging = array())
+    {
         $paging = $paging instanceof Paging ? $paging : self::readClientPaging();
         $ret = self::getInstance()->count();
         return empty($ret) ? 0 : $ret;
     }
-    public static function updateClient($id, $info = array()) {
+    public static function updateClient($id, $info = array())
+    {
         return empty($id) || empty($info) ? false : self::getInstance()->upd($id, $info);
     }
-    public static function deleteClient($id) {
+    public static function deleteClient($id)
+    {
         return self::getInstance()->del($id);
     }
-    public static function createClient($info) {
+    public static function createClient($info)
+    {
         return self::getInstance()->add($info);
     }
 
     /**
      * 检测客户端的合法性
      */
-    public function checkClient($clientId, $clientType = '', $redirectURI = '', $clientSecret = null) {
+    public function checkClient($clientId, $clientType = '', $redirectURI = '', $clientSecret = null)
+    {
         $client = $this->getByUnique($clientId, empty($clientSecret) ? false : true);
-        if(empty($client)) {
+        if (empty($client)) {
             return false;
-        } else if(!empty($clientType)) {
+        } elseif (!empty($clientType)) {
             $pClientType = $this->parseType($client['clientType']);
             $_pClientType = $this->parseType($clientType);
             $twoType = array(OAuth2::CLIENT_TYPE_WEB, OAuth2::CLIENT_TYPE_IMPLICIT, OAuth2::CLIENT_TYPE_DESKTOP);
-            if($pClientType != OAuth2::CLIENT_TYPE_MOBILE && $pClientType != $_pClientType) {
+            if ($pClientType != OAuth2::CLIENT_TYPE_MOBILE && $pClientType != $_pClientType) {
                 // 非移动应用只对应一种方式，类型唯一
                 return false;
-            } else if($pClientType == OAuth2::CLIENT_TYPE_MOBILE && !in_array($_pClientType, $twoType)) {
+            } elseif ($pClientType == OAuth2::CLIENT_TYPE_MOBILE && !in_array($_pClientType, $twoType)) {
                 // 移动应用对应三种方式
                 return false;
             }
-        } else if(!empty($redirectURI) && trim($client['redirectURI']) != trim($redirectURI)) {
+        } elseif (!empty($redirectURI) && trim($client['redirectURI']) != trim($redirectURI)) {
             return false;
-        } else if(!empty($clientSecret) && $client['clientSecret'] != $clientSecret) {
+        } elseif (!empty($clientSecret) && $client['clientSecret'] != $clientSecret) {
             return false;
         }
         return $client;
@@ -106,7 +123,8 @@ class ClientService extends Service {
     /**
      * 将类型转换为对应数值
      */
-    public function parseType($type) {
+    public function parseType($type)
+    {
         $type = strtoupper($type);
         switch ($type) {
             case OAuth2::CLIENT_TYPE_WEB:
@@ -140,7 +158,8 @@ class ClientService extends Service {
     /**
      * 将类型转换为对应字符串
      */
-    public function deparseType($type) {
+    public function deparseType($type)
+    {
         $type = strtoupper($type);
         switch ($type) {
             case '1':
@@ -175,13 +194,14 @@ class ClientService extends Service {
      * @param array $limit
      * @return array
      */
-    public function getClientListByUnique($uniques = array(), $assoc = true, $secret = false) {
+    public function getClientListByUnique($uniques = array(), $assoc = true, $secret = false)
+    {
         $arr = array();
         foreach ($uniques as $u) {
             $ret = $this->getByUnique($u, $secret);
-            if(!empty($ret) && empty($assoc)) {
+            if (!empty($ret) && empty($assoc)) {
                 $arr[] = $ret;
-            } else if(!empty($ret)) {
+            } elseif (!empty($ret)) {
                 $arr[$u] = $ret;
             }
         }
@@ -193,7 +213,8 @@ class ClientService extends Service {
      * @param array $limit
      * @return array
      */
-    public function getClientListPaging($condition = array(), $order = array(), $limit = array()) {
+    public function getClientListPaging($condition = array(), $order = array(), $limit = array())
+    {
         $ret = $this->model()->db()->select(array(), $condition, $order, $limit, false);
         return empty($ret) ? array() : $ret;
     }
@@ -203,7 +224,8 @@ class ClientService extends Service {
      * @param array $limit
      * @return array
      */
-    public function getClientListAll($condition = array(), $order = array()) {
+    public function getClientListAll($condition = array(), $order = array())
+    {
         $ret = $this->model()->db()->select(array(), $condition, $order, array(), false);
         return empty($ret) ? array() : $ret;
     }
@@ -212,7 +234,8 @@ class ClientService extends Service {
      * @param int|string $role
      * @return array
      */
-    public function getClientListByShow() {
+    public function getClientListByShow()
+    {
         $fIsShow = $this->model()->toField('clientIsShow');
         $condition = array();
         $condition[$fIsShow] = array('0', '>');
@@ -224,7 +247,8 @@ class ClientService extends Service {
      * @param int|string $role
      * @return array
      */
-    public function getClientListByWord($word, $limit = array()) {
+    public function getClientListByWord($word, $limit = array())
+    {
         $fClientId = $this->model()->toField('clientId');
         $fClientName = $this->model()->toField('clientName');
         $fields = $this->model()->toFields();
@@ -240,7 +264,8 @@ class ClientService extends Service {
      * @param int|strin $role
      * @return array
      */
-    public function getClientListByRole($role) {
+    public function getClientListByRole($role)
+    {
         $pk = $this->model()->primary();
         $fIsShow = $this->model()->toField('clientIsShow');
         $fVisible = $this->model()->toField('clientVisible');
@@ -254,28 +279,31 @@ class ClientService extends Service {
         $order[$fOrderNum] = 'DESC';
         $order[$fIsShow] = 'DESC';
         $order[$pk] = 'DESC';
-        $fields = array_values(array_diff($fields, array (
+        $fields = array_values(array_diff($fields, array(
                 $this->model()->toField('clientSecret')
         )));
         $ret = $this->model()->db()->select($fields, $condition, $order);
         return empty($ret) ? array() : $ret;
     }
-    public function getVisitCount() {
-
+    public function getVisitCount()
+    {
     }
 
     /**
      * parse role type
      */
-    public function parseRole($role) {
+    public function parseRole($role)
+    {
         return $this->userService->parseRole($role);
     }
-    public function parseLdapRole($role) {
+    public function parseLdapRole($role)
+    {
         return $this->userService->parseLdapRole($role);
     }
 
     // static task
-    public function updateOrderNum($period = 7) {
+    public function updateOrderNum($period = 7)
+    {
         // default one week
         $clients = $this->getClientListByShow();
         foreach ($clients as $k => $c) {
@@ -285,7 +313,8 @@ class ClientService extends Service {
         }
         return $clients;
     }
-    public function updateClientOrderNum($client, $period = 7) {
+    public function updateClientOrderNum($client, $period = 7)
+    {
         $fOrderNum = $this->model()->toField('clientOrderNum');
         $clientId = $client['clientId'];
         $id = $client['id'];

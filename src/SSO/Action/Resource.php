@@ -12,13 +12,15 @@ use Dcux\SSO\Service\OAuth2CodeService;
 use Dcux\SSO\Service\OAuth2TokenService;
 use Dcux\SSO\Service\IdentifyService;
 
-class Resource extends UAction {
+class Resource extends UAction
+{
     protected $clientService;
     protected $scopeService;
     protected $oauth2CodeService;
     protected $oauth2TokenService;
     protected $identify;
-    public function onCreate() {
+    public function onCreate()
+    {
         $this->clientService = ClientService::getInstance();
         $this->scopeService = ScopeService::getInstance();
         $this->oauth2CodeService = OAuth2CodeService::getInstance();
@@ -26,15 +28,17 @@ class Resource extends UAction {
         $this->identify = IdentifyService::getInstance();
         parent::onCreate();
     }
-    public function onGet() {
+    public function onGet()
+    {
         $this->onPost();
     }
-    public function onPost() {
+    public function onPost()
+    {
         $token = empty($_REQUEST['access_token']) ? '' : $_REQUEST['access_token'];
         // $userid = empty($_REQUEST['userid']) ? : $_REQUEST['userid'];
         $oauth2token = $this->oauth2TokenService->get($token);
         if (! empty($oauth2token) && $oauth2token['type'] == OAuth2::TOKEN_TYPE_ACCESS) { // && $userid == $oauth2token['userid']
-            list ( $scopeStr, $scopeArr ) = $this->scopeService->filter($oauth2token['scope']);
+            list($scopeStr, $scopeArr) = $this->scopeService->filter($oauth2token['scope']);
             /*
              * $splits = explode(',', $scopeStr);
              * if(in_array('info', $splits) || in_array(1000, $splits)) {
@@ -45,7 +49,7 @@ class Resource extends UAction {
                 $this->template->push($user);
                 $params = $this->genInfo($oauth2token, $user);
                 $this->template->push($params);
-                //$this->template->header('Content-Type: text/xml');
+            //$this->template->header('Content-Type: text/xml');
             } else {
                 $this->errorResponse('invalid_user');
             }
@@ -62,8 +66,9 @@ class Resource extends UAction {
          * $oauth2->verifyAccessToken($_REQUEST);
          */
     }
-    protected function genInfo($oauth2token, $user) {
-        return array ();
+    protected function genInfo($oauth2token, $user)
+    {
+        return array();
     }
 }
 // PHP END

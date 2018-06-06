@@ -2,8 +2,8 @@
 
 namespace Lay\Advance\Core;
 
-interface Customizable {
-
+interface Customizable
+{
 }
 
 // PHP END

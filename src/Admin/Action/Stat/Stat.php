@@ -16,38 +16,43 @@ use Dcux\SSO\Service\StatClientService;
 use Dcux\SSO\Service\StatService;
 use Dcux\SSO\Service\SessionService;
 
-class Stat extends AjaxPermission {
+class Stat extends AjaxPermission
+{
     protected $clientService;
     protected $userManager;
     protected $statClientService;
     protected $statService;
     protected $sessionService;
-    public function onCreate() {
+    public function onCreate()
+    {
         parent::onCreate();
         $this->clientService = ClientService::getInstance();
-		$this->userService = UserService::getInstance();
+        $this->userService = UserService::getInstance();
         $this->statClientService = StatClientService::getInstance();
         $this->statService = StatService::getInstance();
         $this->sessionService = SessionService::getInstance();
     }
-    public function onGet() {
+    public function onGet()
+    {
         //$this->template->push($stat);
         $this->onPost();
     }
-    public function onPost() {
+    public function onPost()
+    {
         $key = empty($_REQUEST['key']) ? 'online' : $_REQUEST['key'];
-        if($key == 'client_top'){
+        if ($key == 'client_top') {
             $this->loadClientTop();
-        } else if($key == 'browser_top'){
+        } elseif ($key == 'browser_top') {
             $this->loadBrowser();
-        } else if($key == 'browser_d3'){
+        } elseif ($key == 'browser_d3') {
             $this->loadBrowserD3();
-        } else if($key == 'online'){
+        } elseif ($key == 'online') {
             $this->loadOnline();
         }
     }
 
-    protected function loadBrowserD3() {
+    protected function loadBrowserD3()
+    {
         $ret = $this->statService->getStatBrowserDistribution();
         $conduct = array();
         foreach ($ret as $v) {
@@ -63,7 +68,8 @@ class Stat extends AjaxPermission {
         $this->template->push('code', 0);
         $this->template->push('data', $data);
     }
-    protected function loadBrowser() {
+    protected function loadBrowser()
+    {
         $ret = $this->statService->getStatBrowserDistribution();
         $conduct = array();
         foreach ($ret as $v) {
@@ -83,9 +89,10 @@ class Stat extends AjaxPermission {
         $this->template->push('code', 0);
         $this->template->push('data', $data);
     }
-    protected function loadClientTop() {
+    protected function loadClientTop()
+    {
         $period = empty($_REQUEST['period']) ? 30 : intval($_REQUEST['period']);
-        // include 
+        // include
         $startDate = empty($_REQUEST['startDate']) ? date('Y-m-d', time() - 86400 * $period + 86400) : $_REQUEST['startDate'];
         // include
         $endDate = empty($_REQUEST['endDate']) ? date('Y-m-d') : $_REQUEST['endDate'];
@@ -112,7 +119,8 @@ class Stat extends AjaxPermission {
         $this->template->push('code', 0);
         $this->template->push('data', $data);
     }
-    protected function loadOnline() {
+    protected function loadOnline()
+    {
         $online = $this->sessionService->getOnlineUserCount();
         // push data
         $this->template->push('code', 0);

@@ -9,16 +9,19 @@ use Dcux\SSO\Core\Paging;
 /**
  * �ͻ�����֤��־��Ϣ������,������������
  */
-class StatUserDetailStore extends AbstractStore {
+class StatUserDetailStore extends AbstractStore
+{
     /**
      * ��ȡһ��LogClient
      *
-     * @param StatUserDetail $StatUserDetail            
+     * @param StatUserDetail $StatUserDetail
      * @return mixed
      */
-    public function read($args) {
-        if (! $this->connection)
+    public function read($args)
+    {
+        if (! $this->connection) {
             return false;
+        }
         if (is_a($args, 'Dcux\SSO\Model\StatUserDetail')) {
             $statUserDetail = $args;
             $field0 = $statUserDetail->toField('id');
@@ -26,18 +29,18 @@ class StatUserDetailStore extends AbstractStore {
             $value0 = $statUserDetail->getId();
             $value1 = $statUserDetail->getClientId();
             if ($value0 && $value1) {
-                $condition = array (
+                $condition = array(
                         $field0 => $value0,
-                        $field1 => $value1 
+                        $field1 => $value1
                 );
-            } else if ($value0) {
-                $condition = array (
-                        $field0 => $value0 
+            } elseif ($value0) {
+                $condition = array(
+                        $field0 => $value0
                 );
             } else {
                 $condition = '';
             }
-        } else if (is_array($args) || is_string($args)) {
+        } elseif (is_array($args) || is_string($args)) {
             $statUserDetail = new StatUserDetail();
             $condition = $args;
         } else {
@@ -59,9 +62,11 @@ class StatUserDetailStore extends AbstractStore {
      *
      * @return mixed
      */
-    public function reads($args, $order = '', $paging = '', $field = '') {
-        if (! $this->connection)
+    public function reads($args, $order = '', $paging = '', $field = '')
+    {
+        if (! $this->connection) {
             return false;
+        }
         if (is_a($args, 'Dcux\SSO\Model\StatUserDetail')) {
             $statUserDetail = $args;
             $field0 = $statUserDetail->toField('id');
@@ -69,18 +74,18 @@ class StatUserDetailStore extends AbstractStore {
             $value0 = $statUserDetail->getId();
             $value1 = $statUserDetail->getClientId();
             if ($value0 && $value1) {
-                $condition = array (
+                $condition = array(
                         $field0 => $value0,
-                        $field1 => $value1 
+                        $field1 => $value1
                 );
-            } else if ($value0) {
-                $condition = array (
-                        $field0 => $value0 
+            } elseif ($value0) {
+                $condition = array(
+                        $field0 => $value0
                 );
             } else {
                 $condition = '';
             }
-        } else if (is_array($args) || is_string($args)) {
+        } elseif (is_array($args) || is_string($args)) {
             $statUserDetail = new statUserDetail();
             $condition = $args;
         } else {
@@ -101,9 +106,11 @@ class StatUserDetailStore extends AbstractStore {
     /**
      * �ͻ�����
      */
-    public function readCount($args) {
-        if (! $this->connection)
+    public function readCount($args)
+    {
+        if (! $this->connection) {
             return false;
+        }
         if (is_a($args, 'Dcux\SSO\Model\StatUserDetail')) {
             $statUserDetail = $args;
             $field0 = $statUserDetail->toField('id');
@@ -111,18 +118,18 @@ class StatUserDetailStore extends AbstractStore {
             $value0 = $statUserDetail->getId();
             $value1 = $statUserDetail->getClientId();
             if ($value0 && $value1) {
-                $condition = array (
+                $condition = array(
                         $field0 => $value0,
-                        $field1 => $value1 
+                        $field1 => $value1
                 );
-            } else if ($value0) {
-                $condition = array (
-                        $field0 => $value0 
+            } elseif ($value0) {
+                $condition = array(
+                        $field0 => $value0
                 );
             } else {
                 $condition = '';
             }
-        } else if (is_array($args) || is_string($args)) {
+        } elseif (is_array($args) || is_string($args)) {
             $statUserDetail = new StatUserDetail();
             $condition = $args;
         } else {
@@ -135,13 +142,15 @@ class StatUserDetailStore extends AbstractStore {
         $result = $this->connection->count($table, $condition);
         return $result;
     }
-    public function write($args) {
-        if (! $this->connection)
+    public function write($args)
+    {
+        if (! $this->connection) {
             return false;
-            // return $args;
+        }
+        // return $args;
         if (is_a($args, 'Dcux\SSO\Model\StatUserDetail')) {
             $statUserDetail = $args;
-        } else if (is_array($args)) {
+        } elseif (is_array($args)) {
             $statUserDetail = new StatUserDetail();
             $return = $statUserDetail->build($args);
         } else {
@@ -154,9 +163,11 @@ class StatUserDetailStore extends AbstractStore {
         $success = $this->connection->toResult();
         return $success;
     }
-    public function removeByDay($day = 30) {
-        if (! $this->connection)
+    public function removeByDay($day = 30)
+    {
+        if (! $this->connection) {
             return false;
+        }
         $logClient = new StatUserDetail();
         $field0 = $logClient->toField('time');
         $day = ($day) ? (0 + $day) : 30;
@@ -169,4 +180,3 @@ class StatUserDetailStore extends AbstractStore {
         return $success;
     }
 }
-?>

@@ -8,33 +8,37 @@ use Dcux\SSO\Model\User;
 use Dcux\SSO\Model\LdapUser;
 use Dcux\SSO\Model\MysqlUser;
 
-class VUser extends VObject {
-	protected $uid = '';
-	protected $username = '';
-	protected $role = '';
-    public function rules() {
-    	return array(
+class VUser extends VObject
+{
+    protected $uid = '';
+    protected $username = '';
+    protected $role = '';
+    public function rules()
+    {
+        return array(
                 'uid' => Component::TYPE_STRING,
                 'username' => Component::TYPE_STRING,
                 'role' => Component::TYPE_STRING
-    	);
+        );
     }
 
     /**
      */
-    public static function parseRole($role) {
-    	// TODO
-    	return $role;
+    public static function parseRole($role)
+    {
+        // TODO
+        return $role;
     }
     /**
      * @param User|LdapUser|MysqlUser $user
      */
-    public static function parseByModel($user) {
-    	if($user instanceof User) {
+    public static function parseByModel($user)
+    {
+        if ($user instanceof User) {
             return self::parseByUser($user);
-        } else if($val instanceof LdapUser) {
+        } elseif ($val instanceof LdapUser) {
             return self::parseByLdapUser($user);
-        } else if($val instanceof MysqlUser) {
+        } elseif ($val instanceof MysqlUser) {
             return self::parseByMysqlUser($user);
         }
         return new self;
@@ -42,32 +46,35 @@ class VUser extends VObject {
     /**
      * @param User $user
      */
-    public static function parseByUser($user) {
-    	if($user instanceof User) {
-    		return parent::parse($user->toStandard());
-    	} else {
-    		return new self;
-    	}
+    public static function parseByUser($user)
+    {
+        if ($user instanceof User) {
+            return parent::parse($user->toStandard());
+        } else {
+            return new self;
+        }
     }
     /**
      * @param LdapUser $user
      */
-    public static function parseByLdapUser($user) {
-    	if($user instanceof LdapUser) {
-    		return parent::parse($user->toStandard());
-    	} else {
-    		return new self;
-    	}
+    public static function parseByLdapUser($user)
+    {
+        if ($user instanceof LdapUser) {
+            return parent::parse($user->toStandard());
+        } else {
+            return new self;
+        }
     }
     /**
      * @param MysqlUser $user
      */
-    public static function parseByMysqlUser($user) {
-    	if($user instanceof MysqlUser) {
-    		return parent::parse($user->toStandard());
-    	} else {
-    		return new self;
-    	}
+    public static function parseByMysqlUser($user)
+    {
+        if ($user instanceof MysqlUser) {
+            return parent::parse($user->toStandard());
+        } else {
+            return new self;
+        }
     }
 }
 // PHP END

@@ -14,7 +14,7 @@ use Dcux\SSO\Model\User;
 
 /**
  * OAuth2模块
- * 
+ *
  * @category oauth
  * @package classes
  * @subpackage oauth
@@ -22,21 +22,23 @@ use Dcux\SSO\Model\User;
  * @version 1.0
  * @copyright 2005-2012 dcux Inc.
  * @link http://www.dcux.com
- *      
+ *
  */
-class OAuth2 {
+class OAuth2
+{
     
     /**
      *
      * 对象实例，单键模式。
-     * 
+     *
      * @var \OAuth2
      */
-    private static $instance = NULL;
+    private static $instance = null;
     /**
      * 构造方法
      */
-    private function __construct() {
+    private function __construct()
+    {
     }
     
     /**
@@ -46,8 +48,9 @@ class OAuth2 {
      * @author liangjun@dcux.com
      * @return object
      */
-    public static function getInstance() {
-        if (self::$instance == NULL) {
+    public static function getInstance()
+    {
+        if (self::$instance == null) {
             self::$instance = new OAuth2();
         }
         return self::$instance;
@@ -87,8 +90,9 @@ class OAuth2 {
     const HTTP_QUERY_PARAM_SCOPE = 'scope';
     const HTTP_QUERY_PARAM_DISPLAY = 'display';
     const HTTP_QUERY_PARAM_STATE = 'state';
-    public static function getReferer($query = false) {
-        if(empty($query)) {
+    public static function getReferer($query = false)
+    {
+        if (empty($query)) {
             $referer = empty($_SERVER['HTTP_REFERER']) ? '' : $_SERVER['HTTP_REFERER'];
         } else {
             $referer = empty($_REQUEST['referer']) ? (empty($_SERVER['HTTP_REFERER']) ? '' : $_SERVER['HTTP_REFERER']) : $_REQUEST['referer'];
@@ -101,21 +105,24 @@ class OAuth2 {
      *
      * @return string
      */
-    public static function generateCode() {
+    public static function generateCode()
+    {
         return md5(base64_encode(pack('N6', mt_rand(), mt_rand(), mt_rand(), mt_rand(), mt_rand(), uniqid())));
     }
-    public static function getResponseType() {
+    public static function getResponseType()
+    {
         $responseType = empty($_REQUEST[OAuth2::HTTP_QUERY_PARAM_RESPONSE_TYPE]) ? '' : $_REQUEST[OAuth2::HTTP_QUERY_PARAM_RESPONSE_TYPE];
-        if (in_array($responseType, array (
+        if (in_array($responseType, array(
                 OAuth2::RESPONSE_TYPE_CODE,
-                OAuth2::RESPONSE_TYPE_TOKEN 
+                OAuth2::RESPONSE_TYPE_TOKEN
         ))) {
             return $responseType;
         } else {
             return OAuth2::RESPONSE_TYPE_CODE;
         }
     }
-    public static function getRedirectURI() {
+    public static function getRedirectURI()
+    {
         $redirectURI = empty($_REQUEST[OAuth2::HTTP_QUERY_PARAM_REDIRECT_URI]) ? '' : $_REQUEST[OAuth2::HTTP_QUERY_PARAM_REDIRECT_URI];
         if (empty($redirectURI)) {
             return '';
@@ -123,7 +130,8 @@ class OAuth2 {
             return $redirectURI;
         }
     }
-    public static function getClientId() {
+    public static function getClientId()
+    {
         $clientId = empty($_REQUEST[OAuth2::HTTP_QUERY_PARAM_CLIENT_ID]) ? '' : $_REQUEST[OAuth2::HTTP_QUERY_PARAM_CLIENT_ID];
         if (empty($clientId)) {
             return '';
@@ -131,7 +139,8 @@ class OAuth2 {
             return $clientId;
         }
     }
-    public static function getClientSecret() {
+    public static function getClientSecret()
+    {
         $clientSecret = empty($_REQUEST[OAuth2::HTTP_QUERY_PARAM_CLIENT_SECRET]) ? '' : $_REQUEST[OAuth2::HTTP_QUERY_PARAM_CLIENT_SECRET];
         if (empty($clientSecret)) {
             return '';
@@ -139,7 +148,8 @@ class OAuth2 {
             return $clientSecret;
         }
     }
-    public static function getRequestScope() {
+    public static function getRequestScope()
+    {
         $scope = empty($_REQUEST[OAuth2::HTTP_QUERY_PARAM_SCOPE]) ? '' : $_REQUEST[OAuth2::HTTP_QUERY_PARAM_SCOPE];
         if (empty($scope)) {
             return '';
@@ -149,48 +159,51 @@ class OAuth2 {
     }
     /**
      *
-     * @param HttpRequest $request            
-     * @param HttpResponse $response            
+     * @param HttpRequest $request
+     * @param HttpResponse $response
      * @return array
      */
-    public static function getSessionUser() {
+    public static function getSessionUser()
+    {
         $uid = isset($_SESSION['uid']) ? $_SESSION['uid'] : '';
         $username = isset($_SESSION['username']) ? $_SESSION['username'] : '';
         $role = isset($_SESSION['role']) ? $_SESSION['role'] : '';
         if (empty($uid)) {
             return false;
         } else {
-            $user = array ();
+            $user = array();
             $user['uid'] = $uid;
             $user['username'] = $username;
             $user['role'] = $role;
             return $user;
         }
     }
-    public static function getRequestType() {
+    public static function getRequestType()
+    {
         if ($_REQUEST[OAuth2::HTTP_QUERY_PARAM_GRANT_TYPE]) {
             $grantType = $_REQUEST[OAuth2::HTTP_QUERY_PARAM_GRANT_TYPE];
         } else {
             $grantType = OAuth2::GRANT_TYPE_AUTHORIZATION_CODE;
         }
         switch ($grantType) {
-            case OAuth2::GRANT_TYPE_AUTHORIZATION_CODE :
+            case OAuth2::GRANT_TYPE_AUTHORIZATION_CODE:
                 $requestType = OAuth2::REQUEST_TYPE_TOKEN;
                 break;
-            case OAuth2::GRANT_TYPE_PASSWORD :
+            case OAuth2::GRANT_TYPE_PASSWORD:
                 $requestType = OAuth2::REQUEST_TYPE_PASSWORD;
                 break;
-            case OAuth2::GRANT_TYPE_REFRESH_TOKEN :
+            case OAuth2::GRANT_TYPE_REFRESH_TOKEN:
                 $requestType = OAuth2::REQUEST_TYPE_REFRESH_TOKEN;
                 break;
-            default :
+            default:
                 $grantType = OAuth2::GRANT_TYPE_AUTHORIZATION_CODE;
                 $requestType = OAuth2::REQUEST_TYPE_TOKEN;
                 break;
         }
         return $requestType;
     }
-    public static function checkRequest($requestType = '') {
+    public static function checkRequest($requestType = '')
+    {
         if (empty($requestType)) {
             $requestType = OAuth2::REQUEST_TYPE_CODE;
         }
@@ -210,46 +223,45 @@ class OAuth2 {
         $ret = true;
         
         switch ($requestType) {
-            case OAuth2::REQUEST_TYPE_CODE :
+            case OAuth2::REQUEST_TYPE_CODE:
                 if (empty($clientId) || empty($redirectURI)) {
                     $ret = false;
-                } else if ($responseType && $responseType != OAuth2::RESPONSE_TYPE_CODE && $responseType != OAuth2::RESPONSE_TYPE_TOKEN) {
+                } elseif ($responseType && $responseType != OAuth2::RESPONSE_TYPE_CODE && $responseType != OAuth2::RESPONSE_TYPE_TOKEN) {
                     $ret = false;
                 }
                 break;
-            case OAuth2::REQUEST_TYPE_POST :
+            case OAuth2::REQUEST_TYPE_POST:
                 // 登录会话用户没有存在session里
                 if (empty($clientId) || empty($redirectURI) || ((empty($username) || empty($password)) && (empty($id) || empty($name)))) {
                     $ret = false;
-                } else if ($responseType && $responseType != OAuth2::RESPONSE_TYPE_CODE && $responseType != OAuth2::RESPONSE_TYPE_TOKEN) {
+                } elseif ($responseType && $responseType != OAuth2::RESPONSE_TYPE_CODE && $responseType != OAuth2::RESPONSE_TYPE_TOKEN) {
                     $ret = false;
                 }
                 break;
-            case OAuth2::REQUEST_TYPE_TOKEN :
+            case OAuth2::REQUEST_TYPE_TOKEN:
                 if (empty($clientId) || empty($redirectURI) || empty($clientSecret) || empty($code)) {
                     $ret = false;
                 }
                 break;
-            case OAuth2::REQUEST_TYPE_PASSWORD :
+            case OAuth2::REQUEST_TYPE_PASSWORD:
                 if (empty($clientId) || empty($clientSecret) || empty($grantType) || empty($username) || empty($password)) {
                     $ret = false;
                 }
                 break;
-            case OAuth2::REQUEST_TYPE_REFRESH_TOKEN :
+            case OAuth2::REQUEST_TYPE_REFRESH_TOKEN:
                 if (empty($clientId) || empty($clientSecret) || empty($grantType) || empty($refreshToken)) {
                     $ret = false;
                 }
                 break;
-            case OAuth2::REQUEST_TYPE_SHOW :
+            case OAuth2::REQUEST_TYPE_SHOW:
                 if (empty($token) || empty($uid)) {
                     $ret = false;
                 }
                 break;
-            default :
+            default:
                 $ret = false;
                 break;
         }
         return $ret;
     }
 }
-?>

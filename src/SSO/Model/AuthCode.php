@@ -16,21 +16,24 @@ use Lay\Advance\DB\DataBase;
  * @version 1.0
  * @copyright 2005-2012 dcux Inc.
  * @link http://www.dcux.com
- *      
+ *
  */
-class AuthCode extends Model implements Volatile {
+class AuthCode extends Model implements Volatile
+{
     protected $code = '';
     protected $clientId = '';
     protected $redirectURI = '';
     protected $username = '';
     protected $expires = 0;
     protected $scope = '';
-    public function cacher() {
+    public function cacher()
+    {
         $cacher = DataBase::factory('memcache');
         $cacher->setModel($this);
         return $cacher;
     }
-    public function lifetime() {
+    public function lifetime()
+    {
         global $CFG;
         return $CFG['auth_code_lifetime'];
     }
@@ -41,27 +44,30 @@ class AuthCode extends Model implements Volatile {
                 'redirectURI' => '',
                 'username' => '',
                 'expires' => 0,
-                'scope' => '' 
+                'scope' => ''
         );
     }*/
-    public function schema() {
+    public function schema()
+    {
         return 'sso';
     }
-    public function table() {
+    public function table()
+    {
         return 'auth_codes';
     }
-    public function primary() {
+    public function primary()
+    {
         return 'code';
     }
-    public function columns() {
-        return array (
+    public function columns()
+    {
+        return array(
                 'code' => 'code',
                 'clientId' => 'client_id',
                 'redirectURI' => 'redirect_uri',
                 'username' => 'username',
                 'expires' => 'expires',
-                'scope' => 'scope' 
+                'scope' => 'scope'
         );
     }
 }
-?>

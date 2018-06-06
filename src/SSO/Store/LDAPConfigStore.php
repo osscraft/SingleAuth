@@ -16,17 +16,20 @@ use Dcux\SSO\Core\Paging;
  * @version 1.0
  * @copyright 2005-2012 dcux Inc.
  * @link http://www.dcux.com
- *      
+ *
  */
-class LDAPConfigStore extends AbstractStore {
+class LDAPConfigStore extends AbstractStore
+{
     /**
      * 读取一条LDAPConfig
      *
      * @return mixed
      */
-    public function readLDAPConfig($isObj = false) {
-        if (! $this->connection)
+    public function readLDAPConfig($isObj = false)
+    {
+        if (! $this->connection) {
             return;
+        }
         
         $ldapConfig = new LDAPConfig();
         $table = $ldapConfig->toTable();
@@ -46,9 +49,11 @@ class LDAPConfigStore extends AbstractStore {
      *
      * @return mixed
      */
-    public function readLDAPConfigs($condition = '', $order = '', $paging = '', $isObj = false) {
-        if (! $this->connection)
+    public function readLDAPConfigs($condition = '', $order = '', $paging = '', $isObj = false)
+    {
+        if (! $this->connection) {
             return;
+        }
         
         $ldapConfig = new LDAPConfig();
         $table = $ldapConfig->toTable();
@@ -64,14 +69,17 @@ class LDAPConfigStore extends AbstractStore {
     /**
      * 修改LDAPConfig信息
      *
-     * @param LDAPConfig $ldapConfig            
+     * @param LDAPConfig $ldapConfig
      * @return boolean
      */
-    public function modifyLDAPConfig($ldapConfig) {
-        if (! $this->connection)
+    public function modifyLDAPConfig($ldapConfig)
+    {
+        if (! $this->connection) {
             return;
-        if (! is_a($ldapConfig, 'Dcux\SSO\Model\LDAPConfig'))
+        }
+        if (! is_a($ldapConfig, 'Dcux\SSO\Model\LDAPConfig')) {
             return;
+        }
         
         $table = $ldapConfig->toTable();
         $fields = $ldapConfig->toFields();
@@ -86,14 +94,17 @@ class LDAPConfigStore extends AbstractStore {
     /**
      * 更新或初始化LDAPConfig信息
      *
-     * @param LDAPConfig $ldapConfig            
+     * @param LDAPConfig $ldapConfig
      * @return boolean
      */
-    public function updateLDAPConfig($ldapConfig) {
-        if (! $this->connection)
+    public function updateLDAPConfig($ldapConfig)
+    {
+        if (! $this->connection) {
             return;
-        if (! is_a($ldapConfig, 'Dcux\SSO\Model\LDAPConfig'))
+        }
+        if (! is_a($ldapConfig, 'Dcux\SSO\Model\LDAPConfig')) {
             return;
+        }
         
         $temp = $this->readLDAPConfig();
         
@@ -111,4 +122,3 @@ class LDAPConfigStore extends AbstractStore {
         return $success;
     }
 }
-?>

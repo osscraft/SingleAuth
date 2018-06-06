@@ -2,7 +2,6 @@
 
 namespace Dcux\SSO\Kernel;
 
-
 /**
  * 产生验证码
  *
@@ -13,23 +12,25 @@ namespace Dcux\SSO\Kernel;
  * @version 1.0
  * @copyright 2005-2012 dcux Inc.
  * @link http://www.dcux.com
- *      
+ *
  */
-class VerifyCode {
+class VerifyCode
+{
     /**
      * 获得验证码
-     * 
-     * @param integer $num            
-     * @param integer $w            
-     * @param integer $h            
+     *
+     * @param integer $num
+     * @param integer $w
+     * @param integer $h
      * @return mixed
      */
-    public static function getCode($num = 4, $w = 60, $h = 25) {
+    public static function getCode($num = 4, $w = 60, $h = 25)
+    {
         // 字符集 去掉了 0 1 o l O
         $str = "23456789abcdefghijkmnpqrstuvwxyzABCDEFGHIJKLMNPQRSTUVW";
         // 存放产生的验证码字符串
         $code = "";
-        for($i = 0; $i < $num; $i ++) {
+        for ($i = 0; $i < $num; $i ++) {
             $code .= $str[mt_rand(0, strlen($str) - 1)];
         }
         // 将产生的$code存放在session中
@@ -66,7 +67,7 @@ class VerifyCode {
         $size = 16;
         // 字符在图片中的X坐标
         $strx = rand(10, 15);
-        for($i = 0; $i < $num; $i ++) {
+        for ($i = 0; $i < $num; $i ++) {
             $strpos = rand(1, 6);
             // imagestring($im, 5, $strx, $strpos, substr($code, $i, 1), $font_color);
             @imagefttext($im, $size, mt_rand(- 10, 10), $strx, $strpos + 16, $font_color, App::$_rootpath .'/assets/font/DejaVuSerif-Bold.ttf', substr($code, $i, 1));
@@ -76,4 +77,3 @@ class VerifyCode {
         imagedestroy($im);
     }
 }
-?>

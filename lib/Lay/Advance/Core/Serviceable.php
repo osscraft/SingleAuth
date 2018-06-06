@@ -5,7 +5,8 @@ use Lay\Advance\DB\CRUDable;
 use Lay\Advance\Core\Model;
 use Lay\Advance\DB\Cache;
 
-interface Serviceable extends CRUDable {
+interface Serviceable extends CRUDable
+{
     /**
      * 默认Model对象
      * @return Model

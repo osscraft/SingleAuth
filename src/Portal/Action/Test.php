@@ -17,8 +17,10 @@ use Dcux\SSO\Service\ClientService;
 
 // Action中调用Service层，不直接调用Model层
 
-class Test extends PAction {
-    public function onGet() {
+class Test extends PAction
+{
+    public function onGet()
+    {
         $data =array();
         /*$model = StatUser::getInstance();
         $g = $model->get(1);
@@ -53,27 +55,33 @@ class Test extends PAction {
         $this->template->push('code', 0);
         $this->template->push('data', $data);
     }
-    public function onPost() {
+    public function onPost()
+    {
         $this->onGet();
     }
 }
-class User extends  ModelLdap {
-    public function objectClass() {
+class User extends ModelLdap
+{
+    public function objectClass()
+    {
         return array(
             'top', 'user'
         );
     }
-    public function properties() {
+    public function properties()
+    {
         return array(
             'uid' => '',
             'username' => '',
             'role' => ''
         );
     }
-    public function rules() {
+    public function rules()
+    {
         return array();
     }
-    public function table() {
+    public function table()
+    {
         $role = $this->role;
         switch ($role) {
             case '教师':
@@ -84,27 +92,33 @@ class User extends  ModelLdap {
                 return 'ou=other';
         }
     }
-    public function primary() {
+    public function primary()
+    {
         return 'uid';
     }
-    public function columns() {
-        return array (
+    public function columns()
+    {
+        return array(
             'uid' => 'uid',
             'username' => 'username',
             'role' => 'role'
         );
     }
 }
-class StatUser extends Model implements Volatile {
-    public function lifetime() {
+class StatUser extends Model implements Volatile
+{
+    public function lifetime()
+    {
         return 10000;
     }
-    public function cacher() {
+    public function cacher()
+    {
         $mem = DataBase::factory('memcache');
         $mem->setModel($this);
         return $mem;
     }
-    public function properties() {
+    public function properties()
+    {
         return array(
             'id' => 0,
             'username' => '',
@@ -112,20 +126,25 @@ class StatUser extends Model implements Volatile {
             'count' => 0
         );
     }
-    public function rules() {
+    public function rules()
+    {
         return array();
     }
-    public function schema() {
+    public function schema()
+    {
         return 'sso';
     }
-    public function table() {
+    public function table()
+    {
         return 'stat_user';
     }
-    public function primary() {
+    public function primary()
+    {
         return 'id';
     }
-    public function columns() {
-        return array (
+    public function columns()
+    {
+        return array(
             'id' => 'id',
             'username' => 'username',
             'date' => 'date',
@@ -134,13 +153,16 @@ class StatUser extends Model implements Volatile {
     }
 }
 
-class StatUserDetail extends Model {
-    public function cacher() {
+class StatUserDetail extends Model
+{
+    public function cacher()
+    {
         $mem = DataBase::factory('memcache');
         $mem->setModel($this);
         return $mem;
     }
-    public function properties() {
+    public function properties()
+    {
         return array(
             'id' => 0,
             'time' => '',
@@ -149,23 +171,28 @@ class StatUserDetail extends Model {
             'success' => 0,
             'ip' => 0,
             'os' => '',
-            'browser' => '' 
+            'browser' => ''
         );
     }
-    public function rules() {
+    public function rules()
+    {
         return array();
     }
-    public function schema() {
+    public function schema()
+    {
         return 'sso';
     }
-    public function table() {
+    public function table()
+    {
         return 'stat_user_detail';
     }
-    public function primary() {
+    public function primary()
+    {
         return 'id';
     }
-    public function columns() {
-        return array (
+    public function columns()
+    {
+        return array(
             'id' => 'id',
             'time' => 'time',
             'username' => 'username',
@@ -173,7 +200,7 @@ class StatUserDetail extends Model {
             'success' => 'success',
             'ip' => 'ip',
             'os' => 'os',
-            'browser' => 'browser' 
+            'browser' => 'browser'
         );
     }
 }

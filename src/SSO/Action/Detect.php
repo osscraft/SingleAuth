@@ -9,12 +9,15 @@ use Lay\Advance\Util\Utility;
 use Dcux\SSO\Kernel\Action;
 use Dcux\SSO\Service\ClientService;
 
-class Detect extends Action {
-    public function onGet() {
+class Detect extends Action
+{
+    public function onGet()
+    {
         $this->onPost();
     }
-    public function onPost() {
-    	$browscap = new Browscap();
+    public function onPost()
+    {
+        $browscap = new Browscap();
         $out = $browscap->getBrowser();
         $this->template->push('os', Utility::os());
         $this->template->push('browser', Utility::browser());

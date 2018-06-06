@@ -14,19 +14,24 @@ use Dcux\Admin\Kernel\MenuPermission;
 use Dcux\SSO\Service\StatUserDetailService;
 use Dcux\SSO\Service\ClientService;
 
-class Top_User extends MenuPermission {
-	protected $clientService;
-    public function cmd() {
+class Top_User extends MenuPermission
+{
+    protected $clientService;
+    public function cmd()
+    {
         return 'statistics.top.user';
     }
-    public function onCreate() {
-    	parent::onCreate();
-    	$this->clientService = ClientService::getInstance();
+    public function onCreate()
+    {
+        parent::onCreate();
+        $this->clientService = ClientService::getInstance();
     }
-    public function onGet() {
+    public function onGet()
+    {
         $this->template->file('stat/top_user.php');
     }
-    public function onPost() {
+    public function onPost()
+    {
         $this->onGet();
     }
 }

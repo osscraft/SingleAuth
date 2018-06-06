@@ -13,42 +13,45 @@ use Lay\Advance\DB\Uniqueness;
 use Dcux\SSO\Model\Client;
 use Dcux\SSO\Service\StatService;
 
-class ScopeService extends Service {
-	public function model() {
-		return false;
-	}
+class ScopeService extends Service
+{
+    public function model()
+    {
+        return false;
+    }
     /**
      * 过滤掉不合法的scope
-     * 
-     * @param string|array $scope            
+     *
+     * @param string|array $scope
      * @return array
      */
-    public function filter($scope = array()) {
+    public function filter($scope = array())
+    {
         if (empty($scope)) {
-            $tmp = array ();
+            $tmp = array();
             $tmp['uid'] = 'uid';
             $tmp['username'] = 'username';
             $tmp['role'] = 'role';
             $str = implode(',', array_keys($tmp));
             $arr = array_values($tmp);
-            $scope = array (
+            $scope = array(
                     $str,
-                    $arr 
+                    $arr
             );
-        } else if (is_string($scope)) {
+        } elseif (is_string($scope)) {
             $scope = trim($scope) ? array_map('trim', explode(',', $scope)) : '';
             $scope = $this->filter($scope);
-        } else if (is_array($scope)) {
+        } elseif (is_array($scope)) {
             $tmp = $scope;
-            if(Utility::isPureArray($scope)) {
+            if (Utility::isPureArray($scope)) {
                 $str = implode(',', array_values($tmp));
             } else {
                 $str = implode(',', array_keys($tmp));
             }
             $arr = array_values($tmp);
-            $scope = array (
+            $scope = array(
                     $str,
-                    $arr 
+                    $arr
             );
         }
         return $scope;

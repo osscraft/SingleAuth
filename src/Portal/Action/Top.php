@@ -16,13 +16,15 @@ use Dcux\SSO\Service\StatService;
 use Dcux\SSO\Service\SessionService;
 use Dcux\Portal\Kernel\MultiDateAction;
 
-class Top extends MultiDateAction {
+class Top extends MultiDateAction
+{
     protected $clientService;
     protected $userManager;
     protected $statClientService;
     protected $statService;
     protected $sessionService;
-    public function onCreate() {
+    public function onCreate()
+    {
         parent::onCreate();
         $this->clientService = ClientService::getInstance();
         $this->userService = UserService::getInstance();
@@ -30,24 +32,27 @@ class Top extends MultiDateAction {
         $this->statService = StatService::getInstance();
         $this->sessionService = SessionService::getInstance();
     }
-    public function onGet() {
+    public function onGet()
+    {
         //$this->template->push($stat);
         $this->onPost();
     }
-    public function onPost() {
+    public function onPost()
+    {
         $key = empty($_REQUEST['key']) ? 'client_top' : $_REQUEST['key'];
-        if($key == 'client_top'){
+        if ($key == 'client_top') {
             $this->loadClientTop();
-        } else if($key == 'user_top'){
+        } elseif ($key == 'user_top') {
             $this->loadUserTop();
-        } else if($key == 'browser_top'){
+        } elseif ($key == 'browser_top') {
             $this->loadBrowserTop();
-        } else if($key == 'browser_d3'){
+        } elseif ($key == 'browser_d3') {
             $this->loadBrowserD3();
         }
     }
 
-    protected function loadBrowserTop() {
+    protected function loadBrowserTop()
+    {
         $num = empty($_REQUEST['num']) ? 8 : $_REQUEST['num'];
         $ret = $this->statService->getStatBrowserDistribution();
         $conduct = array();
@@ -69,7 +74,8 @@ class Top extends MultiDateAction {
         $this->template->push('code', 0);
         $this->template->push('data', $data);
     }
-    protected function loadBrowserD3() {
+    protected function loadBrowserD3()
+    {
         $ret = $this->statService->getStatBrowserDistribution();
         $conduct = array();
         foreach ($ret as $v) {
@@ -85,14 +91,15 @@ class Top extends MultiDateAction {
         $this->template->push('code', 0);
         $this->template->push('data', $data);
     }
-    protected function loadClientTop() {
+    protected function loadClientTop()
+    {
         list($startDate, $endDate, $period, $type) = $this->detectDatetime();
         // basic data
         $cond = array();
         $cond['startDate'] = $startDate;
         $cond['endDate'] = $endDate;
         $num = empty($_REQUEST['num']) ? 5 : $_REQUEST['num'];
-        if($startDate == date('Y-m-d')) {
+        if ($startDate == date('Y-m-d')) {
             $ret = $this->statService->getStatClientTopToday($num, $cond);
         } else {
             $ret = $this->statService->getStatClientTop($num, $cond);
@@ -108,7 +115,7 @@ class Top extends MultiDateAction {
             $d = array();
             $d['label'] = $clients[$v['client_id']]['clientName'];
             $d['data'] = intval($v['count']);
-            if($d['data']!=0){
+            if ($d['data']!=0) {
                 $data[] = array($d['data'], $d['label']);
             }
         }
@@ -116,14 +123,15 @@ class Top extends MultiDateAction {
         $this->template->push('code', 0);
         $this->template->push('data', $data);
     }
-    protected function loadUserTop() {
+    protected function loadUserTop()
+    {
         list($startDate, $endDate, $period, $type) = $this->detectDatetime();
         // basic data
         $cond = array();
         $cond['startDate'] = $startDate;
         $cond['endDate'] = $endDate;
         $num = empty($_REQUEST['num']) ? 5 : $_REQUEST['num'];
-        if($startDate == date('Y-m-d')) {
+        if ($startDate == date('Y-m-d')) {
             $ret = $this->statService->getStatUserTopToday($num, $cond);
         } else {
             $ret = $this->statService->getStatUserTop($num, $cond);
@@ -134,7 +142,7 @@ class Top extends MultiDateAction {
             $d = array();
             $d['label'] = $v['username'];
             $d['data'] = intval($v['count']);
-            if($d['data']!=0){
+            if ($d['data']!=0) {
                 $data[] = array($d['label'], $d['data']);
             }
         }

@@ -16,30 +16,33 @@ use Dcux\SSO\Core\Paging;
  * @version 1.0
  * @copyright 2005-2012 dcux Inc.
  * @link http://www.dcux.com
- *      
+ *
  */
-class UserStore extends AbstractStore {
+class UserStore extends AbstractStore
+{
     /**
      * 读取一条User
      *
-     * @param User $user            
+     * @param User $user
      * @return mixed
      */
-    public function read($args) {
-        if (! $this->connection)
+    public function read($args)
+    {
+        if (! $this->connection) {
             return false;
+        }
         if (is_a($args, 'Dcux\SSO\Model\User')) {
             $user = $args;
             $field1 = $user->toField('uid');
             $value1 = $user->getUid();
             if ($value1) {
-                $condition = array (
-                        $field1 => $value1 
+                $condition = array(
+                        $field1 => $value1
                 );
             } else {
                 $condition = '';
             }
-        } else if (is_array($args) || is_string($args)) {
+        } elseif (is_array($args) || is_string($args)) {
             $user = new User();
             $condition = $args;
         } else {
@@ -61,21 +64,23 @@ class UserStore extends AbstractStore {
      *
      * @return mixed
      */
-    public function reads($args, $order = '', $paging = '') {
-        if (! $this->connection)
+    public function reads($args, $order = '', $paging = '')
+    {
+        if (! $this->connection) {
             return false;
+        }
         if (is_a($args, 'Dcux\SSO\Model\User')) {
             $user = $args;
             $field1 = $user->toField('isAdmin');
             $value1 = $user->getIsAdmin();
             if ($value1) {
-                $condition = array (
-                        $field1 => $value1 
+                $condition = array(
+                        $field1 => $value1
                 );
             } else {
                 $condition = '';
             }
-        } else if (is_array($args) || is_string($args)) {
+        } elseif (is_array($args) || is_string($args)) {
             $user = new User();
             $condition = $args;
         } else {
@@ -98,13 +103,15 @@ class UserStore extends AbstractStore {
      *
      * @return mixed
      */
-    public function readCount($args) {
-        if (! $this->connection)
+    public function readCount($args)
+    {
+        if (! $this->connection) {
             return false;
+        }
         if (is_a($args, 'Dcux\SSO\Model\User')) {
             $user = $args;
             $condition = '';
-        } else if (is_array($args) || is_string($args)) {
+        } elseif (is_array($args) || is_string($args)) {
             $user = new User();
             $condition = $args;
         } else {
@@ -122,12 +129,14 @@ class UserStore extends AbstractStore {
      *
      * @return mixed
      */
-    public function write($args) {
-        if (! $this->connection)
+    public function write($args)
+    {
+        if (! $this->connection) {
             return false;
+        }
         if (is_a($args, 'Dcux\SSO\Model\User')) {
             $user = $args;
-        } else if (is_array($args)) {
+        } elseif (is_array($args)) {
             $user = new User();
             $return = $user->build($args);
         } else {
@@ -147,20 +156,23 @@ class UserStore extends AbstractStore {
      *
      * @return mixed
      */
-    public function modify($args, $values = '') {
-        if (! $this->connection)
+    public function modify($args, $values = '')
+    {
+        if (! $this->connection) {
             return false;
+        }
         if (is_a($args, 'Dcux\SSO\Model\User')) {
             $user = $args;
             $values = $user->toValues();
             $field1 = $user->toField('uid');
             $value1 = $user->getUid();
-            $condition = array (
-                    $field1 => $value1 
+            $condition = array(
+                    $field1 => $value1
             );
-        } else if (is_array($args)) {
-            if (empty($values))
+        } elseif (is_array($args)) {
+            if (empty($values)) {
                 return false;
+            }
             $user = new User();
             $condition = $args;
         } else {
@@ -179,18 +191,20 @@ class UserStore extends AbstractStore {
      *
      * @return mixed
      */
-    public function remove($args) {
-        if (! $this->connection)
+    public function remove($args)
+    {
+        if (! $this->connection) {
             return false;
+        }
         if (is_a($args, 'Dcux\SSO\Model\User')) {
             $user = $args;
             $values = $user->toValues();
             $field1 = $user->toField('uid');
             $value1 = $user->getUid();
-            $condition = array (
-                    $field1 => $value1 
+            $condition = array(
+                    $field1 => $value1
             );
-        } else if (is_array($args)) {
+        } elseif (is_array($args)) {
             $user = new User();
             $condition = $args;
         } else {
@@ -203,4 +217,3 @@ class UserStore extends AbstractStore {
         return $success;
     }
 }
-?>

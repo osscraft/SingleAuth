@@ -5,14 +5,17 @@ use Dcux\Admin\Kernel\AAction;
 use Dcux\Admin\Kernel\MenuPermission;
 use Dcux\SSO\Service\UserService;
 
-class Grant extends MenuPermission {
-    public function cmd() {
+class Grant extends MenuPermission
+{
+    public function cmd()
+    {
         return 'grant';
     }
-    public function onCreate() {
+    public function onCreate()
+    {
         parent::onCreate();
         $t = $this->template->getTheme();
-        if(!empty($t) && $t != 'default') {//different theme different php
+        if (!empty($t) && $t != 'default') {//different theme different php
             //直接跳至
             $this->template->redirect('/admin/grant/lists.php', array(), false);
         }
@@ -20,9 +23,10 @@ class Grant extends MenuPermission {
             $this->template->redirect('index.php', array(), false);
         }
     }
-    public function onGet() {
+    public function onGet()
+    {
         global $CFG;
-        $out = array ();
+        $out = array();
         $st = time() + microtime();
         $_REQUEST['key'] = empty($_REQUEST['key']) ? 'list' : $_REQUEST['key'];
         if (! empty($_SESSION['user']) && $_SESSION['user']['uid'] === $CFG['root_uid']) {
@@ -30,54 +34,56 @@ class Grant extends MenuPermission {
         } else {
             $_REQUEST['init'] = 0;
         }
-	
+    
         $out['TITLE'] = $CFG['LANG']['ADMIN_GRANT_MANAGE'];
         $out['SESSION'] = $_SESSION;
         $out['LEFTER'] = true;
         switch ($_REQUEST['key']) {
-            case 'view' :
+            case 'view':
                 $this->doView();
                 break;
-            case 'tocreate' :
+            case 'tocreate':
                 $this->doToCreate();
                 break;
-            case 'create' :
+            case 'create':
                 $this->doCreate();
                 break;
-            case 'tomodify' :
+            case 'tomodify':
                 $this->doToModify();
                 break;
-            case 'modify' :
+            case 'modify':
                 $this->doModify();
                 break;
-            case 'todelete' :
+            case 'todelete':
                 $this->doToDelete();
                 break;
-            case 'delete' :
+            case 'delete':
                 $this->doDelete();
                 break;
-            case 'list' :
-            default :
-				$this->doList();
+            case 'list':
+            default:
+                $this->doList();
                 break;
         }
         
         $et = time() + microtime();
         $out['SIGN'] = 'grant';
         $out['LANG'] = $CFG['LANG'];
-        $out['TIME'] = array (
+        $out['TIME'] = array(
                 'START_TIME' => $st,
                 'END_TIME' => $et,
-                'DIFF_TIME' => ($et - $st) 
+                'DIFF_TIME' => ($et - $st)
         );
         $out['RAND'] = rand(100000, 999999);
         $this->template->push($out);
     }
-    public function onPost() {
+    public function onPost()
+    {
         $this->onGet();
     }
 
-    protected function doView() {
+    protected function doView()
+    {
         global $CFG;
         $out = array();
         $out['view'] = true;
@@ -89,7 +95,8 @@ class Grant extends MenuPermission {
         $this->template->push($out);
         $this->template->file('user/view.php');
     }
-    protected function doToCreate() {
+    protected function doToCreate()
+    {
         global $CFG;
         $out = array();
         $out['tocreate'] = true;
@@ -103,10 +110,10 @@ class Grant extends MenuPermission {
             // $_SESSION['user'] = array("username"=>$_token['username'],"isAdmin"=>'1');print_r($_SESSION);print_r($ldapuser);exit;
             $uid = ($ldapuser['uid']) ? $ldapuser['uid'] : $ldapuser['cn'];
             $username = ($ldapuser['username']) ? $ldapuser['username'] : $ldapuser['sn'];
-            $_SESSION['user'] = array (
+            $_SESSION['user'] = array(
                     "uid" => $uid,
                     "username" => $username,
-                    "isAdmin" => '2' 
+                    "isAdmin" => '2'
             );
             // MemSession::setSession();
             $out['USER'] = $_SESSION['user'];
@@ -115,7 +122,8 @@ class Grant extends MenuPermission {
         $this->template->push($out);
         $this->template->file('user/create.php');
     }
-    protected function doCreate() {
+    protected function doCreate()
+    {
         global $CFG;
         $out = array();
         $out['create'] = true;
@@ -127,7 +135,8 @@ class Grant extends MenuPermission {
         $this->template->push($out);
         $this->template->file('user/createok.php');
     }
-    protected function doToModify() {
+    protected function doToModify()
+    {
         global $CFG;
         $out = array();
         $out['tomodify'] = true;
@@ -137,7 +146,8 @@ class Grant extends MenuPermission {
         $this->template->push($out);
         $this->template->file('user/edit.php');
     }
-    protected function doModify() {
+    protected function doModify()
+    {
         global $CFG;
         $out = array();
         $out['modify'] = true;
@@ -147,7 +157,8 @@ class Grant extends MenuPermission {
         $this->template->push($out);
         $this->template->file('user/editok.php');
     }
-    protected function doToDelete() {
+    protected function doToDelete()
+    {
         global $CFG;
         $out = array();
         $out['todelete'] = true;
@@ -158,7 +169,8 @@ class Grant extends MenuPermission {
         $this->template->push($out);
         $this->template->file('user/remove.php');
     }
-    protected function doDelete() {
+    protected function doDelete()
+    {
         global $CFG;
         $out = array();
         $out['delete'] = true;
@@ -168,7 +180,8 @@ class Grant extends MenuPermission {
         $this->template->push($out);
         $this->template->file('user/removeok.php');
     }
-    protected function doList() {
+    protected function doList()
+    {
         global $CFG;
         $out = array();
         $paging = UserService::readUserPaging();
@@ -177,7 +190,7 @@ class Grant extends MenuPermission {
         $out['TITLE'] .= $CFG['LANG']['TITLE_SPLIT_SIGN'] . $CFG['LANG']['LIST'];
         $out['USERS'] = UserService::readUserList($paging);
         $out['PAGING'] = $paging->toPaging();
-        for($i = 0; $i < count($out['PAGING']['pages']); $i ++) {
+        for ($i = 0; $i < count($out['PAGING']['pages']); $i ++) {
             $out['PAGING']['pages'][$i]['url'] = 'user.php?page=' . $out['PAGING']['pages'][$i]['p'] . "&pageSize=" . $out['PAGING']['pages'][$i]['pageSize'];
         }
         $this->template->push($out);

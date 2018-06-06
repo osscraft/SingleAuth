@@ -6,16 +6,20 @@ use Dcux\Admin\Kernel\AjaxPermission;
 use Dcux\Admin\Action\Client;
 use Dcux\SSO\Service\ClientService;
 
-class Add extends AjaxPermission {
-	protected $clientService;
-	public function onCreate() {
+class Add extends AjaxPermission
+{
+    protected $clientService;
+    public function onCreate()
+    {
         parent::onCreate();
-		$this->clientService = ClientService::getInstance();
-	}
-    public function onGet() {
+        $this->clientService = ClientService::getInstance();
+    }
+    public function onGet()
+    {
         $this->onPost();
     }
-    public function onPost() {
+    public function onPost()
+    {
         $info = array();
         $info['clientId'] = $clientId = empty($_REQUEST['clientId']) ? '' : $_REQUEST['clientId'];
         $info['clientName'] = $clientName = empty($_REQUEST['clientName']) ? '' : $_REQUEST['clientName'];
@@ -30,18 +34,18 @@ class Add extends AjaxPermission {
         $info['clientVisible'] = empty($_REQUEST['clientVisible']) ? '' : $_REQUEST['clientVisible'];
         $info['tokenLifetime'] = empty($_REQUEST['tokenLifetime']) ? '' : $_REQUEST['tokenLifetime'];
 
-        if(empty($clientId)) {
+        if (empty($clientId)) {
             $this->template->push('code', 501002);
             $this->template->push('error', 'invalid client id');
-        } else if(empty($clientName)) {
+        } elseif (empty($clientName)) {
             $this->template->push('code', 501003);
             $this->template->push('error', 'invalid client name');
-        } else if(empty($clientSecret)) {
+        } elseif (empty($clientSecret)) {
             $this->template->push('code', 501004);
             $this->template->push('error', 'invalid client secret');
         } else {
             $ret = $this->clientService->add($info);
-            if(empty($ret)) {
+            if (empty($ret)) {
                 $this->template->push('code', 500001);
                 $this->template->push('error', 'add failure');
             } else {

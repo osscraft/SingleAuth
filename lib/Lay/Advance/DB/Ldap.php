@@ -8,7 +8,8 @@ use Lay\Advance\Core\Identification;
 use Lay\Advance\Util\Logger;
 use Lay\Advance\Util\Utility;
 
-class Ldap extends DataBase implements Identification {
+class Ldap extends DataBase implements Identification
+{
     /**
      * ldap服务器访问地址
      *
@@ -58,7 +59,8 @@ class Ldap extends DataBase implements Identification {
      */
     protected $result;
     protected $show;
-    protected function __construct() {
+    protected function __construct()
+    {
         global $CFG;
         $this->host = $CFG['ldap_host'];
         $this->port = $CFG['ldap_port'];
@@ -72,15 +74,17 @@ class Ldap extends DataBase implements Identification {
      * connect ldap database.
      * new instance.
      */
-	public function connect() {
+    public function connect()
+    {
         $this->link = ldap_connect($this->host, $this->port);
         if (!ldap_set_option($this->link, LDAP_OPT_PROTOCOL_VERSION, 3)) {
             throw new Exception('Failed to set version to protocol 3.');
         }
         return $this->link;
-	}
-    public function bind() {
-        if(empty($this->bind) && !empty($this->name) && !empty($this->pass)) {
+    }
+    public function bind()
+    {
+        if (empty($this->bind) && !empty($this->name) && !empty($this->pass)) {
             $this->bind = ldap_bind($this->link, $this->name, $this->pass);
         }
         return empty($this->bind) ? false : true;
@@ -90,16 +94,18 @@ class Ldap extends DataBase implements Identification {
      *
      * @return mixed
      */
-    public function choose($dbname) {
-    	return true;
+    public function choose($dbname)
+    {
+        return true;
     }
     /**
      * another connect
      * new instance.
      */
-    public function alter($name = 'default') {
+    public function alter($name = 'default')
+    {
         global $CFG;
-        if(!empty($name) &&!empty($CFG['ldap']) && !empty($CFG['ldap'][$name])) {
+        if (!empty($name) &&!empty($CFG['ldap']) && !empty($CFG['ldap'][$name])) {
             $this->host = $CFG['ldap'][$name]['host'];
             $this->port = $CFG['ldap'][$name]['port'];
             $this->name = $CFG['ldap'][$name]['name'];
@@ -116,47 +122,55 @@ class Ldap extends DataBase implements Identification {
         }
         return $this->connect();
     }
-	public function close() {
+    public function close()
+    {
         if ($this->link) {
             $ret = ldap_close($this->link);
             $this->link = null;
             return $ret;
         }
-	}
-    public final function get($id, $fields = array()) {
+    }
+    final public function get($id, $fields = array())
+    {
         $ret = $this->resource($id, $fields);
         $arr = $this->toArray(1);
         return empty($arr) ? false : $arr[0];
     }
-    public final function add(array $info, $use_last_id = true) {
+    final public function add(array $info, $use_last_id = true)
+    {
         $ret = $this->query('insert', array(), $info);
         return empty($ret) ? fasle : $ret;
     }
-    public final function del($id) {
+    final public function del($id)
+    {
         $model = $this->model;
         $pk = $this->model->primary();
         $ret = $this->query('delete', array(), array(), array($pk=>$id));
         return empty($ret) ? fasle : $ret;
     }
-    public final function upd($id, array $info) {
+    final public function upd($id, array $info)
+    {
         $model = $this->model;
         $pk = $this->model->primary();
         $condition = array();
         $condition[$pk] = $id;
-        if($this->model->getPassword()) {
+        if ($this->model->getPassword()) {
             $condition['has_pass'] = true;
         }
         $ret = $this->query('update', array(), $info, $condition);
         return empty($ret) ? fasle : $ret;
     }
-    public final function count(array $info = array()) {
+    final public function count(array $info = array())
+    {
         return false;
     }
-    public final function replace(array $info = array()) {
+    final public function replace(array $info = array())
+    {
         return false;
     }
 
-    public final function resource($id, $fields = array()) {
+    final public function resource($id, $fields = array())
+    {
         //$link = !empty($this->link) ?: $this->connect();
         $model = $this->model;
         $columns = $this->model->columns();
@@ -166,18 +180,20 @@ class Ldap extends DataBase implements Identification {
         $ret = $this->query('search', $vcolumns, array(), $condition);
         return $this->result;
     }
-    public final function entry($id, $fields = array()) {
+    final public function entry($id, $fields = array())
+    {
         $ret = $this->resource($id, $scope);
-        if(!empty($ret)) {
+        if (!empty($ret)) {
             $entry = ldap_first_entry($this->link, $this->result);
         }
         return empty($entry) ? false : $entry;
     }
 
-    public final function verify($name, $pass, $scope = array()) {
+    final public function verify($name, $pass, $scope = array())
+    {
         $entry = $this->entry($name, $scope);
         $dn = $this->toEntryDn($entry);
-        if(!empty($dn) && @ldap_bind($this->link, $dn, $pass)) {
+        if (!empty($dn) && @ldap_bind($this->link, $dn, $pass)) {
             $arr = $this->toArray(1);
             return empty($arr) ? false : $arr[0];
         } else {
@@ -185,9 +201,10 @@ class Ldap extends DataBase implements Identification {
         }
     }
 
-    public final function query($cmd, $fields = array(), $values = array(), $condition = array(), $safe = true) {
+    final public function query($cmd, $fields = array(), $values = array(), $condition = array(), $safe = true)
+    {
         $cmd = empty($cmd) ? 'SEARCH' : strtoupper($cmd);
-        if(!empty($cmd)) {
+        if (!empty($cmd)) {
             $link = !empty($this->link) ?: $this->connect();
             $model = $this->model;
             $columns = $this->model->columns();
@@ -199,42 +216,42 @@ class Ldap extends DataBase implements Identification {
                     $fields = $this->makeFields($fields);
                     $filter = $this->makeCondition($condition, $safe);
                     $this->result = @ldap_search($this->link, $this->base, $filter, $fields, 0);
-                    if(!empty($this->show)) {
+                    if (!empty($this->show)) {
                         $fs = implode(',', $fields);
                         Logger::info("$cmd $fs $filter", 'ldap');
                     }
                     break;
                 case 'INSERT':
-                    if(array_key_exists($pk, $values)) {
+                    if (array_key_exists($pk, $values)) {
                         $id = $values[$pk];
-                    } else if(array_key_exists($pkl, $values)) {
+                    } elseif (array_key_exists($pkl, $values)) {
                         $id = $values[$pkl];
                     }
                     // only by primary key
-                    if(!empty($id)) {
+                    if (!empty($id)) {
                         $dn = $this->makeDn($id);
                         $arr = $this->makeValues($fields, $values);
-                        if(!empty($dn) && !empty($arr)) {
+                        if (!empty($dn) && !empty($arr)) {
                             $this->bind = empty($this->bind) ? @ldap_bind($this->link, $this->name, $this->pass) : true;
                             $this->result = empty($this->bind) ? false : ldap_add($this->link, $dn, $arr);
-                            if(!empty($this->show)) {
+                            if (!empty($this->show)) {
                                 $val = json_encode($arr);
                                 Logger::info("$cmd $dn $val", 'ldap');
                             }
-                            if(empty($this->result)) {
+                            if (empty($this->result)) {
                                 Logger::error(ldap_error($this->link));
                             }
                         }
                     }
                     break;
                 case 'UPDATE':
-                    if(array_key_exists($pk, $condition)) {
+                    if (array_key_exists($pk, $condition)) {
                         $id = $condition[$pk];
-                    } else if(array_key_exists($pkl, $condition)) {
+                    } elseif (array_key_exists($pkl, $condition)) {
                         $id = $condition[$pkl];
                     }
                     // only by primary key
-                    if(!empty($id)) {
+                    if (!empty($id)) {
                         // unset primary key
                         unset($values[$pk]);
                         unset($values[$pkl]);
@@ -243,37 +260,37 @@ class Ldap extends DataBase implements Identification {
                         $has_class = empty($condition['has_class']) ? false : true;
                         $dn = $this->makeDn($id);
                         $arr = $this->makeValues($fields, $values, true, $has_pass, $has_class);
-                        if(!empty($dn) && !empty($arr)) {
+                        if (!empty($dn) && !empty($arr)) {
                             $this->bind = empty($this->bind) ? @ldap_bind($this->link, $this->name, $this->pass) : true;
                             $this->result = empty($this->bind) ? false : ldap_modify($this->link, $dn, $arr);
-                            if(!empty($this->show)) {
+                            if (!empty($this->show)) {
                                 $val = json_encode($arr);
                                 Logger::info("$cmd $dn $val", 'ldap');
                             }
-                            if(empty($this->result)) {
+                            if (empty($this->result)) {
                                 Logger::error(ldap_error($this->link));
                             }
                         }
                     }
                     break;
                 case 'DELETE':
-                    if(array_key_exists($pk, $condition)) {
+                    if (array_key_exists($pk, $condition)) {
                         $id = $condition[$pk];
-                    } else if(array_key_exists($pkl, $condition)) {
+                    } elseif (array_key_exists($pkl, $condition)) {
                         $id = $condition[$pkl];
                     }
                     // only by primary key
-                    if(!empty($id)) {
+                    if (!empty($id)) {
                         $entry = $this->entry($id);
                         $dn = $this->toEntryDn($entry);
-                        if(!empty($entry) && !empty($dn)) {
+                        if (!empty($entry) && !empty($dn)) {
                             $this->bind = empty($this->bind) ? @ldap_bind($this->link, $this->name, $this->pass) : true;
                             $this->result = empty($this->bind) ? false : ldap_delete($this->link, $dn);
-                            if(!empty($this->show)) {
+                            if (!empty($this->show)) {
                                 $val = json_encode($arr);
                                 Logger::info("$cmd $dn", 'ldap');
                             }
-                            if(empty($this->result)) {
+                            if (empty($this->result)) {
                                 Logger::error(ldap_error($this->link));
                             }
                         }
@@ -286,39 +303,40 @@ class Ldap extends DataBase implements Identification {
         }
     }
     
-    public function makeDn($id) {
+    public function makeDn($id)
+    {
         $model = $this->model;
         $pk = $this->model->primary();
         $table = $this->model->table();
         $base = $this->base;
-        if(!empty($table)) {
+        if (!empty($table)) {
             return "$pk=$id,$table,$base";
         } else {
             return "$pk=$id,$base";
         }
-
     }
-    public function makeFields($fields = array()) {
+    public function makeFields($fields = array())
+    {
         $model = $this->model;
         $columns = $this->model->columns();
         $vcolumns = array_values($columns);
         $arr = array();
-        if(is_array($fields) && Utility::isAssocArray($fields)) {
+        if (is_array($fields) && Utility::isAssocArray($fields)) {
             foreach ($fields as $k => $v) {
-                if(in_array($k, $vcolumns)) {
+                if (in_array($k, $vcolumns)) {
                     $arr[] = $k;
-                } else if(array_key_exists($k, $columns)) {
+                } elseif (array_key_exists($k, $columns)) {
                     $arr[] = $columns[$f];
                 } else {
                     // ignore
                     continue;
                 }
             }
-        } else if(is_array($fields)){
+        } elseif (is_array($fields)) {
             foreach ($fields as $v) {
-                if(in_array($v, $vcolumns)) {
+                if (in_array($v, $vcolumns)) {
                     $arr[] = $v;
-                } else if(array_key_exists($v, $columns)) {
+                } elseif (array_key_exists($v, $columns)) {
                     $arr[] = $columns[$v];
                 } else {
                     // ignore
@@ -328,53 +346,55 @@ class Ldap extends DataBase implements Identification {
         }
         return empty($arr) ? false : $arr;
     }
-    public function makeCondition($condition, $safe) {
+    public function makeCondition($condition, $safe)
+    {
         $chip = '';
         $model = $this->model;
         $columns = $this->model->columns();
         $vcolumns = array_values($columns);
-        if(is_string($condition)) {
+        if (is_string($condition)) {
             $chip = "$condition";
-        } else if(is_array($condition)) {
+        } elseif (is_array($condition)) {
             $arr = array();
             foreach ($condition as $f => $c) {
-                if(in_array($f, $vcolumns)) {
-
-                } else if(array_key_exists($f, $columns)) {
+                if (in_array($f, $vcolumns)) {
+                } elseif (array_key_exists($f, $columns)) {
                     $f = $columns[$f];
                 } else {
                     // ignore
                     continue;
                 }
                 // condition isnot empty string
-                if($c !== '') {
+                if ($c !== '') {
                     $chip = $this->bindCondition($chip, $f, $c, $safe);
                 }
             }
-            if(!empty($chip)) {
+            if (!empty($chip)) {
                 //$chip = "($chip)";
             } else {
-                $chip = empty($safe) ? "" : "(objectClass=0)"; 
+                $chip = empty($safe) ? "" : "(objectClass=0)";
             }
         }
         return $chip;
     }
-    public function bindCondition($chip, $f, $c, $safe) {
+    public function bindCondition($chip, $f, $c, $safe)
+    {
         // TODO
         return '';
     }
-    public function makeValues($fields = array(), $values = array(), $update = false, $has_pass = false, $has_class = false) {
+    public function makeValues($fields = array(), $values = array(), $update = false, $has_pass = false, $has_class = false)
+    {
         $model = $this->model;
         $columns = $this->model->columns();
         $vcolumns = array_values($columns);
         $pk = $this->model->primary();
-        if($model instanceof Ldaplizable) {
+        if ($model instanceof Ldaplizable) {
             $arr = array();
-            if(empty($fields)) {
+            if (empty($fields)) {
                 foreach ($values as $k => $v) {
-                    if(in_array($k, $vcolumns)) {
+                    if (in_array($k, $vcolumns)) {
                         $arr[$k] = $v;
-                    } else if(array_key_exists($k, $columns)) {
+                    } elseif (array_key_exists($k, $columns)) {
                         $arr[$columns[$k]] = $v;
                     } else {
                         // ignore
@@ -384,16 +404,16 @@ class Ldap extends DataBase implements Identification {
             } else {
                 $fs = Utility::isAssocArray($f) ? array_keys($f) : array_values($f);
                 foreach ($values as $k => $v) {
-                    if(in_array($k, $vcolumns)) {
+                    if (in_array($k, $vcolumns)) {
                         $fr = $k;
                         $fl = array_search($k, $columns);
-                        if(in_array($fl, $fs) || in_array($fr, $fs)) {
+                        if (in_array($fl, $fs) || in_array($fr, $fs)) {
                             $arr[$fr] = $v;
                         }
-                    } else if(array_key_exists($k, $columns)) {
+                    } elseif (array_key_exists($k, $columns)) {
                         $fl = $k;
                         $fr = $columns[$k];
-                        if(in_array($fl, $fs) || in_array($fr, $fs)) {
+                        if (in_array($fl, $fs) || in_array($fr, $fs)) {
                             $arr[$fr] = $v;
                         }
                     } else {
@@ -402,14 +422,14 @@ class Ldap extends DataBase implements Identification {
                     }
                 }
             }
-            if(!empty($update) && !empty($has_pass) && $this->model->usePassword()) {
+            if (!empty($update) && !empty($has_pass) && $this->model->usePassword()) {
                 $arr['userPassword'] = $this->model->getPassword();
-            } else if(empty($update) && !empty($arr) && $this->model->usePassword()) {
+            } elseif (empty($update) && !empty($arr) && $this->model->usePassword()) {
                 $arr['userPassword'] = $this->model->getPassword();
             }
-            if(!empty($update) && !empty($has_class)) {
+            if (!empty($update) && !empty($has_class)) {
                 $arr['objectClass'] = $this->model->objectClass();
-            } else if(empty($update) && !empty($arr)) {
+            } elseif (empty($update) && !empty($arr)) {
                 $arr['objectClass'] = $this->model->objectClass();
             }
             return empty($arr) ? false : $arr;
@@ -418,10 +438,11 @@ class Ldap extends DataBase implements Identification {
         }
     }
 
-    public function toEntryDn($entry = null) {
-        if(!empty($this->link) && !empty($this->result)) {
+    public function toEntryDn($entry = null)
+    {
+        if (!empty($this->link) && !empty($this->result)) {
             $entry = empty($entry) ? ldap_first_entry($this->link, $this->result) : $entry;
-            if(!empty($entry)) {
+            if (!empty($entry)) {
                 return ldap_get_dn($this->link, $entry);
             } else {
                 return false;
@@ -430,33 +451,34 @@ class Ldap extends DataBase implements Identification {
             return false;
         }
     }
-    public function toArray($count = 0, $columns = array()) {
+    public function toArray($count = 0, $columns = array())
+    {
         $model = $this->model;
         $columns = empty($columns) ? $this->model->columns() : $columns;
         $vcolumns = array_values($columns);
         $rows = array();
         if (!empty($this->link) && !empty($this->result) && $count == 1) {
             $entry = ldap_first_entry($this->link, $this->result);
-            if(!empty($entry)) {
+            if (!empty($entry)) {
                 $arr = array();
                 foreach ($columns as $p => $f) {
                     $val = ldap_get_values($this->link, $entry, $f);
-                    if(!empty($val) && $val['count'] > 0) {
+                    if (!empty($val) && $val['count'] > 0) {
                         $arr[$p] = $val[0];
                     }
                 }
                 $rows[] = $arr;
             }
-        } else if (!empty($this->link) && !empty($this->result) && $count != 0) {
+        } elseif (!empty($this->link) && !empty($this->result) && $count != 0) {
             $i = 0;
             $entry = ldap_first_entry($this->link, $this->result);
-            if(!empty($entry)) {
+            if (!empty($entry)) {
                 do {
                     if ($i < $count) {
                         $arr = array();
                         foreach ($columns as $p => $f) {
                             $val = ldap_get_values($this->link, $entry, $f);
-                            if(!empty($val) && $val['count'] > 0) {
+                            if (!empty($val) && $val['count'] > 0) {
                                 $arr[$p] = $val[0];
                             }
                         }
@@ -467,15 +489,15 @@ class Ldap extends DataBase implements Identification {
                     }
                 } while ($entry = ldap_next_entry($this->link, $entry));
             }
-        } else if(!empty($this->link) && !empty($this->result)) {
+        } elseif (!empty($this->link) && !empty($this->result)) {
             $i = 0;
             $entry = ldap_first_entry($this->link, $this->result);
-            if(!empty($entry)) {
+            if (!empty($entry)) {
                 do {
                     $arr = array();
                     foreach ($columns as $p => $f) {
                         $val = ldap_get_values($this->link, $entry, $f);
-                        if(!empty($val) && $val['count'] > 0) {
+                        if (!empty($val) && $val['count'] > 0) {
                             $arr[$p] = $val[0];
                         }
                     }

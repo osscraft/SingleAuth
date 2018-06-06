@@ -10,18 +10,22 @@ use Dcux\Portal\Kernel\PAction;
 use Dcux\SSO\Service\UserElectionService;
 use Dcux\SSO\Service\ClientService;
 
-class Election extends PAction {
+class Election extends PAction
+{
     protected $userElectionService;
     protected $clientService;
-    public function onCreate() {
+    public function onCreate()
+    {
         parent::onCreate();
         $this->userElectionService = UserElectionService::getInstance();
         $this->clientService = ClientService::getInstance();
     }
-    public function onGet() {
+    public function onGet()
+    {
         $this->onPost();
     }
-    public function onPost() {
+    public function onPost()
+    {
         if (! empty($_SESSION['uid'])) {
             $key = empty($_REQUEST['key']) ? 'list' : $_REQUEST['key'];
             switch ($key) {
@@ -41,7 +45,8 @@ class Election extends PAction {
             $this->template->push('error', 'no_permission');
         }
     }
-    protected function doList() {
+    protected function doList()
+    {
         $out = array();
         $ids = array();
         $uid = $_SESSION['uid'];
@@ -58,18 +63,19 @@ class Election extends PAction {
         $rsp['data'] = $out;
         $this->template->push($rsp);
     }
-    protected function doAdd() {
+    protected function doAdd()
+    {
         $uid = $_SESSION['uid'];
         $client_id = empty($_REQUEST['client_id']) ? false : $_REQUEST['client_id'];
-        if(!empty($client_id)) {
+        if (!empty($client_id)) {
             $valid = $this->clientService->getByUnique($client_id);
-            if(!empty($valid)) {
+            if (!empty($valid)) {
                 $info = array();
                 $info['uid'] = $uid;
                 $info['clientId'] = $client_id;
                 $info['time'] = date('Y-m-d H:i:s');
                 $ret = $this->userElectionService->replace($info);
-                if(!empty($ret)) {
+                if (!empty($ret)) {
                     $this->template->push('code', 0);
                     $this->template->push('data', $ret);
                 } else {
@@ -85,17 +91,18 @@ class Election extends PAction {
             $this->template->push('error', 'empty_client_id');
         }
     }
-    protected function doDel() {
+    protected function doDel()
+    {
         $uid = $_SESSION['uid'];
         $client_id = empty($_REQUEST['client_id']) ? false : $_REQUEST['client_id'];
-        if(!empty($client_id)) {
+        if (!empty($client_id)) {
             $valid = $this->clientService->getByUnique($client_id);
-            if(!empty($valid)) {
+            if (!empty($valid)) {
                 $condtion = array();
                 $condtion['uid'] = $uid;
                 $condtion['clientId'] = $client_id;
                 $ret = $this->userElectionService->getByUnique($condtion);
-                if(!empty($ret)) {
+                if (!empty($ret)) {
                     $id = $ret['id'];
                     $ret = $this->userElectionService->del($id);
                     $this->template->push('code', 0);
@@ -113,6 +120,5 @@ class Election extends PAction {
             $this->template->push('error', 'invalid_client');
         }
     }
-
 }
 // PHP END

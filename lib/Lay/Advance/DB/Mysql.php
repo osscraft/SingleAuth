@@ -8,7 +8,8 @@ use Lay\Advance\DB\Uniqueness;
 use Lay\Advance\Util\Utility;
 use Lay\Advance\Util\Logger;
 
-class Mysql extends DataBase implements Querying, Uniqueness {
+class Mysql extends DataBase implements Querying, Uniqueness
+{
     /**
      * MySQL服务器访问地址
      *
@@ -55,7 +56,8 @@ class Mysql extends DataBase implements Querying, Uniqueness {
      * @var boolean
      */
     protected $showsql;
-    public function __construct() {
+    public function __construct()
+    {
         global $CFG;
         $this->server = $CFG['mysql_host'] . ":" . $CFG['mysql_port'];
         $this->username = $CFG['mysql_name'];
@@ -68,30 +70,35 @@ class Mysql extends DataBase implements Querying, Uniqueness {
     /**
      * connect mysql database
      */
-	public function connect() {
+    public function connect()
+    {
         $this->link = mysqli_connect($this->server, $this->username, $this->password);// or die("Could not connect: " . mysqli_error($this->link));
-        if(empty($this->link)) {
+        if (empty($this->link)) {
             throw new \Exception("Could not connect mysql: " . $this->server);
         }
-        if ($this->dbname)
+        if ($this->dbname) {
             $this->choose($this->dbname) or die("Could not select: " . mysqli_error($this->link));
+        }
         return $this->link;
-	}
+    }
     /**
      * 选择数据库名称
      *
      * @return mixed
      */
-    public function choose($dbname) {
-        if ($this->link)
+    public function choose($dbname)
+    {
+        if ($this->link) {
             return mysqli_select_db($this->link, $dbname);
+        }
     }
     /**
      * another connect
      */
-    public function alter($name = 'default') {
+    public function alter($name = 'default')
+    {
         global $CFG;
-        if(!empty($name) &&!empty($CFG['mysql']) && !empty($CFG['mysql'][$name])) {
+        if (!empty($name) &&!empty($CFG['mysql']) && !empty($CFG['mysql'][$name])) {
             $this->server = $CFG['mysql'][$name]['host'] . ":" . $CFG['mysql'][$name]['port'];
             $this->username = $CFG['mysql'][$name]['name'];
             $this->password = $CFG['mysql'][$name]['password'];
@@ -108,14 +115,16 @@ class Mysql extends DataBase implements Querying, Uniqueness {
         }
         return empty($this->link) ? true : $this->connect();
     }
-	public function close() {
+    public function close()
+    {
         if ($this->link) {
             $ret = mysqli_close($this->link);
             $this->link = null;
             return $ret;
         }
-	}
-    public final function get($id, $fields = array()) {
+    }
+    final public function get($id, $fields = array())
+    {
         $model = $this->model;
         $columns = $this->model->columns();
         $pk = $this->model->primary();
@@ -128,17 +137,19 @@ class Mysql extends DataBase implements Querying, Uniqueness {
         $arr = $this->toArray(1);
         return empty($arr) ? false : $arr[0];
     }
-    public final function add(array $info, $use_last_id = true) {
+    final public function add(array $info, $use_last_id = true)
+    {
         $sql = $this->makeInsert(array_keys($info), $info);
         $ret = $this->query($sql);
-        if(!empty($use_last_id)) {
+        if (!empty($use_last_id)) {
             $lastid = $this->toLastId();
             return empty($lastid) ? false : $lastid;
         } else {
             return empty($ret) ? false : $ret;
         }
     }
-    public final function del($id) {
+    final public function del($id)
+    {
         $model = $this->model;
         $pk = $this->model->primary();
         $condition = array($pk => $id);
@@ -147,7 +158,8 @@ class Mysql extends DataBase implements Querying, Uniqueness {
         $ret = $this->toResult();
         return empty($ret) ? false : $ret;
     }
-    public final function upd($id, array $info) {
+    final public function upd($id, array $info)
+    {
         $model = $this->model;
         $pk = $this->model->primary();
         $condition = array($pk => $id);
@@ -156,23 +168,25 @@ class Mysql extends DataBase implements Querying, Uniqueness {
         $ret = $this->toResult();
         return empty($ret) ? false : $ret;
     }
-    public final function count(array $info = array()) {
+    final public function count(array $info = array())
+    {
         $sql = $this->makeCount($info);
         $ret = $this->query($sql);
         $arr = $this->toArray(1);
         return empty($arr) ? false : $arr[0]['num'];
     }
-    public final function replace(array $info = array()) {
+    final public function replace(array $info = array())
+    {
         $model = $this->model;
         $pk = $this->model->primary();
         $columns = $this->model->columns();
         $pkl = array_search($pk, $columns);
         $sql = $this->makeInsert(array_keys($info), $info, true);
         $ret = $this->query($sql);
-        if(!empty($ret)) {
-            if(array_key_exists($pk, $info)) {
+        if (!empty($ret)) {
+            if (array_key_exists($pk, $info)) {
                 $lastid = $info[$pk];
-            } else if(array_key_exists($pkl, $info)) {
+            } elseif (array_key_exists($pkl, $info)) {
                 $lastid = $info[$pkl];
             } else {
                 $lastid = $this->toLastId();
@@ -180,18 +194,19 @@ class Mysql extends DataBase implements Querying, Uniqueness {
         }
         return empty($lastid) ? false : $lastid;
     }
-    public final function query($sql, $encoding = 'UTF8', array $option = array()) {
+    final public function query($sql, $encoding = 'UTF8', array $option = array())
+    {
         //connect
-        if(empty($this->link)) {
+        if (empty($this->link)) {
             $this->connect();
         }
-        if(!empty($this->link)) {
+        if (!empty($this->link)) {
             if ($this->encode) {
                 $ret = $this->link->query("SET NAMES " . $this->encode);
-            } else if ($encoding) {
+            } elseif ($encoding) {
                 $ret = $this->link->query("SET NAMES $encoding");
             }
-            if(empty($ret)) {
+            if (empty($ret)) {
                 $this->connect();
                 Logger::info('RECONNECT', 'sql');
             }
@@ -206,7 +221,8 @@ class Mysql extends DataBase implements Querying, Uniqueness {
         }
         return $this->result;
     }
-    public final function select($fields = array(), $condition = array(), $order = array(), $limit = array(), $safe = true) {
+    final public function select($fields = array(), $condition = array(), $order = array(), $limit = array(), $safe = true)
+    {
         $columns = $this->model->columns();
         $fields = empty($fields) ? array_values($columns) : $fields;
         $sql = $this->makeSelect($fields, $condition, $order, $limit, $safe);
@@ -214,27 +230,31 @@ class Mysql extends DataBase implements Querying, Uniqueness {
         $arr = $this->toArray();
         return $arr;
     }
-    public final function insert($fields = array(), $values = array(), $replace = false) {
+    final public function insert($fields = array(), $values = array(), $replace = false)
+    {
         $sql = $this->makeInsert($fields, $values, $replace);
         $ret = $this->query($sql);
-        if(empty($replace)) {
+        if (empty($replace)) {
             $lastid = $this->toLastId();
             return empty($lastid) ? false : $lastid;
         } else {
             return empty($ret) ? false : $ret;
         }
     }
-    public final function update($fields = array(), $values = array(), $condition = array(), $safe = true) {
+    final public function update($fields = array(), $values = array(), $condition = array(), $safe = true)
+    {
         $sql = $this->makeUpdate($fields, $values, $condition, $safe);
         $ret = $this->query($sql);
         return empty($ret) ? false : $ret;
     }
-    public final function delete($condition = array(), $safe = true) {
+    final public function delete($condition = array(), $safe = true)
+    {
         $sql = $this->makeDelete($condition, $safe);
         $ret = $this->query($sql);
         return empty($ret) ? false : $ret;
     }
-    public final function increase($field, $num = 1, $condition = array(), $safe = true) {
+    final public function increase($field, $num = 1, $condition = array(), $safe = true)
+    {
         $sql = $this->makeIncrease($field, $num, $condition, $safe);
         $ret = $this->query($sql);
         return empty($ret) ? false : $ret;
@@ -244,9 +264,10 @@ class Mysql extends DataBase implements Querying, Uniqueness {
      * @param array|string $unique
      * @param array $info
      */
-    public final function updByUnique($unique, array $info) {
+    final public function updByUnique($unique, array $info)
+    {
         $condition = $this->makeUnique($unique);
-        if(!empty($condition)) {
+        if (!empty($condition)) {
             return $this->update(array(), $info, $condition);
         } else {
             return false;
@@ -255,9 +276,10 @@ class Mysql extends DataBase implements Querying, Uniqueness {
     /**
      * @param array|string $unique
      */
-    public final function getByUnique($unique) {
+    final public function getByUnique($unique)
+    {
         $condition = $this->makeUnique($unique);
-        if(!empty($condition)) {
+        if (!empty($condition)) {
             $columns = $this->model->columns();
             $fields = array_values($columns);
             $sql = $this->makeSelect($fields, $condition, array(), array(1));
@@ -271,9 +293,10 @@ class Mysql extends DataBase implements Querying, Uniqueness {
     /**
      * @param array|string $unique
      */
-    public final function delByUnique($unique) {
+    final public function delByUnique($unique)
+    {
         $condition = $this->makeUnique($unique);
-        if(!empty($condition)) {
+        if (!empty($condition)) {
             return $this->delete($condition);
         } else {
             return false;
@@ -282,23 +305,24 @@ class Mysql extends DataBase implements Querying, Uniqueness {
     /**
      * make unique fields' condition array
      */
-    public function makeUnique($unique) {
+    public function makeUnique($unique)
+    {
         $model = $this->model;
         $columns = $this->model->columns();
         $uk = $this->model->unique();
         $condition = array();
-        if(!empty($uk) && is_array($uk) && is_array($unique)) {
+        if (!empty($uk) && is_array($uk) && is_array($unique)) {
             foreach ($uk as $k) {
                 $p = array_search($k, $columns);
-                if(!empty($unique[$k])) {
+                if (!empty($unique[$k])) {
                     $condition[$k] = $unique[$k];
-                } else if(!empty($unique[$p])) {
+                } elseif (!empty($unique[$p])) {
                     $condition[$k] = $unique[$p];
                 } else {
                     return false;
                 }
             }
-        } else if(!empty($uk) && is_string($uk)) {
+        } elseif (!empty($uk) && is_string($uk)) {
             $condition[$uk] = $unique;
         } else {
             return false;
@@ -311,7 +335,8 @@ class Mysql extends DataBase implements Querying, Uniqueness {
      *
      * @return mixed
      */
-    public function toResult() {
+    public function toResult()
+    {
         return $this->result;
     }
     /**
@@ -319,7 +344,8 @@ class Mysql extends DataBase implements Querying, Uniqueness {
      *
      * @return mixed
      */
-    public function toLastId() {
+    public function toLastId()
+    {
         return empty($this->result) ? false : mysqli_insert_id($this->link);
     }
     /**
@@ -331,18 +357,19 @@ class Mysql extends DataBase implements Querying, Uniqueness {
      *            数据源
      * @return array
      */
-    public function toArray($count = 0) {
+    public function toArray($count = 0)
+    {
         $result = $this->result;
         $rows = array();
         if ($result && $count == 1) {
             $row = mysqli_fetch_array($result, MYSQLI_ASSOC);
-            if(!empty($row)) {
-               $rows[] = $row; 
+            if (!empty($row)) {
+                $rows[] = $row;
             }
-        } else if ($result && $count != 0) {
+        } elseif ($result && $count != 0) {
             $i = 0;
             if (@mysqli_num_rows($result)) {
-                while ( $row = mysqli_fetch_array($result, MYSQLI_ASSOC) ) {
+                while ($row = mysqli_fetch_array($result, MYSQLI_ASSOC)) {
                     if ($i < $count) {
                         $rows[$i] = (array) $row;
                         $i ++;
@@ -351,10 +378,10 @@ class Mysql extends DataBase implements Querying, Uniqueness {
                     }
                 }
             }
-        } else if($result) {
+        } elseif ($result) {
             $i = 0;
             if (@mysqli_num_rows($result)) {
-                while ( $row = mysqli_fetch_array($result, MYSQLI_ASSOC) ) {
+                while ($row = mysqli_fetch_array($result, MYSQLI_ASSOC)) {
                     $rows[$i] = (array) $row;
                     $i ++;
                 }
@@ -365,7 +392,8 @@ class Mysql extends DataBase implements Querying, Uniqueness {
     /**
      * make select SQL
      */
-    public final function makeSelect($fields = array(), $condition = array(), $order = array(), $limit = array(), $safe = true) {
+    final public function makeSelect($fields = array(), $condition = array(), $order = array(), $limit = array(), $safe = true)
+    {
         $link = !empty($this->link) ? $this->link : $this->connect();
         $model = $this->model;
         $schema = $this->model->schema();
@@ -383,7 +411,8 @@ class Mysql extends DataBase implements Querying, Uniqueness {
     /**
      * make select count SQL
      */
-    public final function makeCount($condition = array(), $safe = false) {
+    final public function makeCount($condition = array(), $safe = false)
+    {
         $link = !empty($this->link) ? $this->link : $this->connect();
         $model = $this->model;
         $schema = $this->model->schema();
@@ -392,7 +421,7 @@ class Mysql extends DataBase implements Querying, Uniqueness {
         $w = empty($condition) ? (empty($safe) ? '' : 'WHERE 1 = 0') : $this->model->makeCondition($condition, $link, false, $safe);
         $g = !is_array($condition) || empty($condition['$group']) ? '' : $this->model->makeGroup($condition['$group']);
         $h = !is_array($condition) || empty($condition['$having']) ? '' : $this->model->makeHaving($condition['$having']);
-        if(!empty($condition['$group'])) {
+        if (!empty($condition['$group'])) {
             $sql = "SELECT COUNT(*) AS num FROM (SELECT * FROM $t $w $g $h) `tmp` LIMIT 1";
         } else {
             $sql = "SELECT COUNT(*) AS num FROM $t $w $g $h LIMIT 1";
@@ -402,17 +431,18 @@ class Mysql extends DataBase implements Querying, Uniqueness {
     /**
      * make insert SQL
      */
-    public final function makeInsert($fields = array(), $values = array(), $replace = false) {
+    final public function makeInsert($fields = array(), $values = array(), $replace = false)
+    {
         $sql = false;
         $link = !empty($this->link) ? $this->link : $this->connect();
         $model = $this->model;
         $schema = $this->model->schema();
         $table = $this->model->table();
-        if(!empty($values)) {
+        if (!empty($values)) {
             $t = $this->model->makeTable();
             $f = empty($fields) ? '' : $this->model->makeFields($fields, false);
             $v = $this->model->makeValues($fields, $values, $link);
-            if(empty($replace)) {
+            if (empty($replace)) {
                 $sql = "INSERT INTO $t ( $f ) VALUES ( $v )";
             } else {
                 $sql = "REPLACE INTO $t ( $f ) VALUES ( $v )";
@@ -423,13 +453,14 @@ class Mysql extends DataBase implements Querying, Uniqueness {
     /**
      * make update SQL
      */
-    public final function makeUpdate($fields = array(), $values = array(), $condition = array(), $safe = true) {
+    final public function makeUpdate($fields = array(), $values = array(), $condition = array(), $safe = true)
+    {
         $sql = false;
         $link = !empty($this->link) ? $this->link : $this->connect();
         $model = $this->model;
         $schema = $this->model->schema();
         $table = $this->model->table();
-        if(!empty($values)) {
+        if (!empty($values)) {
             $t = $this->model->makeTable();
             $s = $this->model->makeSetter($fields, $values, $link);
             $w = empty($condition) ? (empty($safe) ? '' : 'WHERE 1 = 0') : $this->model->makeCondition($condition, $link, false, $safe);
@@ -440,7 +471,8 @@ class Mysql extends DataBase implements Querying, Uniqueness {
     /**
      * make delete SQL
      */
-    public final function makeDelete($condition = array(), $safe = true) {
+    final public function makeDelete($condition = array(), $safe = true)
+    {
         $link = !empty($this->link) ? $this->link : $this->connect();
         $model = $this->model;
         $schema = $this->model->schema();
@@ -453,13 +485,14 @@ class Mysql extends DataBase implements Querying, Uniqueness {
     /**
      * make increase SQL
      */
-    public final function makeIncrease($field, $num = 1, $condition = array(), $safe = true) {
+    final public function makeIncrease($field, $num = 1, $condition = array(), $safe = true)
+    {
         $sql = false;
         $link = !empty($this->link) ? $this->link : $this->connect();
         $model = $this->model;
         $schema = $this->model->schema();
         $table = $this->model->table();
-        if(!empty($field)) {
+        if (!empty($field)) {
             $t = $this->model->makeTable();
             $s = $this->model->makeIncreaseSetter($field, $num);
             $w = empty($condition) ? (empty($safe) ? '' : 'WHERE 1 = 0') : $this->model->makeCondition($condition, $link, false, $safe);
@@ -472,20 +505,21 @@ class Mysql extends DataBase implements Querying, Uniqueness {
     /**
      * make insert or select fields SQL chip
      */
-    public function makeFields($f, $as = false) {
+    public function makeFields($f, $as = false)
+    {
         $chip = '';
         $model = $this->model;
         $columns = $this->model->columns();
         $vcolumns = array_values($columns);
         $arr = array();
-        if(is_string($f)) {
+        if (is_string($f)) {
             $chip = $f;
-        } else if(is_array($f) && Utility::isAssocArray($f)) {
+        } elseif (is_array($f) && Utility::isAssocArray($f)) {
             foreach ($f as $k => $v) {
-                if(in_array($k, $vcolumns)) {
+                if (in_array($k, $vcolumns)) {
                     $asf = array_search($k, $columns);
                     $arr[] = empty($as) ? "`$k`" : "`$k` AS `$asf`";
-                } else if(array_key_exists($k, $columns)) {
+                } elseif (array_key_exists($k, $columns)) {
                     $asf = $k;
                     $arr[] = empty($as) ? "`{$columns[$k]}`" : "`{$columns[$k]}` AS `$asf`";
                 } else {
@@ -493,12 +527,12 @@ class Mysql extends DataBase implements Querying, Uniqueness {
                     continue;
                 }
             }
-        } else if(is_array($f)) {
+        } elseif (is_array($f)) {
             foreach ($f as $v) {
-                if(in_array($v, $vcolumns)) {
+                if (in_array($v, $vcolumns)) {
                     $asf = array_search($v, $columns);
                     $arr[] = empty($as) ? "`$v`" : "`$v` AS `$asf`";
-                } else if(array_key_exists($v, $columns)) {
+                } elseif (array_key_exists($v, $columns)) {
                     $asf = $v;
                     $arr[] = empty($as) ? "`{$columns[$v]}`" : "`{$columns[$v]}` AS `$asf`";
                 } else {
@@ -507,7 +541,7 @@ class Mysql extends DataBase implements Querying, Uniqueness {
                 }
             }
         }
-        if(!empty($arr)) {
+        if (!empty($arr)) {
             $chip = implode(", ", $arr);
         }
         return $chip;
@@ -515,17 +549,18 @@ class Mysql extends DataBase implements Querying, Uniqueness {
     /**
      * make insert values SQL chip
      */
-    public function makeValues($f, $v) {
+    public function makeValues($f, $v)
+    {
         $chip = '';
         $model = $this->model;
         $columns = $this->model->columns();
         $vcolumns = array_values($columns);
         $arr = array();
-        if(empty($f)) {
+        if (empty($f)) {
             foreach ($v as $k => $val) {
-                if(in_array($k, $vcolumns)) {
+                if (in_array($k, $vcolumns)) {
                     $arr[] = mysqli_real_escape_string($this->link, $val);
-                } else if(array_key_exists($k, $columns)) {
+                } elseif (array_key_exists($k, $columns)) {
                     $arr[] = mysqli_real_escape_string($this->link, $val);
                 } else {
                     // ignore
@@ -535,18 +570,18 @@ class Mysql extends DataBase implements Querying, Uniqueness {
         } else {
             $fs = Utility::isAssocArray($f) ? array_keys($f) : array_values($f);
             foreach ($v as $k => $val) {
-                if(in_array($k, $vcolumns)) {
+                if (in_array($k, $vcolumns)) {
                     $fr = $k;
                     $fl = array_search($k, $columns);
                     // when that is the valid field
-                    if(in_array($fl, $fs) || in_array($fr, $fs)) {
+                    if (in_array($fl, $fs) || in_array($fr, $fs)) {
                         $arr[] = mysqli_real_escape_string($this->link, $val);
                     }
-                } else if(array_key_exists($k, $columns)) {
+                } elseif (array_key_exists($k, $columns)) {
                     $fl = $k;
                     $fr = $columns[$k];
                     // when that is the valid field
-                    if(in_array($fl, $fs) || in_array($fr, $fs)) {
+                    if (in_array($fl, $fs) || in_array($fr, $fs)) {
                         $arr[] = mysqli_real_escape_string($this->link, $val);
                     }
                 } else {
@@ -555,7 +590,7 @@ class Mysql extends DataBase implements Querying, Uniqueness {
                 }
             }
         }
-        if(!empty($arr)) {
+        if (!empty($arr)) {
             $chip = "'" . implode("', '", $arr) . "'";
         }
         return $chip;
@@ -564,8 +599,9 @@ class Mysql extends DataBase implements Querying, Uniqueness {
      * make select GROUP BY SQL chip
      * only string supported
      */
-    public function makeGroup($group, $safe) {
-        if(empty($group) || !is_string($group)) {
+    public function makeGroup($group, $safe)
+    {
+        if (empty($group) || !is_string($group)) {
             return '';
         } else {
             return "GROUP BY $group";
@@ -575,8 +611,9 @@ class Mysql extends DataBase implements Querying, Uniqueness {
      * make select HAVING SQL chip,
      * only string supported
      */
-    public function makeHaving($having, $safe) {
-        if(empty($having) || !is_string($having)) {
+    public function makeHaving($having, $safe)
+    {
+        if (empty($having) || !is_string($having)) {
             return '';
         } else {
             return "HAVING $having";
@@ -585,37 +622,37 @@ class Mysql extends DataBase implements Querying, Uniqueness {
     /**
      * make select where condition SQL chip
      */
-    public function makeCondition($condition, $safe) {
+    public function makeCondition($condition, $safe)
+    {
         $chip = '';
         $model = $this->model;
         $columns = $this->model->columns();
         $vcolumns = array_values($columns);
-        if(is_string($condition)) {
+        if (is_string($condition)) {
             $chip = "WHERE $condition";
-        } else if(is_array($condition)) {
+        } elseif (is_array($condition)) {
             $arr = array();
             foreach ($condition as $f => $c) {
-                if(preg_match('/^.*\.\d+$/', $f)) {
+                if (preg_match('/^.*\.\d+$/', $f)) {
                     $fs = explode('.', $f);
                     $f = array_shift($fs);
                 }
-                if(in_array($f, $vcolumns)) {
-
-                } else if(array_key_exists($f, $columns)) {
+                if (in_array($f, $vcolumns)) {
+                } elseif (array_key_exists($f, $columns)) {
                     $f = $columns[$f];
                 } else {
                     // ignore
                     continue;
                 }
                 // condition isnot empty string
-                if($c !== '') {
+                if ($c !== '') {
                     $chip = $this->bindCondition($chip, $f, $c, $safe);
                 }
             }
-            if(!empty($chip)) {
+            if (!empty($chip)) {
                 $chip = "WHERE $chip";
             } else {
-                $chip = empty($safe) ? "WHERE 1 = 1" : "WHERE 1 = 0"; 
+                $chip = empty($safe) ? "WHERE 1 = 1" : "WHERE 1 = 0";
             }
         }
         return $chip;
@@ -623,24 +660,25 @@ class Mysql extends DataBase implements Querying, Uniqueness {
     /**
      * @param $chip where condition SQL chip
      * @param $f
-     * @param $c 
+     * @param $c
      *      数组:array($value, $operator, $join)
      *          $operator:
      *              '=','<>','>','<','<=','>=', 'BETWEEN', 'LIKE', 'NOT LIKE', 'IN', 'NOT IN'
      *      标量:'1'
      * @param $safe
      */
-    public function bindCondition($chip, $f, $val, $safe = true) {
-        if(is_array($val) && !empty($val)) {
+    public function bindCondition($chip, $f, $val, $safe = true)
+    {
+        if (is_array($val) && !empty($val)) {
             $v = array_shift($val);
             $o = empty($val) ? '=' : array_shift($val);
             $j = empty($val) ? 'AND' : array_shift($val);
-        } else if(is_scalar($val)) {
+        } elseif (is_scalar($val)) {
             $v = $val;
             $o = '=';
             $j = 'AND';
         }
-        if(!empty($chip)) {
+        if (!empty($chip)) {
             $chip .= " $j ";
         }
         switch (strtoupper($o)) {
@@ -662,13 +700,12 @@ class Mysql extends DataBase implements Querying, Uniqueness {
                 break;
             case 'LIKE':
             case 'NOT LIKE':
-                if(is_scalar($v)) {
+                if (is_scalar($v)) {
                     $v = strval($v);
                     $v = mysqli_real_escape_string($this->link, $v);
                     $chip .= "(`$f` $o '%$v%')";
                 } else {
                     // TODO
-
                 }
                 break;
             case '=':
@@ -691,25 +728,26 @@ class Mysql extends DataBase implements Querying, Uniqueness {
     /**
      * make select order SQL chip
      */
-    public function makeOrder($o) {
+    public function makeOrder($o)
+    {
         $chip = '';
         $model = $this->model;
         $columns = $this->model->columns();
         $vcolumns = array_values($columns);
-        if(is_string($o)) {
+        if (is_string($o)) {
             $chip = "ORDER BY $o";
-        } else if(is_array($o)) {
+        } elseif (is_array($o)) {
             $arr = array();
             foreach ($o as $f => $a) {
                 $a = $a == 'ASC' ? $a : 'DESC';
-                if(in_array($f, $vcolumns)) {
+                if (in_array($f, $vcolumns)) {
                     $arr[] = "`$f` $a";
-                } else if(array_key_exists($f, $columns)) {
+                } elseif (array_key_exists($f, $columns)) {
                     $f = $columns[$f];
                     $arr[] = "`$f` $a";
                 }
             }
-            if(!empty($arr)) {
+            if (!empty($arr)) {
                 $order = implode(', ', $arr);
                 $chip = "ORDER BY $order";
             }
@@ -719,23 +757,24 @@ class Mysql extends DataBase implements Querying, Uniqueness {
     /**
      * make select limit SQL chip
      */
-    public function makeLimit($l) {
+    public function makeLimit($l)
+    {
         $chip = '';
-        if(is_string($l)) {
+        if (is_string($l)) {
             $chip = "LIMIT $l";
-        } else if(is_array($l)) {
-            if(count($l) == 1) {
+        } elseif (is_array($l)) {
+            if (count($l) == 1) {
                 $l0 = array_shift($l);
                 $v0 = intval($l0);
                 $v0 = $v0 < 0 ? 0 : $v0;
                 $chip = "LIMIT $v0";
-            } else if(count($l) > 1) {
+            } elseif (count($l) > 1) {
                 $l0 = array_shift($l);
                 $l1 = array_shift($l);
                 $v0 = intval($l0);
                 $v1 = intval($l1);
                 $v0 = $v0 < 0 ? 0 : $v0;
-                if($v1 > 0) {
+                if ($v1 > 0) {
                     $chip = "LIMIT $v0, $v1";
                 }
             }
@@ -745,18 +784,19 @@ class Mysql extends DataBase implements Querying, Uniqueness {
     /**
      * make update setter SQL chip
      */
-    public function makeSetter($f, $v) {
+    public function makeSetter($f, $v)
+    {
         $chip = '';
         $model = $this->model;
         $columns = $this->model->columns();
         $vcolumns = array_values($columns);
         $arr = array();
-        if(empty($f)) {
+        if (empty($f)) {
             foreach ($v as $k => $val) {
-                if(in_array($k, $vcolumns)) {
+                if (in_array($k, $vcolumns)) {
                     $val = mysqli_real_escape_string($this->link, $val);
                     $arr[] = "`$k` = '$val'";
-                } else if(array_key_exists($k, $columns)) {
+                } elseif (array_key_exists($k, $columns)) {
                     $val = mysqli_real_escape_string($this->link, $val);
                     $arr[] = "`{$columns[$k]}` = '$val'";
                 } else {
@@ -767,19 +807,19 @@ class Mysql extends DataBase implements Querying, Uniqueness {
         } else {
             $fs = Utility::isAssocArray($f) ? array_keys($f) : array_values($f);
             foreach ($v as $k => $val) {
-                if(in_array($k, $vcolumns)) {
+                if (in_array($k, $vcolumns)) {
                     $fr = $k;
                     $fl = array_search($k, $columns);
                     // when that is the valid field
-                    if(in_array($fl, $fs) || in_array($fr, $fs)) {
+                    if (in_array($fl, $fs) || in_array($fr, $fs)) {
                         $val = mysqli_real_escape_string($this->link, $val);
                         $arr[] = "`$k` = '$val'";
                     }
-                } else if(array_key_exists($k, $columns)) {
+                } elseif (array_key_exists($k, $columns)) {
                     $fl = $k;
                     $fr = $columns[$k];
                     // when that is the valid field
-                    if(in_array($fl, $fs) || in_array($fr, $fs)) {
+                    if (in_array($fl, $fs) || in_array($fr, $fs)) {
                         $val = mysqli_real_escape_string($this->link, $val);
                         $arr[] = "`{$columns[$k]}` = '$val'";
                     }
@@ -789,36 +829,38 @@ class Mysql extends DataBase implements Querying, Uniqueness {
                 }
             }
         }
-        if(!empty($arr)) {
+        if (!empty($arr)) {
             $chip = implode(", ", $arr);
         }
         return $chip;
     }
-    public function makeIncreaseSetter($f, $n) {
+    public function makeIncreaseSetter($f, $n)
+    {
         $n = empty($n) ? 0 : intval($n);
         $chip = '';
         $model = $this->model;
         $columns = $this->model->columns();
         $vcolumns = array_values($columns);
         $arr = array();
-        if(empty($f)) {
+        if (empty($f)) {
             return $chip;
-        } else if(in_array($f, $vcolumns)) {
+        } elseif (in_array($f, $vcolumns)) {
             $arr[] = "`$f` = `$f` + $n";
-        } else if(array_key_exists($f, $columns)) {
+        } elseif (array_key_exists($f, $columns)) {
             $arr[] = "`{$columns[$f]}` = `{$columns[$f]}` + $n";
         } else {
             // ignore
             // continue;
         }
-        if(!empty($arr)) {
+        if (!empty($arr)) {
             $chip = implode(", ", $arr);
         }
         return $chip;
     }
 
-    public function freeResult() {
-        if(!empty($this->result)) {
+    public function freeResult()
+    {
+        if (!empty($this->result)) {
             mysqli_free_result($this->result);
         }
         return true;

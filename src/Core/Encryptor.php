@@ -5,13 +5,16 @@ namespace Dcux\Core;
 use RuntimeException;
 
 //
-class Encryptor {
-    public static function encrypt($str, $key = 'sso') {
+class Encryptor
+{
+    public static function encrypt($str, $key = 'sso')
+    {
         $iv_size = mcrypt_get_iv_size(MCRYPT_3DES, MCRYPT_MODE_CFB);
         $iv = str_repeat("\0", $iv_size);
         return base64_encode(mcrypt_encrypt(MCRYPT_3DES, $key, $str, MCRYPT_MODE_CFB, $iv));
     }
-    public static function decrypt($str, $key = 'sso') {
+    public static function decrypt($str, $key = 'sso')
+    {
         if (trim($str) == '') {
             return false;
         }
@@ -21,29 +24,30 @@ class Encryptor {
     }
     /**
      * 随机生成指定长度的混淆码
-     * 
+     *
      * @param
      *            Integer len
      * @return s {String}
      */
-    public static function confusion($len = 2, $str = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=") {
+    public static function confusion($len = 2, $str = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=")
+    {
         $output = "";
         $len = $len > 0 ? $len : 4;
-        for($l = 0; $l < $len; $l ++) {
+        for ($l = 0; $l < $len; $l ++) {
             $pos = mt_rand(0, strlen($str) - 1);
             $output += substr($str, $pos, 1);
         }
         return $output;
     }
 
-    public static function md5_encrypt($str, $key = 'sso') {
+    public static function md5_encrypt($str, $key = 'sso')
+    {
         $key    =   md5($key);
         $x      =   0;
         $len    =   strlen($str);
         $l      =   strlen($key);
         for ($i = 0; $i < $len; $i++) {
-            if ($x == $l) 
-            {
+            if ($x == $l) {
                 $x = 0;
             }
             $char .= $key{$x};
@@ -54,7 +58,8 @@ class Encryptor {
         }
         return base64_encode($str);
     }
-    public static function md5_decrypt($str, $key = 'sso') {
+    public static function md5_decrypt($str, $key = 'sso')
+    {
         $key = md5($key);
         $x = 0;
         $str = base64_decode($str);

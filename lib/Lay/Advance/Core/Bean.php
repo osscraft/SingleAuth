@@ -13,8 +13,10 @@ use ArrayAccess;
 use stdClass;
 use Exception;
 
-abstract class Bean extends Component {
-    public final function __construct() {
+abstract class Bean extends Component
+{
+    final public function __construct()
+    {
         //初始化值
         foreach ($this->properties() as $name => $value) {
             $this->$name = $value;
@@ -23,26 +25,28 @@ abstract class Bean extends Component {
     /**
      * @see Component::rules()
      */
-    public function rules() {
+    public function rules()
+    {
         return array();
     }
     /**
      * @see Component::format()
      */
-    public function format($val, $key, $options = array()) {
+    public function format($val, $key, $options = array())
+    {
         return $val;
     }
     /**
      * 兼容,
      */
-    public function build($args = array()) {
+    public function build($args = array())
+    {
         $args = empty($args) ? $_REQUEST : $args;
         foreach ($this->properties() as $p => $v) {
-            if(isset($args[$p])) {
+            if (isset($args[$p])) {
                 $this->$p = $args[$p];
             }
         }
     }
-    
 }
 // PHP END

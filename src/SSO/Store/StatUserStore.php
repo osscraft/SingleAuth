@@ -6,16 +6,19 @@ use Dcux\SSO\Core\AbstractStore;
 use Dcux\SSO\Model\StatUser;
 use Dcux\SSO\Core\Paging;
 
-class StatUserStore extends AbstractStore {
+class StatUserStore extends AbstractStore
+{
     /**
-     * 
+     *
      */
-    public function addByDay($args) {
-        if (! $this->connection)
+    public function addByDay($args)
+    {
+        if (! $this->connection) {
             return false;
+        }
         if (is_a($args, 'Dcux\SSO\Model\StatUser')) {
             $statUser = $args;
-        } else if (is_array($args)) {
+        } elseif (is_array($args)) {
             $statUser = new StatUser();
             $return = $statUser->build($args);
         } else {
@@ -26,9 +29,9 @@ class StatUserStore extends AbstractStore {
         $value1 = $statUser->getDate();
         $field2 = $statUser->toField('username');
         $value2 = $statUser->getUsername();
-        $statUser1 = $this->get(array (
+        $statUser1 = $this->get(array(
                 $field1 => $value1,
-                $field2 => $value2 
+                $field2 => $value2
         ));
         // return $statUser1;
         if ($statUser1) {
@@ -39,22 +42,24 @@ class StatUserStore extends AbstractStore {
             return 'insert=' . $success;
         }
     }
-    public function get($args, $order = '', $paging = '') {
-        if (! $this->connection)
+    public function get($args, $order = '', $paging = '')
+    {
+        if (! $this->connection) {
             return false;
-            // return $args;
+        }
+        // return $args;
         if (is_a($args, 'Dcux\SSO\Model\StatUser')) {
             $statUser = $args;
             $field1 = $statUser->toField('id');
             $value1 = $statUser->getId();
             if ($value1) {
-                $condition = array (
-                        $field1 => $value1 
+                $condition = array(
+                        $field1 => $value1
                 );
             } else {
                 $condition = '';
             }
-        } else if (is_array($args) || is_string($args)) {
+        } elseif (is_array($args) || is_string($args)) {
             $statUser = new StatUser();
             // return $args;
             $condition = $args;
@@ -75,21 +80,23 @@ class StatUserStore extends AbstractStore {
         
         return $statUsers;
     }
-    public function modify($args) {
-        if (! $this->connection)
+    public function modify($args)
+    {
+        if (! $this->connection) {
             return false;
-            // return $args;
+        }
+        // return $args;
         if (is_array($args)) {
             $statUser = new StatUser();
             $statUser->build($args);
             $field1 = $statUser->toField('id');
             $value1 = $statUser->getId();
             $field2 = $statUser->toField('count');
-            $condition = array (
-                    $field1 => $value1 
+            $condition = array(
+                    $field1 => $value1
             );
-            $values = array (
-                    $field2 => ($statUser->getCount() + 1) 
+            $values = array(
+                    $field2 => ($statUser->getCount() + 1)
             );
         } else {
             return false;
@@ -100,12 +107,14 @@ class StatUserStore extends AbstractStore {
         $success = $this->connection->toResult();
         return $success;
     }
-    public function insert($args) {
-        if (! $this->connection)
+    public function insert($args)
+    {
+        if (! $this->connection) {
             return false;
+        }
         if (is_a($args, 'Dcux\SSO\Model\StatUser')) {
             $statUser = $args;
-        } else if (is_array($args)) {
+        } elseif (is_array($args)) {
             $statUser = new StatUser();
             $return = $statUser->build($args);
         } else {
@@ -119,13 +128,15 @@ class StatUserStore extends AbstractStore {
         $success = $this->connection->toResult();
         return $success;
     }
-    public function readCount($args) {
-        if (! $this->connection)
+    public function readCount($args)
+    {
+        if (! $this->connection) {
             return false;
+        }
         if (is_a($args, 'Dcux\SSO\Model\StatUser')) {
             $statUser = $args;
             $condition = '';
-        } else if (is_array($args) || is_string($args)) {
+        } elseif (is_array($args) || is_string($args)) {
             $user = new User();
             $condition = $args;
         } else {
@@ -139,4 +150,3 @@ class StatUserStore extends AbstractStore {
         return $result;
     }
 }
-?>

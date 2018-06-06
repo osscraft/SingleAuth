@@ -16,26 +16,29 @@ use Dcux\SSO\Core\Paging;
  * @version 1.0
  * @copyright 2005-2012 dcux Inc.
  * @link http://www.dcux.com
- *      
+ *
  */
-class AuthInfoStore extends AbstractStore {
+class AuthInfoStore extends AbstractStore
+{
     /**
      * 读取一条
      *
-     * @param mixed $args            
+     * @param mixed $args
      * @return mixed
      */
-    public function read($args) {
-        if (! $this->connection)
+    public function read($args)
+    {
+        if (! $this->connection) {
             return false;
+        }
         if (is_a($args, 'Dcux\SSO\Model\AuthInfo')) {
             $authInfo = $args;
             $field1 = $authInfo->toField('id');
             $value1 = $authInfo->getId();
-            $condition = array (
-                    $field1 => $value1 
+            $condition = array(
+                    $field1 => $value1
             );
-        } else if (is_array($args) || is_string($args)) {
+        } elseif (is_array($args) || is_string($args)) {
             $authInfo = new AuthInfo();
             $condition = $args;
         } else {
@@ -62,31 +65,34 @@ class AuthInfoStore extends AbstractStore {
      *            Paging,string
      * @return mixed
      */
-    public function reads($args, $order = '', $paging = '') {
-        if (! $this->connection)
+    public function reads($args, $order = '', $paging = '')
+    {
+        if (! $this->connection) {
             return false;
+        }
         if (is_a($args, 'Dcux\SSO\Model\AuthInfo')) {
             $authInfo = $args;
             $field1 = $authInfo->toField('clientId');
             $field2 = $authInfo->toField('username');
             $value1 = $authInfo->getClientId();
             $value2 = $authInfo->getUsername();
-            if ($value1 && $value2)
-                $condition = array (
+            if ($value1 && $value2) {
+                $condition = array(
                         $field1 => $value1,
-                        $field2 => $value2 
+                        $field2 => $value2
                 );
-            else if ($value1)
-                $condition = array (
-                        $field1 => $value1 
+            } elseif ($value1) {
+                $condition = array(
+                        $field1 => $value1
                 );
-            else if ($value2)
-                $condition = array (
-                        $field2 => $value2 
+            } elseif ($value2) {
+                $condition = array(
+                        $field2 => $value2
                 );
-            else
+            } else {
                 $condition = '';
-        } else if (is_array($args) || is_string($args)) {
+            }
+        } elseif (is_array($args) || is_string($args)) {
             $authInfo = new AuthInfo();
             $condition = $args;
         } else {
@@ -110,31 +116,34 @@ class AuthInfoStore extends AbstractStore {
      *            AuthInfo,array,string
      * @return mixed
      */
-    public function readCount($args) {
-        if (! $this->connection)
+    public function readCount($args)
+    {
+        if (! $this->connection) {
             return false;
+        }
         if (is_a($args, 'Dcux\SSO\Model\AuthInfo')) {
             $authInfo = $args;
             $field1 = $authInfo->toField('clientId');
             $field2 = $authInfo->toField('username');
             $value1 = $authInfo->getClientId();
             $value2 = $authInfo->getUsername();
-            if ($value1 && $value2)
-                $condition = array (
+            if ($value1 && $value2) {
+                $condition = array(
                         $field1 => $value1,
-                        $field2 => $value2 
+                        $field2 => $value2
                 );
-            else if ($value1)
-                $condition = array (
-                        $field1 => $value1 
+            } elseif ($value1) {
+                $condition = array(
+                        $field1 => $value1
                 );
-            else if ($value2)
-                $condition = array (
-                        $field2 => $value2 
+            } elseif ($value2) {
+                $condition = array(
+                        $field2 => $value2
                 );
-            else
+            } else {
                 $condition = '';
-        } else if (is_array($args) || is_string($args)) {
+            }
+        } elseif (is_array($args) || is_string($args)) {
             $authInfo = new AuthInfo();
             $condition = $args;
         } else {
@@ -153,25 +162,28 @@ class AuthInfoStore extends AbstractStore {
      *            AuthInfo,array,string
      * @return mixed
      */
-    public function write($args) {
-        if (! $this->connection)
+    public function write($args)
+    {
+        if (! $this->connection) {
             return false;
+        }
         if (is_a($args, 'Dcux\SSO\Model\AuthInfo')) {
             $authInfo = $args;
-        } else if (is_array($args)) {
+        } elseif (is_array($args)) {
             $authInfo = new AuthInfo();
             $return = $authInfo->build($args);
         } else {
             return false;
         }
-        if (! $authInfo->getAuthTime())
+        if (! $authInfo->getAuthTime()) {
             $authInfo->setAuthTime(time());
+        }
         
         $table = $authInfo->toTable();
         $field1 = $authInfo->toField('id');
         $fields = $authInfo->toFields();
-        $fields = array_diff($fields, array (
-                $field1 
+        $fields = array_diff($fields, array(
+                $field1
         ));
         $values = $authInfo->toValues();
         $return = $this->connection->insert($table, $fields, $values);
@@ -185,27 +197,31 @@ class AuthInfoStore extends AbstractStore {
      *            AuthInfo,array,string
      * @return mixed
      */
-    public function modify($args, $values = '') {
-        if (! $this->connection)
+    public function modify($args, $values = '')
+    {
+        if (! $this->connection) {
             return false;
+        }
         if (is_a($args, 'Dcux\SSO\Model\AuthInfo')) {
             $authInfo = $args;
             $values = $authInfo->toValues();
             $field1 = $authInfo->toField('id');
             $value1 = $authInfo->getId();
-            $condition = array (
-                    $field1 => $value1 
+            $condition = array(
+                    $field1 => $value1
             );
-        } else if (is_array($args)) {
-            if (empty($values))
+        } elseif (is_array($args)) {
+            if (empty($values)) {
                 return false;
+            }
             $authInfo = new AuthInfo();
             $condition = $args;
         } else {
             return false;
         }
-        if (! $authInfo->getAuthTime())
+        if (! $authInfo->getAuthTime()) {
             $authInfo->setAuthTime(time());
+        }
         
         $table = $authInfo->toTable();
         $fields = '';
@@ -220,18 +236,20 @@ class AuthInfoStore extends AbstractStore {
      *            AuthInfo,array,string
      * @return mixed
      */
-    public function remove($args) {
-        if (! $this->connection)
+    public function remove($args)
+    {
+        if (! $this->connection) {
             return false;
+        }
         if (is_a($args, 'Dcux\SSO\Model\AuthInfo')) {
             $authInfo = $args;
             $field1 = $authInfo->toField('id');
             $value1 = $authInfo->getId();
             $value2 = $authInfo->getUsername();
-            $condition = array (
-                    $field1 => $value1 
+            $condition = array(
+                    $field1 => $value1
             );
-        } else if (is_array($args)) {
+        } elseif (is_array($args)) {
             $authInfo = new AuthInfo();
             $condition = $args;
         } else {
@@ -244,4 +262,3 @@ class AuthInfoStore extends AbstractStore {
         return $success;
     }
 }
-?>

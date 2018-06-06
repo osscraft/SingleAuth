@@ -6,11 +6,14 @@ use Dcux\Admin\Kernel\AAction;
 use Dcux\Admin\Kernel\MenuPermission;
 use Dcux\Admin\Action\Client;
 
-class Token extends MenuPermission {
-    public function cmd() {
+class Token extends MenuPermission
+{
+    public function cmd()
+    {
         return 'token';
     }
-    public function onGet() {
+    public function onGet()
+    {
         $this->template->file('user/token.php');
     }
 }

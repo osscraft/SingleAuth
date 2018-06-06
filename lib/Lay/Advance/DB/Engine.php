@@ -4,8 +4,10 @@ namespace Lay\Advance\DB;
 
 use Lay\Advance\DB\DataBase;
 
-class Engine extends DataBase {
-    protected function __construct() {
+class Engine extends DataBase
+{
+    protected function __construct()
+    {
         global $CFG;
         /*$this->server = $CFG['mysql_host'];
         $this->username = $CFG['mysql_name'];
@@ -17,23 +19,26 @@ class Engine extends DataBase {
     /**
      * connect mysql database
      */
-	public function connect() {
+    public function connect()
+    {
         return $this->link;
-	}
+    }
     /**
      * 选择数据库名称
      *
      * @return mixed
      */
-    public function choose($dbname) {
-    	return true;
+    public function choose($dbname)
+    {
+        return true;
     }
     /**
      * another connect
      */
-    public function alter($name = '') {
+    public function alter($name = '')
+    {
         global $CFG;
-        if(!empty($name) &&!empty($CFG['memcache']) && !empty($CFG['memcache'][$name])) {
+        if (!empty($name) &&!empty($CFG['memcache']) && !empty($CFG['memcache'][$name])) {
             /*$this->server = $CFG['mysql'][$name]['host'];
             $this->username = $CFG['mysql'][$name]['name'];
             $this->password = $CFG['mysql'][$name]['password'];
@@ -50,11 +55,13 @@ class Engine extends DataBase {
         }
         return $this->connect();
     }
-	public function close() {
+    public function close()
+    {
         /*if ($this->link)
             return mysqli_close($this->link);*/
-	}
-    public final function get($id, $fields = array()) {
+    }
+    final public function get($id, $fields = array())
+    {
         $model = $this->model;
         $columns = $this->model->columns();
         $pk = $this->model->primary();
@@ -67,24 +74,27 @@ class Engine extends DataBase {
         $arr = $this->toArray(1);
         return empty($arr) ? false : $arr[0];
     }
-    public final function add(array $info, $use_last_id = true) {
+    final public function add(array $info, $use_last_id = true)
+    {
         return false;
     }
-    public final function del($id) {
+    final public function del($id)
+    {
         return false;
     }
-    public final function upd($id, array $info) {
+    final public function upd($id, array $info)
+    {
         return false;
     }
-    public final function count(array $info = array()) {
+    final public function count(array $info = array())
+    {
         $sql = $this->makeCount($info);
         $ret = $this->query($sql);
         $arr = $this->toArray(1);
         return empty($arr) ? false : $arr[0]['count'];
     }
-    public final function replace(array $info = array()) {
+    final public function replace(array $info = array())
+    {
         return false;
     }
-
-    
 }

@@ -2,8 +2,8 @@
 
 namespace Dcux\Core;
 
-interface Customizable {
-
+interface Customizable
+{
 }
 
 // PHP END

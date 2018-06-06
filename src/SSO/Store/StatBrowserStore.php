@@ -7,11 +7,14 @@ use Dcux\SSO\Model\StatBrowser;
 use Dcux\SSO\Core\Paging;
 use Dcux\Util\Logger;
 
-class StatBrowserStore extends AbstractStore {
-    public function increase($args) {
-        if (! $this->connection)
+class StatBrowserStore extends AbstractStore
+{
+    public function increase($args)
+    {
+        if (! $this->connection) {
             return false;
-        if(is_array($args) && !empty($args)) {
+        }
+        if (is_array($args) && !empty($args)) {
             $statBrowser = new StatBrowser();
             $cond = array();
             $info = array();
@@ -27,7 +30,7 @@ class StatBrowserStore extends AbstractStore {
         //先查找，再更新
         $ret = $this->connection->select($table, array($fId), $cond);
         !empty($ret) && $row = $this->connection->toArray(1);
-        if(!empty($row)) {
+        if (!empty($row)) {
             $upd = "`$fCount` = `$fCount` + 1";
             $condition = array('id' => $row[0]['id']);
             $return = $this->connection->update($table, '', $upd, $condition);
@@ -44,8 +47,11 @@ class StatBrowserStore extends AbstractStore {
      * 获取浏览器使用分布
      * @return multitype
      */
-    public function readAll() {
-        if(!$this->connection) return false;
+    public function readAll()
+    {
+        if (!$this->connection) {
+            return false;
+        }
 
         $stat = new StatBrowser();
         $table = $stat->toTable();

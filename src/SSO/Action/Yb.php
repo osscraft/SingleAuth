@@ -12,13 +12,16 @@ use Dcux\SSO\Service\IdentifyService;
 use YBOpenApi;
 use YBLANG;
 
-class Yb extends UAction {
+class Yb extends UAction
+{
     private $identifyService;
-    public function onCreate() {
+    public function onCreate()
+    {
         parent::onCreate();
         $this->identifyService = IdentifyService::getInstance();
     }
-    public function onGet() {
+    public function onGet()
+    {
         global $CFG;
         require_once App::$_rootpath . "/web/inc/YBApi_sdk_php/classes/yb-globals.inc.php";
         Autoloader::addPath(App::$_rootpath . "/web/inc/YBApi_sdk_php/classes/");
@@ -37,15 +40,15 @@ class Yb extends UAction {
         $au = $api->getAuthorize();
 
         // 将原地址存入session
-        if(empty($_SESSION['__RAWURL__']) && empty($_GET['rawurl'])) {
+        if (empty($_SESSION['__RAWURL__']) && empty($_GET['rawurl'])) {
             exit("无效请求！");
-        } else if(!empty($_GET['rawurl'])) {
+        } elseif (!empty($_GET['rawurl'])) {
             $rawurl = $_SESSION['__RAWURL__'] = $_GET['rawurl'];
-        } else if(!empty($_SESSION['__RAWURL__'])) {
+        } elseif (!empty($_SESSION['__RAWURL__'])) {
             $rawurl = $_SESSION['__RAWURL__'];
         }
-        // 
-        if(empty($_GET['code'])) {
+        //
+        if (empty($_GET['code'])) {
             // 导向至易班认证页
             $authURL = $au->forwardurl($_GET['url']);
             header("Location: $authURL");
@@ -65,7 +68,7 @@ class Yb extends UAction {
             exit(YBLANG::EXIT_NOT_AUTHORIZED);
         }
         // token已经过期
-        if($_SESSION['__EXPIRES__'] < time()) {
+        if ($_SESSION['__EXPIRES__'] < time()) {
             // 导向至易班认证页
             $authURL = $au->forwardurl();
             header("Location: $authURL");
@@ -78,7 +81,7 @@ class Yb extends UAction {
          */
         $api = $api->bind($_SESSION['__TOKEN__']);
 
-        if($CFG['use_verify_me']) {
+        if ($CFG['use_verify_me']) {
             // TODO
         } else {
             $user = $api->getUser();
@@ -90,15 +93,15 @@ class Yb extends UAction {
             $verify = $user->verifyme();
             print_r($real);
 
-            if($verify['status'] == 'success') {
+            if ($verify['status'] == 'success') {
                 $uid = $verify['info']['studentid'];
-            } else if(!empty($CFG['use_test_uid'])) {
+            } elseif (!empty($CFG['use_test_uid'])) {
                 $uid = $CFG['test_uid'];
             }
-            if(!empty($uid)) {
+            if (!empty($uid)) {
                 $userinfo = $this->identifyService->getUser($uid);
             }
-            if(empty($userinfo)) {
+            if (empty($userinfo)) {
                 exit("用户不存在！");
             }
 
@@ -114,7 +117,8 @@ class Yb extends UAction {
         }
         exit;
     }
-    public function onPost() {
+    public function onPost()
+    {
         $this->onGet();
     }
 }

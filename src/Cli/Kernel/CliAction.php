@@ -8,13 +8,15 @@ use Lay\Advance\Util\Logger;
 
 use Dcux\Cli\Kernel\App;
 
-abstract class CliAction extends Action {
-    public abstract function on();
+abstract class CliAction extends Action
+{
+    abstract public function on();
     /**
      * do GET
      */
-    public function onGet() {
-    	$this->on();
+    public function onGet()
+    {
+        $this->on();
     }
 }
 

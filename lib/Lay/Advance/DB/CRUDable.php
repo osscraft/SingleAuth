@@ -2,10 +2,11 @@
 
 namespace Lay\Advance\DB;
 
-interface CRUDable {
+interface CRUDable
+{
     /**
      * 获取某条记录
-     * 
+     *
      * @param int|string $id
      *            ID
      * @return array
@@ -13,7 +14,7 @@ interface CRUDable {
     public function get($id, $fields = array());
     /**
      * 删除某条记录
-     * 
+     *
      * @param int|string $id
      *            ID
      * @return boolean
@@ -21,7 +22,7 @@ interface CRUDable {
     public function del($id);
     /**
      * 增加一条记录
-     * 
+     *
      * @param array $info
      *            数据数组
      * @return boolean
@@ -30,7 +31,7 @@ interface CRUDable {
     
     /**
      * 更新某条记录
-     * 
+     *
      * @param int|string $id
      *            ID
      * @param array $info
@@ -41,7 +42,7 @@ interface CRUDable {
     
     /**
      * 某些条件下的记录数
-     * 
+     *
      * @param array $info
      *            数据数组
      * @return int
@@ -49,7 +50,7 @@ interface CRUDable {
     public function count(array $info = array());
     /**
      * 增加或替换一条记录
-     * 
+     *
      * @param array $info
      *            数据数组
      * @return int

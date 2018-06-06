@@ -11,7 +11,8 @@ use Dcux\DB\Engine;
 use Dcux\DB\Querying;
 use Dcux\Util\Logger;
 
-abstract class Model extends SingleComponent implements Modelizable {
+abstract class Model extends SingleComponent implements Modelizable
+{
     //use Singleton;
     const E_GET = 'model:event:get';
     const E_ADD = 'model:event:add';
@@ -23,13 +24,15 @@ abstract class Model extends SingleComponent implements Modelizable {
      * 构造方法
      * @return Model
      */
-    public final function __construct() {
+    final public function __construct()
+    {
         foreach ($this->properties() as $pro => $def) {
             $this->$pro = $def;
         }
         $this->listen();
     }
-    protected function listen() {
+    protected function listen()
+    {
         $class = get_class($this);
         App::$_event->listen($class, self::E_GET, array($this, 'onGet'));
         App::$_event->listen($class, self::E_ADD, array($this, 'onAdd'));
@@ -41,62 +44,67 @@ abstract class Model extends SingleComponent implements Modelizable {
     /**
      * get后触发
      */
-    public function onGet($ret, $id) {
+    public function onGet($ret, $id)
+    {
         $cacher = $this->cacher();
-        if(!empty($cacher) && !empty($ret)) {
+        if (!empty($cacher) && !empty($ret)) {
             $cacher->upd($id, $ret);
         }
     }
     /**
      * add后触发
      */
-    public function onAdd($ret, $info) {
+    public function onAdd($ret, $info)
+    {
         $cacher = $this->cacher();
-        if(!empty($cacher) && !empty($ret)) {
+        if (!empty($cacher) && !empty($ret)) {
             $cacher->add($info);
         }
     }
     /**
      * del后触发
      */
-    public function onDel($ret, $id, $info = array()) {
+    public function onDel($ret, $id, $info = array())
+    {
         $cacher = $this->cacher();
-        if(!empty($cacher) && !empty($ret)) {
+        if (!empty($cacher) && !empty($ret)) {
             $cacher->del($id);
         }
     }
     /**
      * upd后触发
      */
-    public function onUpd($ret, $id, $info) {
+    public function onUpd($ret, $id, $info)
+    {
         $cacher = $this->cacher();
-        if(!empty($cacher) && !empty($ret)) {
+        if (!empty($cacher) && !empty($ret)) {
             $cacher->del($id);
         }
     }
     /**
      * count后触发
      */
-    public function onCount($ret, $info) {
-        
+    public function onCount($ret, $info)
+    {
     }
     /**
      * replace后触发
      */
-    public function onReplace($ret, $info) {
-        if(!empty($ret)) {
+    public function onReplace($ret, $info)
+    {
+        if (!empty($ret)) {
             $cacher = $this->cacher();
             $pk = $this->primary();
             $columns = $this->columns();
             $pkl = array_search($pk, $columns);
-            if(!empty($info[$pk])) {
+            if (!empty($info[$pk])) {
                 $id = $info[$pk];
-            } else if(!empty($info[$pkl])) {
+            } elseif (!empty($info[$pkl])) {
                 $id = $info[$pkl];
-            } else if(is_numeric($ret)) {
+            } elseif (is_numeric($ret)) {
                 $id = $ret;
             }
-            if(!empty($cacher) && !empty($id)) {
+            if (!empty($cacher) && !empty($id)) {
                 $cacher->del($id);
             }
         }
@@ -105,30 +113,34 @@ abstract class Model extends SingleComponent implements Modelizable {
     /**
      * @see Modelizable::rules()
      */
-    public function rules() {
+    public function rules()
+    {
         return array();
     }
     /**
      * 兼容
      */
-    public function pk() {
+    public function pk()
+    {
         return $this->primary();
     }
 
     /**
      * @see Component::format()
      */
-    public function format($val, $key, $options = array()) {
+    public function format($val, $key, $options = array())
+    {
         return $val;
     }
     /**
      * 返回对象属性名对属性值的数组
      * @return array
      */
-    public final function toArray() {
+    final public function toArray()
+    {
         $ret = array();
         foreach ($this->properties() as $pro => $def) {
-            if(isset($this->$pro)) {
+            if (isset($this->$pro)) {
                 $ret[$pro] = $this->$pro;
             }
         }
@@ -138,7 +150,8 @@ abstract class Model extends SingleComponent implements Modelizable {
      * 返回对象转换为stdClass后的对象
      * @return stdClass
      */
-    public function toStandard() {
+    public function toStandard()
+    {
         $ret = new stdClass();
         foreach ($this->properties() as $pro => $value) {
             $ret->$pro = $this->$pro;
@@ -150,7 +163,8 @@ abstract class Model extends SingleComponent implements Modelizable {
      * 对应表名
      * @return string
      */
-    public function toTable() {
+    public function toTable()
+    {
         return $this->table();
     }
     /**
@@ -158,7 +172,8 @@ abstract class Model extends SingleComponent implements Modelizable {
      * 属性名转换为字段名
      * @return string
      */
-    public function toField($property) {
+    public function toField($property)
+    {
         $columns = $this->columns();
         return array_key_exists($property, $columns) ? $columns[$property] : false;
     }
@@ -167,11 +182,13 @@ abstract class Model extends SingleComponent implements Modelizable {
      * 所有字段名
      * @return array
      */
-    public function toFields() {
+    public function toFields()
+    {
         $columns = $this->columns();
         return array_values($columns);
     }
-    public function toValues() {
+    public function toValues()
+    {
         $values = array();
         foreach ($this->columns() as $p => $f) {
             $values[$f] = $this->$p;
@@ -182,29 +199,32 @@ abstract class Model extends SingleComponent implements Modelizable {
      * 兼容,
      * 将数据库中查询到的多条记录赋到对应对象数组中
      */
-    public function rowsToEntities($rows) {
-        $entities = array ();
+    public function rowsToEntities($rows)
+    {
+        $entities = array();
         $className = get_class($this);
-        if (is_array($rows))
-            foreach ( $rows as $k => $row ) {
+        if (is_array($rows)) {
+            foreach ($rows as $k => $row) {
                 if (is_array($row)) {
                     $bean = new $className();
                     $return = $bean->rowToEntity($row);
                     $entities[] = $bean;
                 }
             }
+        }
         return $entities;
     }
     /**
      * 兼容,
      * 将数据库中查询到的记录赋到本对象中
      */
-    public function rowToEntity($row) {
+    public function rowToEntity($row)
+    {
         $columns = $this->columns();
         if (is_array($row) && $columns) {
-            foreach ( $this->properties() as $k => $v ) {
+            foreach ($this->properties() as $k => $v) {
                 $f = $columns[$k];
-                if(isset($row[$f])) {
+                if (isset($row[$f])) {
                     $this->$k = $row[$f];
                 }
             }
@@ -214,24 +234,27 @@ abstract class Model extends SingleComponent implements Modelizable {
     /**
      * 兼容,
      */
-    public function rowsToArray($rows) {
-        $arrs = array ();
+    public function rowsToArray($rows)
+    {
+        $arrs = array();
         $className = get_class($this);
-        if (is_array($rows))
-            foreach ( $rows as $k => $row ) {
+        if (is_array($rows)) {
+            foreach ($rows as $k => $row) {
                 if (is_array($row)) {
                     $model = new $className();
                     $arr = $model->rowToArray($row);
                     $arrs[] = $arr;
                 }
             }
+        }
         return $arrs;
     }
     /**
      * 兼容,
      */
-    public function rowToArray($row) {
-        $arr = array ();
+    public function rowToArray($row)
+    {
+        $arr = array();
         if (is_array($row)) {
             $model = $this->rowToEntity($row);
             $arr = $this->toArray();
@@ -241,14 +264,15 @@ abstract class Model extends SingleComponent implements Modelizable {
     /**
      * 兼容,
      */
-    public function build($args = 0) {
+    public function build($args = 0)
+    {
         $args = empty($args) ? $_REQUEST : $args;
         $columns = $this->columns();
         foreach ($this->properties() as $p => $v) {
             $f = $columns[$p];
-            if(isset($args[$p])) {
+            if (isset($args[$p])) {
                 $this->$p = $args[$p];
-            } else if(isset($args[$f])) {
+            } elseif (isset($args[$f])) {
                 $this->$p = $args[$f];
             }
         }
@@ -258,7 +282,8 @@ abstract class Model extends SingleComponent implements Modelizable {
      * 数据存储数据库
      * @return DataBase
      */
-    public function db() {
+    public function db()
+    {
         $db = DataBase::factory();
         $db->setModel($this);
         return $db;
@@ -267,45 +292,51 @@ abstract class Model extends SingleComponent implements Modelizable {
      * 数据缓存数据库
      * @return Cacher
      */
-    public function cacher() {
+    public function cacher()
+    {
         return false;
     }
     /**
      * 数据搜索引擎数据库
      * @return Engine
      */
-    public function engine() {
+    public function engine()
+    {
         return false;
     }
 
-    public final function get($id, $fields = array()) {
+    final public function get($id, $fields = array())
+    {
         $cacher = $this->cacher();
-        if(!empty($cacher)) {
+        if (!empty($cacher)) {
             $ret = $cacher->get($id, $fields);
         }
-        if(empty($ret)) {
+        if (empty($ret)) {
             $ret = $this->db()->get($id, $fields);
             App::$_event->fire(get_class($this), self::E_GET, array($ret, $id));
         }
         return empty($ret) ? false : $ret;
     }
-    public final function add(array $info) {
+    final public function add(array $info)
+    {
         $ret = $this->db()->add($info);
         App::$_event->fire(get_class($this), self::E_ADD, array($ret, $info));
         return $ret;
     }
-    public final function del($id) {
+    final public function del($id)
+    {
         $info = $this->db()->get($id);
-        if(!empty($info)) {
+        if (!empty($info)) {
             $ret = $this->db()->del($id);
         }
         $ret = empty($ret) ? false : $ret;
         App::$_event->fire(get_class($this), self::E_DELETE, array($ret, $id, $info));
         return $ret;
     }
-    public final function upd($id, array $info) {
+    final public function upd($id, array $info)
+    {
         $data = $this->db()->get($id);
-        if(!empty($data)) {
+        if (!empty($data)) {
             $ret = $this->db()->upd($id, $info);
             App::$_event->fire(get_class($this), self::E_UPDATE, array($ret, $id, $data));
             return $ret;
@@ -313,12 +344,14 @@ abstract class Model extends SingleComponent implements Modelizable {
             return false;
         }
     }
-    public final function count(array $info = array()) {
+    final public function count(array $info = array())
+    {
         $ret = $this->db()->count($info);
         App::$_event->fire(get_class($this), self::E_COUNT, array($ret, $info));
         return $ret;
     }
-    public final function replace(array $info = array()) {
+    final public function replace(array $info = array())
+    {
         $ret = $this->db()->replace($info);
         //$this->onReplace($ret, $info);
         App::$_event->fire(get_class($this), self::E_REPLACE, array($ret, $info));
@@ -328,24 +361,25 @@ abstract class Model extends SingleComponent implements Modelizable {
     /**
      * get list of objects by serveral ids
      */
-    public final function lists(array $ids = array()) {
+    final public function lists(array $ids = array())
+    {
         $cacher = $this->cacher();
-        if(empty($cacher) && !empty($ids)) {
+        if (empty($cacher) && !empty($ids)) {
             $db = $this->db();
             $pk = $this->primary();
             $columns = $this->columns();
             $fields = array_values($columns);
             $condition = array();
             $condition[$pk] = array($ids, 'IN');
-            if($db instanceof Querying) {
+            if ($db instanceof Querying) {
                 $ret = $db->select($fields, $condition);
             }
             return empty($ret) ? false : $ret;
-        } else if(!empty($ids)) {
+        } elseif (!empty($ids)) {
             $arr = array();
             foreach ($ids as $id) {
                 $ret = $this->get($id);
-                if(!empty($ret)) {
+                if (!empty($ret)) {
                     $arr[] = $ret;
                 }
             }
@@ -357,12 +391,13 @@ abstract class Model extends SingleComponent implements Modelizable {
     /**
      * get list of objects by serveral query conditions
      */
-    public final function query($fields = array(), array $condition = array(), $order = array(), $limit = array()) {
-        if(!empty($condition)) {
+    final public function query($fields = array(), array $condition = array(), $order = array(), $limit = array())
+    {
+        if (!empty($condition)) {
             $db = $this->db();
             //$columns = $this->columns();
             //$fields = array_values($columns);
-            if($db instanceof Querying) {
+            if ($db instanceof Querying) {
                 $ret = $db->select($fields, $condition, $order, $limit);
             }
             return empty($ret) ? false : $ret;
@@ -374,11 +409,12 @@ abstract class Model extends SingleComponent implements Modelizable {
      * get list of objects by serveral search conditions.
      * use engine.
      */
-    public final function search($fields = array(), array $condition = array(), $order = array(), $limit = array()) {
+    final public function search($fields = array(), array $condition = array(), $order = array(), $limit = array())
+    {
         $engine = $this->engine();
-        if(empty($engine) && !empty($condition)) {
+        if (empty($engine) && !empty($condition)) {
             return $this->query($fields, $condition, $order, $limit);
-        } else if(!empty($condition)) {
+        } elseif (!empty($condition)) {
             $ret = $engine->search($fields, $condition, $order, $limit);
             return empty($ret) ? false : $ret;
         } else {
@@ -389,9 +425,10 @@ abstract class Model extends SingleComponent implements Modelizable {
 
     /**
      * 自身数据保存数据库
-     * @param $unpk 
+     * @param $unpk
      */
-    public final function save() {
+    final public function save()
+    {
         // TODO
         $pk = $this->primary();
         $colums = $this->columns();
@@ -411,14 +448,15 @@ abstract class Model extends SingleComponent implements Modelizable {
     }
     /**
      * 通过自身数据创建
-     * @param $unpk 
+     * @param $unpk
      */
-    public final function create($unpk = true) {
+    final public function create($unpk = true)
+    {
         $pk = $this->primary();
         $colums = $this->columns();
         $pkl = array_search($pk, $columns);
         $data = $this->toArray();
-        if($unpk) {
+        if ($unpk) {
             //去除Primary Key
             unset($data[$pkl]);
         }
@@ -432,28 +470,29 @@ abstract class Model extends SingleComponent implements Modelizable {
      * 通过自身数据更新
      * @param array $fields 指定更新某些字段
      */
-    public final function update(array $fields = array()) {
+    final public function update(array $fields = array())
+    {
         $pk = $this->primary();
         $columns = $this->columns();
         $vcolumns = array_values($columns);
         $pkl = array_search($pk, $columns);
         $data = $this->toArray();
-        if(!empty($data[$pkl])) {
+        if (!empty($data[$pkl])) {
             $id = $data[$pkl];
             unset($data[$pkl]);//去除Primary Key
-            if(empty($fields)) {
+            if (empty($fields)) {
                 return $this->upd($id, $data);
             } else {
                 $arr = array();
                 foreach ($fields as $f) {
-                    if(array_key_exists($f, $columns)) {
+                    if (array_key_exists($f, $columns)) {
                         $arr[$columns[$f]] = $data[$f];
-                    } else if(in_array($f, $vcolumns)){
+                    } elseif (in_array($f, $vcolumns)) {
                         $pro = array_search($f, $columns);
                         $arr[$f] = $data[$pro];
                     }
                 }
-                if(empty($arr)) {
+                if (empty($arr)) {
                     return false;
                 } else {
                     return $this->upd($id, $arr);
@@ -466,13 +505,14 @@ abstract class Model extends SingleComponent implements Modelizable {
     /**
      * 通过自身数据删除
      */
-    public final function delete() {
+    final public function delete()
+    {
         $pk = $this->primary();
         $columns = $this->columns();
         $vcolumns = array_values($columns);
         $pkl = array_search($pk, $columns);
         $data = $this->toArray();
-        if(!empty($data[$pkl])) {
+        if (!empty($data[$pkl])) {
             return $this->del($data[$pkl]);
         } else {
             return false;

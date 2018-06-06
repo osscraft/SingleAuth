@@ -15,37 +15,41 @@ use Dcux\SSO\Service\ClientService;
 use Dcux\SSO\Service\StatClientService;
 use stdClass;
 
-class Index extends Api {
-	public function onCreate() {
-		parent::onCreate();
-		$this->clientService = ClientService::getInstance();
-		$this->statClientService = StatClientService::getInstance();
-	}
-	public function onGet() {
-		$list = new VList();
-		$arr = array(new VObject(), 1);
-		
-		$arr[] = VClient::parse($this->clientService->getByUnique('ufsso_profile'));
-		$arr[] = VStatClient::parse($this->statClientService->get(213));
-		$arr[] = Security::generateSid('liaiyong');
-		$arr[] = VStatClient::parse($this->statClientService->get(214));
-		$arr[] = Security::getUidFromSid('mPWsTPVEh75pDQai93VLOh9inLCRwPiz7g==');
-		$std = new stdClass;
-		$arr[] = empty($std);
-		$list->list = $arr;
-		$list->total = count($arr);
+class Index extends Api
+{
+    public function onCreate()
+    {
+        parent::onCreate();
+        $this->clientService = ClientService::getInstance();
+        $this->statClientService = StatClientService::getInstance();
+    }
+    public function onGet()
+    {
+        $list = new VList();
+        $arr = array(new VObject(), 1);
+        
+        $arr[] = VClient::parse($this->clientService->getByUnique('ufsso_profile'));
+        $arr[] = VStatClient::parse($this->statClientService->get(213));
+        $arr[] = Security::generateSid('liaiyong');
+        $arr[] = VStatClient::parse($this->statClientService->get(214));
+        $arr[] = Security::getUidFromSid('mPWsTPVEh75pDQai93VLOh9inLCRwPiz7g==');
+        $std = new stdClass;
+        $arr[] = empty($std);
+        $list->list = $arr;
+        $list->total = count($arr);
 
-		/*$array = $this->clientService->getAll(array('id' => 'DESC'), array(10));
-		$total = $this->clientService->count();
-		$list = VClient::parseList($array, $total);*/
-		//echo '<pre>';print_r($list);exit;
-		//$this->response->data = $list;
-		//$this->response->success();
-		//$this->success();
-		$this->success($list);
-	}
-	public function onPost() {
-		$this->onGet();
-	}
+        /*$array = $this->clientService->getAll(array('id' => 'DESC'), array(10));
+        $total = $this->clientService->count();
+        $list = VClient::parseList($array, $total);*/
+        //echo '<pre>';print_r($list);exit;
+        //$this->response->data = $list;
+        //$this->response->success();
+        //$this->success();
+        $this->success($list);
+    }
+    public function onPost()
+    {
+        $this->onGet();
+    }
 }
 // PHP END

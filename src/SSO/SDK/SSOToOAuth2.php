@@ -20,7 +20,8 @@ use Lay\Advance\Util\Logger;
  * @author liaiyong
  * @version 1.0
  */
-class SSOToOAuth2 {
+class SSOToOAuth2
+{
     /**
      *
      * @ignore
@@ -65,12 +66,13 @@ class SSOToOAuth2 {
      * @ignore
      *
      */
-    public $sslVerifyPeer = FALSE;
+    public $sslVerifyPeer = false;
     public $authorizeURL = '';
     public $accessTokenURL = '';
     public $logoutURL = '';
     public $userAgent = 'SSO CURL 1.0';
-    public function __construct($clientId, $clientSecret, $access_token = NULL, $refresh_token = NULL) {
+    public function __construct($clientId, $clientSecret, $access_token = null, $refresh_token = null)
+    {
         global $CFG;
         $this->authorizeURL = empty($CFG['SSO_AUTHORIZE_URL']) ? $this->authorizeURL : $CFG['SSO_AUTHORIZE_URL'];
         $this->accessTokenURL = empty($CFG['SSO_TOKEN_URL']) ? $this->accessTokenURL : $CFG['SSO_TOKEN_URL'];
@@ -92,8 +94,9 @@ class SSOToOAuth2 {
      *            用于保持请求和回调的状态。在回调时,会在Query Parameter中回传该参数
      * @return array
      */
-    public function getAuthorizeURL($url, $response_type = 'code', $state = '1q2w3e') {
-        $params = array ();
+    public function getAuthorizeURL($url, $response_type = 'code', $state = '1q2w3e')
+    {
+        $params = array();
         $params['client_id'] = $this->clientId;
         $params['redirect_uri'] = $url;
         $params['response_type'] = $response_type;
@@ -112,20 +115,21 @@ class SSOToOAuth2 {
      *            - 当$type为token时： array('refresh_token'=>...)
      * @return array
      */
-    public function getAccessToken($type = 'code', $keys) {
-        $params = array ();
+    public function getAccessToken($type = 'code', $keys)
+    {
+        $params = array();
         $params['client_id'] = $this->clientId;
         $params['client_secret'] = $this->clientSecret;
         if ($type === 'token') {
             $params['grant_type'] = 'refresh_token';
             $params['refresh_token'] = $keys['refresh_token'];
-        } else if ($type === 'code') {
+        } elseif ($type === 'code') {
             $params['grant_type'] = 'authorization_code';
             $params['code'] = $keys['code'];
             $params['redirect_uri'] = $keys['redirect_uri'];
         }
-        if(function_exists('curl_init')) {
-            $response = $this->http($this->accessTokenURL,'GET',$params);
+        if (function_exists('curl_init')) {
+            $response = $this->http($this->accessTokenURL, 'GET', $params);
         } else {
             $response = $this->fopen($this->accessTokenURL, 'GET', $params);
         }
@@ -137,21 +141,23 @@ class SSOToOAuth2 {
         }
         return $token;
     }
-    public function getLogoutURL($uri = '') {
-        $params = array ();
+    public function getLogoutURL($uri = '')
+    {
+        $params = array();
         $params['access_token'] = $this->access_token;
         $params['refresh_token'] = $this->refresh_token;
         $params['redirect_uri'] = $uri;
         return $this->logoutURL . "?" . http_build_query($params);
     }
-    public function logout() {
-        $params = array ();
+    public function logout()
+    {
+        $params = array();
         $access_token = $this->access_token;
         $refresh_token = $this->refresh_token;
         $params['access_token'] = $access_token;
         $params['refresh_token'] = $refresh_token;
-        if(function_exists('curl_init')) {
-            $response = $this->http($this->logoutURL,'GET',$params);
+        if (function_exists('curl_init')) {
+            $response = $this->http($this->logoutURL, 'GET', $params);
         } else {
             $response = $this->fopen($this->logoutURL, 'GET', $params);
         }
@@ -163,7 +169,8 @@ class SSOToOAuth2 {
      *
      * @return string API results
      */
-    protected function fopen($url, $method, $fields = null) {
+    protected function fopen($url, $method, $fields = null)
+    {
         $path = $url . "?" . ((is_array($fields)) ? http_build_query($fields) : $fields);
         $stream = ($this->sslVerifyPeer) ? fsockopen($path, 'r') : fopen($path, 'r');
         $response = stream_get_contents($stream);
@@ -174,9 +181,11 @@ class SSOToOAuth2 {
      *
      * @return string API results
      */
-    protected function http($url, $method, $fields = null, $headers = null) {
-        if (! function_exists('curl_init'))
+    protected function http($url, $method, $fields = null, $headers = null)
+    {
+        if (! function_exists('curl_init')) {
             exit('{"success":false,"msg":"install curl"}');
+        }
         $ci = curl_init();
         
         curl_setopt($ci, CURLOPT_CONNECTTIMEOUT, $this->connectTimeout);
@@ -186,19 +195,22 @@ class SSOToOAuth2 {
         curl_setopt($ci, CURLOPT_SSL_VERIFYPEER, $this->sslVerifyPeer);
         
         switch ($method) {
-            case 'POST' :
+            case 'POST':
                 curl_setopt($ci, CURLOPT_POST, true);
-                if (! empty($fields))
+                if (! empty($fields)) {
                     curl_setopt($ci, CURLOPT_POSTFIELDS, $fields);
+                }
                 break;
-            case 'GET' :
-                if (! empty($fields))
+            case 'GET':
+                if (! empty($fields)) {
                     $url = $url . "?" . ((is_array($fields)) ? http_build_query($fields) : $fields);
+                }
                 break;
         }
         
-        if (isset($this->access_token) && $this->access_token)
+        if (isset($this->access_token) && $this->access_token) {
             $headers[] = "Authorization: OAuth2 " . $this->access_token;
+        }
         
         $headers[] = "API-RemoteIP: " . $_SERVER['REMOTE_ADDR'];
         

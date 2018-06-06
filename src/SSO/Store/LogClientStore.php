@@ -16,18 +16,21 @@ use Dcux\SSO\Core\Paging;
  * @version 1.0
  * @copyright 2005-2012 dcux Inc.
  * @link http://www.dcux.com
- *      
+ *
  */
-class LogClientStore extends AbstractStore {
+class LogClientStore extends AbstractStore
+{
     /**
      * 读取一条LogClient
      *
-     * @param LogClient $logClient            
+     * @param LogClient $logClient
      * @return mixed
      */
-    public function read($args) {
-        if (! $this->connection)
+    public function read($args)
+    {
+        if (! $this->connection) {
             return false;
+        }
         if (is_a($args, 'Dcux\SSO\Model\LogClient')) {
             $logClient = $args;
             $field0 = $logClient->toField('uid');
@@ -35,18 +38,18 @@ class LogClientStore extends AbstractStore {
             $value0 = $logClient->getUid();
             $value1 = $logClient->getClientId();
             if ($value0 && $value1) {
-                $condition = array (
+                $condition = array(
                         $field0 => $value0,
-                        $field1 => $value1 
+                        $field1 => $value1
                 );
-            } else if ($value0) {
-                $condition = array (
-                        $field0 => $value0 
+            } elseif ($value0) {
+                $condition = array(
+                        $field0 => $value0
                 );
             } else {
                 $condition = '';
             }
-        } else if (is_array($args) || is_string($args)) {
+        } elseif (is_array($args) || is_string($args)) {
             $logClient = new LogClient();
             $condition = $args;
         } else {
@@ -68,9 +71,11 @@ class LogClientStore extends AbstractStore {
      *
      * @return mixed
      */
-    public function reads($args, $order = '', $paging = '', $field = '') {
-        if (! $this->connection)
+    public function reads($args, $order = '', $paging = '', $field = '')
+    {
+        if (! $this->connection) {
             return false;
+        }
         if (is_a($args, 'Dcux\SSO\Model\LogClient')) {
             $logClient = $args;
             $field0 = $logClient->toField('uid');
@@ -78,18 +83,18 @@ class LogClientStore extends AbstractStore {
             $value0 = $logClient->getUid();
             $value1 = $logClient->getClientId();
             if ($value0 && $value1) {
-                $condition = array (
+                $condition = array(
                         $field0 => $value0,
-                        $field1 => $value1 
+                        $field1 => $value1
                 );
-            } else if ($value0) {
-                $condition = array (
-                        $field0 => $value0 
+            } elseif ($value0) {
+                $condition = array(
+                        $field0 => $value0
                 );
             } else {
                 $condition = '';
             }
-        } else if (is_array($args) || is_string($args)) {
+        } elseif (is_array($args) || is_string($args)) {
             $logClient = new LogClient();
             $condition = $args;
         } else {
@@ -110,9 +115,11 @@ class LogClientStore extends AbstractStore {
     /**
      * 客户端数
      */
-    public function readCount($args) {
-        if (! $this->connection)
+    public function readCount($args)
+    {
+        if (! $this->connection) {
             return false;
+        }
         if (is_a($args, 'Dcux\SSO\Model\LogClient')) {
             $logClient = $args;
             $field0 = $logClient->toField('uid');
@@ -120,18 +127,18 @@ class LogClientStore extends AbstractStore {
             $value0 = $logClient->getUid();
             $value1 = $logClient->getClientId();
             if ($value0 && $value1) {
-                $condition = array (
+                $condition = array(
                         $field0 => $value0,
-                        $field1 => $value1 
+                        $field1 => $value1
                 );
-            } else if ($value0) {
-                $condition = array (
-                        $field0 => $value0 
+            } elseif ($value0) {
+                $condition = array(
+                        $field0 => $value0
                 );
             } else {
                 $condition = '';
             }
-        } else if (is_array($args) || is_string($args)) {
+        } elseif (is_array($args) || is_string($args)) {
             $logClient = new LogClient();
             $condition = $args;
         } else {
@@ -147,9 +154,11 @@ class LogClientStore extends AbstractStore {
     /**
      * 删除$day天前的记录
      */
-    public function removeByDay($day = 30) {
-        if (! $this->connection)
+    public function removeByDay($day = 30)
+    {
+        if (! $this->connection) {
             return false;
+        }
         $logClient = new LogClient();
         $field0 = $logClient->toField('timeReported');
         $day = ($day) ? (0 + $day) : 30;
@@ -163,4 +172,3 @@ class LogClientStore extends AbstractStore {
         return $success;
     }
 }
-?>

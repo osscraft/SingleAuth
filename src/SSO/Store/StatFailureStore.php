@@ -7,8 +7,8 @@ use Dcux\SSO\Model\StatFailure;
 use Dcux\SSO\Core\Paging;
 use Dcux\Util\Logger;
 
-class StatFailureStore extends AbstractStore {
-    
+class StatFailureStore extends AbstractStore
+{
 }
 
 // PHP END

@@ -14,19 +14,22 @@ use Assetic\Asset\FileAsset;
 use Assetic\Asset\GlobAsset;
 use Assetic\Filter\JSMinFilter;
 
-class Underscore_Min extends CAction {
-	public function onGet() {
-		global $CFG;
-		$asset = new AssetCollection(array(
-			new FileAsset(App::$_docpath . '/lib/underscore-min.map')
-		));
-		$arr = array();
-		$arr['filename'] = App::$_docpath . DIRECTORY_SEPARATOR . 'cache/js/underscore-min.map';
-		$arr['content'] = $asset->dump();
-		$this->template->push($arr['content']);
-		$this->push($arr);
-	}
-    public function onPost() {
+class Underscore_Min extends CAction
+{
+    public function onGet()
+    {
+        global $CFG;
+        $asset = new AssetCollection(array(
+            new FileAsset(App::$_docpath . '/lib/underscore-min.map')
+        ));
+        $arr = array();
+        $arr['filename'] = App::$_docpath . DIRECTORY_SEPARATOR . 'cache/js/underscore-min.map';
+        $arr['content'] = $asset->dump();
+        $this->template->push($arr['content']);
+        $this->push($arr);
+    }
+    public function onPost()
+    {
         $this->onGet();
     }
 }

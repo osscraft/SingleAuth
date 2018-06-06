@@ -6,7 +6,7 @@ use Lay\Advance\Util\Utility;
 
 /**
  * 记录系统日志，应用接入日志，资源拥有者登录日志。
- * 
+ *
  * @category
  *
  * @package classes
@@ -14,9 +14,10 @@ use Lay\Advance\Util\Utility;
  * @version 1.0
  * @copyright 2005-2012 dcux Inc.
  * @link http://www.dcux.com
- *      
+ *
  */
-class Syslog {
+class Syslog
+{
     /**
      *
      * 记录应用接入日志。
@@ -24,14 +25,15 @@ class Syslog {
      * api,clientId,responseType,requestType,success
      *
      * @author liangjun@dcux.com
-     * @param array $applog            
+     * @param array $applog
      * @return void
      */
-    public static function logApp($appLog) {
+    public static function logApp($appLog)
+    {
         $arr = &$appLog;
         $message = '';
         $i = 0;
-        foreach ( $arr as $k => $v ) {
+        foreach ($arr as $k => $v) {
             if ($i == 0) {
                 $message .= "$k=>" . $v;
             } else {
@@ -53,14 +55,15 @@ class Syslog {
      * clientId,username,success
      *
      * @author liangjun@dcux.com
-     * @param array $resourceOwnerLog            
+     * @param array $resourceOwnerLog
      * @return void
      */
-    public static function logResourceOwner($resourceOwnerLog) {
+    public static function logResourceOwner($resourceOwnerLog)
+    {
         $arr = &$resourceOwnerLog;
         $message = '';
         $i = 0;
-        foreach ( $arr as $k => $v ) {
+        foreach ($arr as $k => $v) {
             if ($i == 0) {
                 $message .= "$k=>" . $v;
             } else {
@@ -81,10 +84,11 @@ class Syslog {
      * 包含有系统的运行状况，调试日志。
      *
      * @author liangjun@dcux.com
-     * @param string $systemLog            
+     * @param string $systemLog
      * @return void
      */
-    public static function logSystem($systemLog) {
+    public static function logSystem($systemLog)
+    {
         self::logToSyslog(LOG_INFO, $systemLog);
     }
     
@@ -94,12 +98,12 @@ class Syslog {
      * $priority参数请参见http://cn.php.net/manual/zh/function.syslog.php
      *
      * @author liangjun@dcux.com
-     * @param int $priority            
-     * @param string $message            
+     * @param int $priority
+     * @param string $message
      * @return void
      */
-    private static function logToSyslog($priority, $message) {
+    private static function logToSyslog($priority, $message)
+    {
         syslog($priority, "DCUX SSO SYSTEM:" . $message);
     }
 }
-?>

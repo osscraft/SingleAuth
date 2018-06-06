@@ -15,29 +15,33 @@ use Dcux\SSO\Model\LdapUser;
 use Dcux\SSO\Model\MysqlUser;
 use stdClass;
 
-class VStatUserDetail extends VObject {
-	protected $id = 0;
-	protected $uid = '';
+class VStatUserDetail extends VObject
+{
+    protected $id = 0;
+    protected $uid = '';
     protected $cid = '';
-	protected $time = '';
+    protected $time = '';
     protected $ip = '';
     protected $os = '';
     protected $browser = '';
     protected $user = null;
     protected $client = null;
-    public function __construct() {
+    public function __construct()
+    {
         $this->user = new stdClass;
         $this->client = new stdClass;
         parent::__construct();
     }
-    public function mapping() {
+    public function mapping()
+    {
         return array(
             'uid' => 'username',
             'cid' => 'clientId'
         );
     }
-    public function rules() {
-    	return array(
+    public function rules()
+    {
+        return array(
                 'id' => Component::TYPE_INTEGER,
                 'uid' => Component::TYPE_STRING,
                 'cid' => Component::TYPE_STRING,
@@ -47,33 +51,35 @@ class VStatUserDetail extends VObject {
                 'browser' => Component::TYPE_STRING,
                 'user' => array(Component::TYPE_FORMAT, array()),
                 'client' => array(Component::TYPE_FORMAT, array())
-    	);
+        );
     }
-    public function format($val, $key, $option = array()) {
+    public function format($val, $key, $option = array())
+    {
         $ret = '';
         switch ($key) {
             case 'ip':
-                if(is_numeric($val)) {
+                if (is_numeric($val)) {
                     $ret = Utility::ntoip($val);
                 }
                 break;
             case 'user':
-                if($val instanceof VUser){
+                if ($val instanceof VUser) {
                     $ret = $val;
-                } else if($val instanceof Model) {
-                    $ret = VUser::parseByModel($val);;
-                } else if((is_array($val) && !empty($val)) || (is_object($val) && !Utility::emptyObject($val))){
+                } elseif ($val instanceof Model) {
+                    $ret = VUser::parseByModel($val);
+                    ;
+                } elseif ((is_array($val) && !empty($val)) || (is_object($val) && !Utility::emptyObject($val))) {
                     $ret = VUser::parse($val);
                 } else {
                     $ret = new stdClass;
                 }
                 break;
             case 'client':
-                if($val instanceof VClient){
+                if ($val instanceof VClient) {
                     $ret = $val;
-                } else if($val instanceof Client) {
+                } elseif ($val instanceof Client) {
                     $ret = VClient::parseByClient($val);
-                } else if((is_array($val) && !empty($val)) || (is_object($val) && !Utility::emptyObject($val))) {
+                } elseif ((is_array($val) && !empty($val)) || (is_object($val) && !Utility::emptyObject($val))) {
                     $ret = VClient::parse($val);
                 } else {
                     $ret = new stdClass;
@@ -86,18 +92,19 @@ class VStatUserDetail extends VObject {
     }
 
     
-    public static function parse($statUser) {
+    public static function parse($statUser)
+    {
         $ret = parent::parse($statUser);
         // diff properties
 
         // pick user
-        if(!empty($ret) && !Utility::emptyObject($ret)) {
-            if(!empty($ret->uid)) {
+        if (!empty($ret) && !Utility::emptyObject($ret)) {
+            if (!empty($ret->uid)) {
                 $ret->user = VUser::parse(VObject::$datapicker->pickUser($ret->uid));
             } else {
                 $ret->user = new stdClass;
             }
-            if(!empty($ret->cid)) {
+            if (!empty($ret->cid)) {
                 $ret->client = VClient::parse(VObject::$datapicker->pickClient($ret->cid));
             } else {
                 $ret->client = new stdClass;
@@ -109,7 +116,8 @@ class VStatUserDetail extends VObject {
         return $ret;
     }
 
-    public static function parseSimple($statUser) {
+    public static function parseSimple($statUser)
+    {
         return parent::parse($statUser);
     }
 }

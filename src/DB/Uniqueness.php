@@ -2,7 +2,8 @@
 
 namespace Dcux\DB;
 
-interface Uniqueness {
+interface Uniqueness
+{
     /**
      * @param array|string $unique
      */
