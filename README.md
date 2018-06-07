@@ -17,7 +17,7 @@ if (!-e $request_filename) {
 ```
 
 ## 安装
-1. 下载或克隆至任意位置;
+1. 下载或克隆至任意位置`$PROJECT_PATH$`;
 2. 使用[composer](http://getcomposer.org/ "Dependency Manager for PHP")命令;
 ```
 composer update
