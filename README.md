@@ -13,8 +13,9 @@ Open Authentication Platform System
 composer update
 ```
 3. 导入数据表结构和demo数据，执行`$PROJECT_PATH$/assets/sql/SSO-demo/sso.sql`和`$PROJECT_PATH$/assets/sql/SSO-demo/data.sql`;
-4. Apache Web服务地址指向`$PROJECT_PATH$/public`，端口8800;
-5. 浏览器打开 http://127.0.0.1:8800/
+4. php.ini文件中增加配置项`browscap = $PROJECT_PATH$/config/lite_php_browscap.ini`
+5. Apache Web服务地址指向`$PROJECT_PATH$/public`，端口8800;
+6. 浏览器打开 http://127.0.0.1:8800/
 
 ## 命名规范
 
