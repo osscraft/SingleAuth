@@ -1,30 +1,21 @@
 # SingleAuth
-Open Authentication and Authorization  Platform System
+Open Authentication Platform System
 
 ## 环境
 * PHP > 5.4
 * PHP扩展：php_mysqli php_memcache
-* [composer](http://getcomposer.org/ "Dependency Manager for PHP")
-* Apache2(httpd)或Ngnix
-  + apache2 rewrite 
-  + nginx
-```
-// rewrite
-if (!-e $request_filename) {
-  rewrite ^(.*)$ /index.php?s=/$1 last;
-  break;
-}
-```
+* Apache2 Web或Ngnix
 
 ## 安装
-1. 下载或克隆至任意位置`$PROJECT_PATH$`;
+1. 下载或克隆至任意位置;
 2. 使用[composer](http://getcomposer.org/ "Dependency Manager for PHP")命令;
 ```
 composer update
 ```
 3. 导入数据表结构和demo数据，执行`$PROJECT_PATH$/assets/sql/SSO-demo/sso.sql`和`$PROJECT_PATH$/assets/sql/SSO-demo/data.sql`;
-4. Apache2或Nginx服务地址指向`$PROJECT_PATH$/public`，端口8800;
-5. 浏览器打开 http://127.0.0.1:8800/
+4. php.ini文件中增加配置项`browscap = $PROJECT_PATH$/config/lite_php_browscap.ini`
+5. Apache Web服务地址指向`$PROJECT_PATH$/public`，端口8800;
+6. 浏览器打开 http://127.0.0.1:8800/
 
 ## 命名规范
 
