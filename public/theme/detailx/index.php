@@ -1,1 +1,0 @@
-<?php include dirname(__DIR__) . '/detail/index.php';?>

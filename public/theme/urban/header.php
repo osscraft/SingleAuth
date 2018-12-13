@@ -1,1 +1,0 @@
-<?php include dirname(__DIR__) . '/fix/header.php';?>
