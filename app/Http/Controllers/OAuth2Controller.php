@@ -86,6 +86,34 @@ class OAuth2Controller extends Controller
         $authRequest = $this->_authorizationServer->validateAuthorizationRequest($this->_request);
 
         // Once the user has logged in set the user on the AuthorizationRequest
+        // $authRequest->setUser(new UserEntity());
+
+        // Once the user has approved or denied the client update the status
+        // (true = approved, false = denied)
+        // $authRequest->setAuthorizationApproved(true);
+
+        // Return the HTTP redirect response
+        // return $this->_authorizationServer->completeAuthorizationRequest($authRequest, $this->_response);
+
+        return view('oauth2.authorize');
+    }
+
+    public function authPost($ability, $arguments = [])
+    {
+        // 使用令牌码
+        $this->_authorizationServer->enableGrantType(
+            new AuthCodeGrant(
+                $this->_authCodeRepository,
+                $this->_refreshTokenRepository,
+                new \DateInterval('PT10M')
+            ),
+            new \DateInterval('PT1H')
+        );
+
+        // dump($this->_authorizationServer);
+        $authRequest = $this->_authorizationServer->validateAuthorizationRequest($this->_request);
+
+        // Once the user has logged in set the user on the AuthorizationRequest
         $authRequest->setUser(new UserEntity());
 
         // Once the user has approved or denied the client update the status
