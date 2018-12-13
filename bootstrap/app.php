@@ -27,6 +27,7 @@ $app->withFacades();
 
 $app->withEloquent();
 
+$app->configure('constant');  # 加载常量
 /*
 |--------------------------------------------------------------------------
 | Register Container Bindings
@@ -60,7 +61,8 @@ $app->singleton(
 */
 
 $app->middleware([
-    Illuminate\Session\Middleware\StartSession::class
+    Illuminate\Session\Middleware\StartSession::class,
+    App\Http\Middleware\Http::class,
 ]);
 // $app->middleware([
 //     Lay\Advance\Middleware\StartSession::class
@@ -91,10 +93,15 @@ $app->middleware([
 // $app->alias('session', Lay\Advance\Session\SaSessionHandler::class);
 // echo "1";
 
-// $app->register(App\Providers\AppServiceProvider::class);
+$app->register(App\Providers\AppServiceProvider::class);
 // $app->register(App\Providers\AuthServiceProvider::class);
-// $app->register(App\Providers\EventServiceProvider::class);
+$app->register(App\Providers\EventServiceProvider::class);
 
+$app->configure('session');  # 加载配置文件
+$app->bind(\Illuminate\Session\SessionManager::class, function () use ($app) {
+    return new \Illuminate\Session\SessionManager($app);
+});
+$app->register(\Illuminate\Session\SessionServiceProvider::class);
 /*
 |--------------------------------------------------------------------------
 | Load The Application Routes

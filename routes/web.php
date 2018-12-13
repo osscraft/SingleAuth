@@ -14,9 +14,13 @@
 $router->get('/', function () use ($router) {
     return $router->app->version();
 });
-$router->get('authorize','OAuth2Controller@authorize');
-$router->get('token','OAuth2Controller@token');
+$router->get('authorize','OAuth2Controller@auth');
+$router->post('authorize','OAuth2Controller@authPost');
+$router->post('access_token','OAuth2Controller@access_token');
 // $router->group(['prefix' => 'api'], function () use ($router) {
 //     // $router->get('hello',['middleware'=>'token','uses'=>'AdminController@index']);
 //     // $router->get('login','AdminController@login');
 // });
+
+$router->get('/test/{name}', 'ExampleController@test');
+$router->post('/test/{name}', 'ExampleController@test');

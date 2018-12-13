@@ -14,5 +14,18 @@ class ExampleController extends Controller
         //
     }
 
+    public function test($name)
+    {
+        if(method_exists($this, $name)) {
+            return $this->$name();
+        }
+    }
+
     //
+    public function chmod()
+    {
+        $bool = chmod(env('APP_PRIVATE_KEY'), 660);
+
+        return ['success' => $bool];
+    }
 }

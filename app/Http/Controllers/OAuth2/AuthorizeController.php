@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\OAuth2;
 
 use App\Http\Controllers\Controller;
 use App\OAuth2\Entities\UserEntity;
@@ -16,7 +16,7 @@ use Illuminate\Database\Schema\Blueprint;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
-class OAuth2Controller extends Controller
+class AuthorizeController extends Controller
 {
     /**
      * @var ServerRequestInterface
@@ -67,12 +67,7 @@ class OAuth2Controller extends Controller
         $this->_clientRepository = $clientRepository;
         $this->_refreshTokenRepository = $refreshTokenRepository;
         $this->_scopeRepository = $scopeRepository;
-    }
-
-    //
-    public function auth($ability, $arguments = [])
-    {
-        // 使用令牌码
+        
         $this->_authorizationServer->enableGrantType(
             new AuthCodeGrant(
                 $this->_authCodeRepository,
@@ -81,7 +76,11 @@ class OAuth2Controller extends Controller
             ),
             new \DateInterval('PT1H')
         );
+    }
 
+    //
+    public function auth($ability, $arguments = [])
+    {
         // dump($this->_authorizationServer);
         $authRequest = $this->_authorizationServer->validateAuthorizationRequest($this->_request);
 
@@ -90,24 +89,14 @@ class OAuth2Controller extends Controller
 
         // Once the user has approved or denied the client update the status
         // (true = approved, false = denied)
-        $authRequest->setAuthorizationApproved(true);
+        $authRequest->setAuthorizationApproved(false);
 
         // Return the HTTP redirect response
         return $this->_authorizationServer->completeAuthorizationRequest($authRequest, $this->_response);
     }
 
-    public function access_token()
+    public function authPost()
     {
-        // 使用令牌码
-        $this->_authorizationServer->enableGrantType(
-            new AuthCodeGrant(
-                $this->_authCodeRepository,
-                $this->_refreshTokenRepository,
-                new \DateInterval('PT10M')
-            ),
-            new \DateInterval('PT1H')
-        );
 
-        return $this->_authorizationServer->respondToAccessTokenRequest($this->_request, $this->_response);
     }
 }
