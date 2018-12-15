@@ -16,7 +16,7 @@ class ClientRepository implements ClientRepositoryInterface
             'myawesomeapp' => [
                 'secret'          => password_hash('abc123', PASSWORD_BCRYPT),
                 'name'            => 'My Awesome App',
-                'redirect_uri'    => 'http://127.0.0.1:8900/access_token',
+                'redirect_uri'    => url('/index'),
                 'is_confidential' => true,
             ],
         ];

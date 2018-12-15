@@ -14,13 +14,12 @@
 $router->get('/', function () use ($router) {
     return $router->app->version();
 });
+$router->get('index','OAuth2Controller@index');
 $router->get('authorize','OAuth2Controller@auth');
 $router->post('authorize','OAuth2Controller@authPost');
 $router->post('access_token','OAuth2Controller@access_token');
-// $router->group(['prefix' => 'api'], function () use ($router) {
-//     // $router->get('hello',['middleware'=>'token','uses'=>'AdminController@index']);
-//     // $router->get('login','AdminController@login');
-// });
+$router->get('qrcode/{clientId}','OAuth2Controller@qrcode');
+$router->get('qrcode/login/{clientId}','OAuth2Controller@qrcodeLogin');
 
 $router->get('/test/{name}', 'ExampleController@test');
 $router->post('/test/{name}', 'ExampleController@test');

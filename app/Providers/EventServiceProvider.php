@@ -18,5 +18,8 @@ class EventServiceProvider extends ServiceProvider
         \App\Events\ExceptionEvent::class => [
             \App\Listeners\ExceptionListener::class,
         ],
+        \App\Events\CurlEvent::class => [
+            \App\Listeners\CurlListener::class,
+        ],
     ];
 }

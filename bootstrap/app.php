@@ -97,11 +97,14 @@ $app->register(App\Providers\AppServiceProvider::class);
 // $app->register(App\Providers\AuthServiceProvider::class);
 $app->register(App\Providers\EventServiceProvider::class);
 
+$app->register(\Illuminate\Session\SessionServiceProvider::class);
+$app->register(SimpleSoftwareIO\QrCode\QrCodeServiceProvider::class);
+
 $app->configure('session');  # 加载配置文件
 $app->bind(\Illuminate\Session\SessionManager::class, function () use ($app) {
     return new \Illuminate\Session\SessionManager($app);
 });
-$app->register(\Illuminate\Session\SessionServiceProvider::class);
+$app->alias('qrcode', SimpleSoftwareIO\QrCode\Facades\QrCode::class);
 /*
 |--------------------------------------------------------------------------
 | Load The Application Routes
