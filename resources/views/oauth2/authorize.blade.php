@@ -22,28 +22,6 @@
     border-color: #25a25a;
 }
     </style>
-    <script>
-        var ws = new WebSocket("{{$form->socketServerUri}}");
-        ws.onopen = function() {
-            console.log("连接成功");
-            // ws.send('tom');
-            // console.log("给服务端发送一个字符串：tom");
-        };
-        ws.onmessage = function(e) {
-            console.log("收到服务端的消息：" + e.data);
-            var json = JSON.parse(e.data);
-            var event = json.event;
-            var data = json.data;
-            switch (event) {
-                case 'onconnect':
-                    clientId = data.client_id;
-                    break;
-            }
-            if(event != 'onticks') {
-                $('#messages').append('<div class=message>' + '[' + (new Date()).toLocaleString() + '] ' + e.data + '</div>');
-            }
-        };
-    </script>
 </head>
 <body>
     <header class="navbar navbar-expand navbar-dark flex-column flex-md-row bd-navbar bg-success">
@@ -61,11 +39,12 @@
                     <div class="col-md-6 text-center text-md-left pr-md-5">
                         <form action="" method="POST" class="form-layout" enctype="multipart/form-data">
                             <h1 class="mb-3 bd-text-purple-bright">OAuth2</h1>
+                            @if(!$form->sessionUser)
                             <div class="form-group">
-                                <input type="text" class="form-control input-lg" id="username" aria-describedby="username" placeholder="用户名">
+                                <input type="text" class="form-control input-lg" id="username" name="username" aria-describedby="username" placeholder="用户名" value="{{$form->username}}">
                             </div>
                             <div class="form-group">
-                                <input type="password" class="form-control input-lg" id="password" placeholder="密码">
+                                <input type="password" class="form-control input-lg" id="password" name="password" placeholder="密码" value="{{$form->password}}">
                             </div>
                             <div class="form-group">
                                 <button type="submit" class="btn btn-success btn-lg btn-block mb15"><span>登录</span></button>
@@ -73,17 +52,52 @@
                             <div class="form-group">
                                 <label>忘记密码？</label>
                             </div>
+                            @else
+                            <div class="form-group">
+                                <label>已登录帐号：{{$form->sessionUser->getIdentifier()}}</label>
+                            </div>
+                            <div class="form-group">
+                                <button type="submit" class="btn btn-success btn-lg btn-block mb15"><span>确认</span></button>
+                            </div>
+                            <div class="form-group">
+                                <label>其他帐号？</label>
+                            </div>
+                            @endif
                         </form>
                     </div>
                 </div>
             </div>
+            @if(!$form->sessionUser)
             <div class="row mx-auto align-items-center pt-md-5">
                 <div class="mx-auto">
                     <div class="mx-auto text-center"><label>二维码登录</label></div>
                     <img class="img-fluid mb-3 mb-md-0" src="{{URL('/qrcode/fac0000000000000001')}}" alt="" width="300" height="300">
                 </div>
             </div>
+            @endif
         </div>
     </main>
 </body>
+<script>
+    var ws = new WebSocket("{{$form->socketServerUri}}");
+    ws.onopen = function() {
+        console.log("连接成功");
+        // ws.send('tom');
+        // console.log("给服务端发送一个字符串：tom");
+    };
+    ws.onmessage = function(e) {
+        console.log("收到服务端的消息：" + e.data);
+        var json = JSON.parse(e.data);
+        var event = json.event;
+        var data = json.data;
+        switch (event) {
+            case 'onconnect':
+                clientId = data.client_id;
+                break;
+        }
+        if(event != 'onticks') {
+            $('#messages').append('<div class=message>' + '[' + (new Date()).toLocaleString() + '] ' + e.data + '</div>');
+        }
+    };
+</script>
 </html>

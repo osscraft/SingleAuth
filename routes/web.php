@@ -16,7 +16,7 @@ $router->get('/', function () use ($router) {
 });
 $router->get('index','OAuth2Controller@index');
 $router->get('authorize','OAuth2Controller@auth');
-$router->post('authorize','OAuth2Controller@authPost');
+$router->post('authorize','OAuth2Controller@auth');
 $router->post('access_token','OAuth2Controller@access_token');
 $router->get('qrcode/{clientId}','OAuth2Controller@qrcode');
 $router->get('qrcode/login/{clientId}','OAuth2Controller@qrcodeLogin');

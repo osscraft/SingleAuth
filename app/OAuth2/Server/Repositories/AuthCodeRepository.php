@@ -1,10 +1,10 @@
 <?php
 
-namespace App\OAuth2\Repositories;
+namespace App\OAuth2\Server\Repositories;
 
 use League\OAuth2\Server\Entities\AuthCodeEntityInterface;
 use League\OAuth2\Server\Repositories\AuthCodeRepositoryInterface;
-use App\OAuth2\Entities\AuthCodeEntity;
+use App\OAuth2\Server\Entities\AuthCodeEntity;
 
 class AuthCodeRepository implements AuthCodeRepositoryInterface
 {

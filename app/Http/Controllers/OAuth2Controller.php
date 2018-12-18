@@ -79,6 +79,7 @@ class OAuth2Controller extends Controller
         $encryptionKey = env('APP_KEY');
         $this->_apiHelper = $apiHelper;
         $this->_request = $request;
+        $this->_session = $request->session();
         $this->_psrRequest = $psrRequest;
         $this->_psrResponse = $psrResponse;
         $this->_authorizationServer = new AuthorizationServer($clientRepository, $accessTokenRepository, $scopeRepository, $privateKey, $encryptionKey);
@@ -92,42 +93,42 @@ class OAuth2Controller extends Controller
 
     public function index()
     {
-        // $query = $this->_psrRequest->getQueryParams();
-        // $query = json_decode(json_encode())
         $form = new \stdClass;
-        $code = $this->_request->get('code') ?: '';
+        $form->code = $this->_request->get('code') ?: '';
 
-        $res = $this->_apiHelper->httpPost('/access_token', ['grant_type' => 'authorization_code', 'code' => $code, 'client_id' => 'myawesomeapp', 'client_secret' => 'abc123', 'redirect_uri' => url('/index')]);
+        $res = $this->_apiHelper->httpPost('/access_token', ['grant_type' => 'authorization_code', 'code' => $form->code, 'client_id' => 'myawesomeapp', 'client_secret' => 'abc123', 'redirect_uri' => url('/index')]);
         $data = $this->_apiHelper->convert($res);
 
         return $this->success($data);
     }
+
     //
     public function auth($ability, $arguments = [])
     {
-        // 使用令牌码
-        $this->_authorizationServer->enableGrantType(
-            new AuthCodeGrant(
-                $this->_authCodeRepository,
-                $this->_refreshTokenRepository,
-                new \DateInterval('PT10M')
-            ),
-            new \DateInterval('PT1H')
-        );
-
-        // dump($this->_authorizationServer);
-        $authRequest = $this->_authorizationServer->validateAuthorizationRequest($this->_psrRequest);
-        
         $form = new \stdClass;
+        $form->clientId = $this->_request->get('client_id') ?: '';
+        $form->responseType = $this->_request->get('response_type') ?: '';
+        $form->state = $this->_request->get('state') ?: '';
         $form->socketServerUri = (is_https() ? 'wss' : 'ws') . '://' . env('SOCKET_SERVER_HOST') . ':' . env('SOCKET_SERVER_PORT');
-        $form->sessionUser = empty($_SESSION['user']) ? null : json_decode(json_encode($_SESSION['user']));
 
-        return view('oauth2.authorize', ['form' => $form]);
+        $method = $this->_request->method();
+        if($method == 'GET') {
+            return $this->_oauth2->authorize($form);
+        } else {
+            $form->username = $this->_request->post('username') ?: '';
+            $form->password = $this->_request->post('password') ?: '';
+            $form->logout = $this->_request->input('logout') ?: false;
+
+            if($form->logout) {
+                return $this->_oauth2->logout($form);
+            }
+            return $this->_oauth2->login($form);
+        }
     }
 
     public function authPost($ability, $arguments = [])
     {
-        // 使用令牌码
+        // 使用授权码
         $this->_authorizationServer->enableGrantType(
             new AuthCodeGrant(
                 $this->_authCodeRepository,
@@ -160,6 +161,22 @@ class OAuth2Controller extends Controller
             $form->sessionUser = null;
             return view('oauth2.authorize', ['form' => $form]);
         }
+    }
+
+    public function other()
+    {
+        // 使用授权码
+        $this->_authorizationServer->enableGrantType(
+            new AuthCodeGrant(
+                $this->_authCodeRepository,
+                $this->_refreshTokenRepository,
+                new \DateInterval('PT10M')
+            ),
+            new \DateInterval('PT1H')
+        );
+
+        // dump($this->_authorizationServer);
+        $authRequest = $this->_authorizationServer->validateAuthorizationRequest($this->_psrRequest);
     }
 
     public function access_token()
