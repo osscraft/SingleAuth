@@ -22,6 +22,11 @@ interface SessionRepositoryInterface
     public function getUser();
 
     /**
+     * 清除会话用户
+     */
+    public function revokeUser();
+
+    /**
      * 登录输入次数
      */
     public function loginTimes();
@@ -32,9 +37,7 @@ interface SessionRepositoryInterface
     public function incLoginTimes();
 
     /**
-     * Revoke session user
-     *
-     * @param string $codeId
+     * 清除输入次数
      */
-    public function revokeUser();
+    public function revokeLoginTimes();
 }

@@ -48,6 +48,16 @@ class SessionRepository implements SessionRepositoryInterface
     /**
      * {@inheritdoc}
      */
+    public function revokeUser()
+    {
+        $this->session->forget('user');
+
+        return $this;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function loginTimes()
     {
         return $this->session->get('loginTimes', 0);
@@ -67,9 +77,9 @@ class SessionRepository implements SessionRepositoryInterface
     /**
      * {@inheritdoc}
      */
-    public function revokeUser()
+    public function revokeLoginTimes()
     {
-        $this->session->forget('user');
+        $this->session->forget('loginTimes');
 
         return $this;
     }

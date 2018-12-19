@@ -118,6 +118,7 @@ class OAuth2Controller extends Controller
             $form->username = $this->_request->post('username') ?: '';
             $form->password = $this->_request->post('password') ?: '';
             $form->logout = $this->_request->input('logout') ?: false;
+            $form->error = '';
 
             if($form->logout) {
                 return $this->_oauth2->logout($form);
@@ -126,58 +127,42 @@ class OAuth2Controller extends Controller
         }
     }
 
-    public function authPost($ability, $arguments = [])
-    {
-        // 使用授权码
-        $this->_authorizationServer->enableGrantType(
-            new AuthCodeGrant(
-                $this->_authCodeRepository,
-                $this->_refreshTokenRepository,
-                new \DateInterval('PT10M')
-            ),
-            new \DateInterval('PT1H')
-        );
+    // public function authPost($ability, $arguments = [])
+    // {
+    //     // 使用授权码
+    //     $this->_authorizationServer->enableGrantType(
+    //         new AuthCodeGrant(
+    //             $this->_authCodeRepository,
+    //             $this->_refreshTokenRepository,
+    //             new \DateInterval('PT10M')
+    //         ),
+    //         new \DateInterval('PT1H')
+    //     );
 
-        $form = new \stdClass;
-        $form->username = $this->_request->input('username') ?: '';
-        $form->password = $this->_request->input('password') ?: '';
-        $form->socketServerUri = (is_https() ? 'wss' : 'ws') . '://' . env('SOCKET_SERVER_HOST') . ':' . env('SOCKET_SERVER_PORT');
+    //     $form = new \stdClass;
+    //     $form->username = $this->_request->input('username') ?: '';
+    //     $form->password = $this->_request->input('password') ?: '';
+    //     $form->socketServerUri = (is_https() ? 'wss' : 'ws') . '://' . env('SOCKET_SERVER_HOST') . ':' . env('SOCKET_SERVER_PORT');
+    //     $form->error = '';
 
-        list($success, $user) = $this->_oauth2->login($form);
-        if($success) {
-            // dump($this->_authorizationServer);
-            $authRequest = $this->_authorizationServer->validateAuthorizationRequest($this->_psrRequest);
-    
-            // Once the user has logged in set the user on the AuthorizationRequest
-            $authRequest->setUser($user);
-    
-            // Once the user has approved or denied the client update the status
-            // (true = approved, false = denied)
-            $authRequest->setAuthorizationApproved(true);
-    
-            // Return the HTTP redirect response
-            return $this->_authorizationServer->completeAuthorizationRequest($authRequest, $this->_psrResponse);
-        } else {
-            $form->sessionUser = null;
-            return view('oauth2.authorize', ['form' => $form]);
-        }
-    }
+    //     return $this->_oauth2->login($form);
+    // }
 
-    public function other()
-    {
-        // 使用授权码
-        $this->_authorizationServer->enableGrantType(
-            new AuthCodeGrant(
-                $this->_authCodeRepository,
-                $this->_refreshTokenRepository,
-                new \DateInterval('PT10M')
-            ),
-            new \DateInterval('PT1H')
-        );
+    // public function other()
+    // {
+    //     // 使用授权码
+    //     $this->_authorizationServer->enableGrantType(
+    //         new AuthCodeGrant(
+    //             $this->_authCodeRepository,
+    //             $this->_refreshTokenRepository,
+    //             new \DateInterval('PT10M')
+    //         ),
+    //         new \DateInterval('PT1H')
+    //     );
 
-        // dump($this->_authorizationServer);
-        $authRequest = $this->_authorizationServer->validateAuthorizationRequest($this->_psrRequest);
-    }
+    //     // dump($this->_authorizationServer);
+    //     $authRequest = $this->_authorizationServer->validateAuthorizationRequest($this->_psrRequest);
+    // }
 
     public function access_token()
     {
