@@ -24,23 +24,26 @@
     </style>
 </head>
 <body>
-    <header class="navbar navbar-expand navbar-dark flex-column flex-md-row bd-navbar bg-success">
+    @if(!empty($form->showHeader))
+    <header class="navbar navbar-expand navbar-dark flex-column flex-md-row bd-navbar bg-primary">
         <a class="navbar-brand mr-0 mr-md-2" href="/" aria-label="OAuth2">
             OAuth2
         </a>
     </header>
+    @endif
     <main class="bd-masthead" id="content" role="main">
         <div class="container">
-            <div class="row pt-md-5">
+            <div class="row mt-5">
                 <div class="row mx-auto align-items-center">
                     <div class="col-6 mx-auto col-md-6">
                         <img class="img-fluid mb-3 mb-md-0" src="http://getbootstrap.com/docs/4.1/assets/img/bootstrap-stack.png" alt="" width="600" height="600">
                     </div>
                     <div class="col-md-6 text-center text-md-left pr-md-5">
-                        <form action="" method="POST" class="form-layout" enctype="multipart/form-data">
+                        <form id="form" action="" method="POST" class="form-layout" enctype="multipart/form-data">
                             <h1 class="mb-3 bd-text-purple-bright">OAuth2</h1>
                             @if(!$form->sessionUser)
                             <div class="form-group">
+                                <label id="error" class="text-danger font-weight-bold">@if(empty($form->error)) &nbsp; @else {{$form->error}} @endif</label>
                                 <input type="text" class="form-control input-lg" id="username" name="username" aria-describedby="username" placeholder="用户名" value="{{$form->username}}">
                             </div>
                             <div class="form-group">
@@ -54,24 +57,27 @@
                             </div>
                             @else
                             <div class="form-group">
-                                <label>已登录帐号：{{$form->sessionUser->getIdentifier()}}</label>
+                                <input id="username" name="username" type="text" value="{{$form->sessionUser->getIdentifier()}}" class="form-control input-lg" placeholder="用户名" disabled />
                             </div>
                             <div class="form-group">
+                                <input type="hidden" class="form-control input-lg" id="logout" name="logout" value="">
+                                <input type="hidden" class="form-control input-lg" id="unbind" name="unbind" value="">
                                 <button type="submit" class="btn btn-success btn-lg btn-block mb15"><span>确认</span></button>
                             </div>
                             <div class="form-group">
-                                <label>其他帐号？</label>
+                                <a id="other" class="btn p-0 float-left">其他帐号？</a>
+                                @if(!empty($form->isWeixinBound)) <a id="cancel" class="btn p-0 float-right">取消绑定</a> @endif
                             </div>
                             @endif
                         </form>
                     </div>
                 </div>
             </div>
-            @if(!$form->sessionUser)
-            <div class="row mx-auto align-items-center pt-md-5">
+            @if(!$form->sessionUser && !$form->isMobile && !$form->isWeixinBrowser)
+            <div class="row mx-auto align-items-center mt-5">
                 <div class="mx-auto">
-                    <div class="mx-auto text-center"><label>二维码登录</label></div>
-                    <img class="img-fluid mb-3 mb-md-0" src="{{URL('/qrcode/fac0000000000000001')}}" alt="" width="300" height="300">
+                    <div class="mx-auto text-center"><label>微信扫描下方二维码</label></div>
+                    <img id="qrcode" class="img-fluid mb-3 mb-md-0" src="" alt="" width="160" height="160">
                 </div>
             </div>
             @endif
@@ -79,6 +85,8 @@
     </main>
 </body>
 <script>
+    var base = "{{URL()}}";
+    var clientId = '';
     var ws = new WebSocket("{{$form->socketServerUri}}");
     ws.onopen = function() {
         console.log("连接成功");
@@ -92,12 +100,22 @@
         var data = json.data;
         switch (event) {
             case 'onconnect':
-                clientId = data.client_id;
+                clientId = data.clientId;
+                var qrcode = base + '/qrcode/' + clientId + '?_r=' + Math.random();
+                $('#qrcode').prop('src', qrcode);
                 break;
         }
         if(event != 'onticks') {
             $('#messages').append('<div class=message>' + '[' + (new Date()).toLocaleString() + '] ' + e.data + '</div>');
         }
     };
+    $('#other').on('click', function(e) {
+        $('#logout').val(1);
+        $('#form').submit();
+    });
+    $('#cancel').on('click', function(e) {
+        $('#unbind').val(1);
+        $('#form').submit();
+    });
 </script>
 </html>

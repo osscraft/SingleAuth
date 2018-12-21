@@ -16,6 +16,8 @@ use Illuminate\Session\Store;
 use League\OAuth2\Server\AuthorizationServer;
 use League\OAuth2\Server\RequestTypes\AuthorizationRequest;
 use League\OAuth2\Server\Grant\AuthCodeGrant;
+use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
 
 class OAuth2Service
 {
@@ -109,21 +111,20 @@ class OAuth2Service
         // 验证请求参数
         $authRequest = $this->_authorizationServer->validateAuthorizationRequest($this->_psrRequest);
         $form->client = $client = $authRequest->getClient();
-        $form->sessionUser = $sessionUser = $this->_sessionRepository->getUser();
-
+        $form->sessionUser = $user = $this->_sessionRepository->getUser();
         if($confirmAuthorize) {
             // 需要确认时，页面显示
             return view('oauth2.authorize', ['form' => $form]);
-        } else if($sessionUser) {
+        } else if(!empty($user)) {
             // 自动确认时，用户已登录，检查用户是否对应用授权过，如果未授权显示确认页面
-            $isAuthorized = $this->_userClientRepository->isAuthorized($sessionUser, $client);
+            $isAuthorized = $this->_userClientRepository->isAuthorized($user, $client);
             if(empty($isAuthorized)) {
                 // 首次确认，页面显示
                 return view('oauth2.authorize', ['form' => $form]);
             }
 
             // Once the user has logged in set the user on the AuthorizationRequest
-            $authRequest->setUser($sessionUser);
+            $authRequest->setUser($user);
             // Once the user has approved or denied the client update the status
             // (true = approved, false = denied)
             $authRequest->setAuthorizationApproved(true);
@@ -140,55 +141,51 @@ class OAuth2Service
      */
     public function login($form)
     {
+        $maxLoginCount = env('LOGIN_COUNT', 3);
         // 使用授权码
         $grant = new AuthCodeGrant($this->_authCodeRepository, $this->_refreshTokenRepository, new \DateInterval('PT10M'));
         $this->_authorizationServer->enableGrantType($grant, new \DateInterval('PT1H'));
         // 验证请求参数
         $authRequest = $this->_authorizationServer->validateAuthorizationRequest($this->_psrRequest);
+
         $form->client = $client = $authRequest->getClient();
-        // $form->sessionUser = $sessionUser = $this->_sessionRepository->getUser();
-        $loginTimes = $this->_sessionRepository->loginTimes();
-        $hasUser = $this->_sessionRepository->hasUser();
-        if($hasUser) {
-            $user = $this->_sessionRepository->getUser();
-        } else {
+        $form->sessionUser = $user = $this->_sessionRepository->getUser();
+        $form->loginCount = $this->_sessionRepository->getLoginCount();
+        $form->lastAttemptTime = $this->_sessionRepository->getLastAttemptTime();
+        if($form->loginCount > $maxLoginCount && !empty($form->lastAttemptTime) && time() - $form->lastAttemptTime < 1800) {
+            // 设置信息
+            $form->error = '请半小时后重试';
+            return view('oauth2.authorize', ['form' => $form]);
+        }
+        if(empty($user)) {
             // 验证用户名密码
             $user = $this->_userRepository->getUserEntityByUserCredentials($form->username, $form->password, $grant->getIdentifier(), $client);
             if(empty($user)) {
                 // 验证失败
-                $this->_sessionRepository->incLoginTimes();
-                $form->error = '登录失败';
+                $this->_sessionRepository->incLoginCount();
+                $this->_sessionRepository->persistLastAttemptTime();
+                // 设置信息
+                $form->error = '用户名或密码错误';
                 return view('oauth2.authorize', ['form' => $form]);
             }
 
             $this->_sessionRepository->persistUser($user);
-            $this->_sessionRepository->revokeLoginTimes();
+            $this->_sessionRepository->revokeLoginCount();
+            $this->_sessionRepository->revokeLastAttemptTime();
         }
             
         // Once the user has logged in set the user on the AuthorizationRequest
         $authRequest->setUser($user);
-
         // Once the user has approved or denied the client update the status
         // (true = approved, false = denied)
         $authRequest->setAuthorizationApproved(true);
-
         // Return the HTTP redirect response
         return $this->_authorizationServer->completeAuthorizationRequest($authRequest, $this->_psrResponse);
-        // $this->
-        if(empty($form->username) || empty($form->password)) {
-            $this->_session->put('loginTimes', ++$loginTimes);
-            $form->loginTimes = $loginTimes;
-            return [false, null];
-        }
-
-        $seesionUser = new UserEntity();
-        // $seesionUser->getIdentifier();
-        $this->_session->put('user', $seesionUser);
-        $this->_session->forget('loginTimes');
-
-        return [false, $seesionUser];
     }
 
+    /**
+     * 登出
+     */
     public function logout($form)
     {
         // 使用授权码
@@ -202,14 +199,28 @@ class OAuth2Service
         );
         // 验证请求参数
         $authRequest = $this->_authorizationServer->validateAuthorizationRequest($this->_psrRequest);
-        $form->client = $client = $authRequest->getClient();
-        $hasUser = $this->_sessionRepository->hasUser();
-        if($hasUser) {
-            $this->_sessionRepository->revokeUser();
-        }
 
+        $this->_sessionRepository->revokeUser();
+
+        $form->client = $client = $authRequest->getClient();
         $form->sessionUser = $sessionUser = $this->_sessionRepository->getUser();
         // 显示页面
         return view('oauth2.authorize', ['form' => $form]);
+    }
+
+    /**
+     * 与接入应用解绑
+     */
+    public function unbind($form)
+    {
+        
+    }
+
+    /**
+     * 与接入应用绑定
+     */
+    public function bind($form)
+    {
+        
     }
 }

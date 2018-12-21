@@ -29,15 +29,30 @@ interface SessionRepositoryInterface
     /**
      * 登录输入次数
      */
-    public function loginTimes();
+    public function getLoginCount();
 
     /**
      * 记录增涨登录输入次数
      */
-    public function incLoginTimes();
+    public function incLoginCount();
 
     /**
      * 清除输入次数
      */
-    public function revokeLoginTimes();
+    public function revokeLoginCount();
+    
+    /**
+     * 最后一次尝试登录时间
+     */
+    public function getLastAttemptTime();
+
+    /**
+     * 保存最后一次尝试登录时间
+     */
+    public function persistLastAttemptTime();
+
+    /**
+     * 清除最后一次尝试登录时间
+     */
+    public function revokeLastAttemptTime();
 }

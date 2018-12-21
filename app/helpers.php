@@ -1,4 +1,17 @@
 <?php
+
+if (!function_exists('is_mobile')) {
+    /**
+     * 检测是否是手机端
+     *      
+     * @return boolean
+     */
+    function is_mobile()
+    {
+        return false;
+    }
+}
+
 if (!function_exists('is_cli')) {
     /**
      * 检测是否是CLI模式运行

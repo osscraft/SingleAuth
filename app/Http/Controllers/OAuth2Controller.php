@@ -5,18 +5,19 @@ namespace App\Http\Controllers;
 use App\Helper\ApiHelper;
 use App\Helper\Traits\Output;
 use App\Http\Controllers\Controller;
-use App\OAuth2\Entities\UserEntity;
-use App\OAuth2\Repositories\AccessTokenRepository;
-use App\OAuth2\Repositories\AuthCodeRepository;
-use App\OAuth2\Repositories\ClientRepository;
-use App\OAuth2\Repositories\RefreshTokenRepository;
-use App\OAuth2\Repositories\ScopeRepository;
+use App\OAuth2\Server\Entities\UserEntity;
+use App\OAuth2\Server\Repositories\AccessTokenRepository;
+use App\OAuth2\Server\Repositories\AuthCodeRepository;
+use App\OAuth2\Server\Repositories\ClientRepository;
+use App\OAuth2\Server\Repositories\RefreshTokenRepository;
+use App\OAuth2\Server\Repositories\ScopeRepository;
 use App\Service\OAuth2Service;
-use League\OAuth2\Server\AuthorizationServer;
-use League\OAuth2\Server\Grant\AuthCodeGrant;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
+use Jenssegers\Agent\Facades\Agent;
+use League\OAuth2\Server\AuthorizationServer;
+use League\OAuth2\Server\Grant\AuthCodeGrant;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
@@ -109,7 +110,11 @@ class OAuth2Controller extends Controller
         $form->clientId = $this->_request->get('client_id') ?: '';
         $form->responseType = $this->_request->get('response_type') ?: '';
         $form->state = $this->_request->get('state') ?: '';
+        $form->username = $this->_request->input('username') ?: '';
+        $form->password = $this->_request->input('password') ?: '';
         $form->socketServerUri = (is_https() ? 'wss' : 'ws') . '://' . env('SOCKET_SERVER_HOST') . ':' . env('SOCKET_SERVER_PORT');
+        $form->isMobile = Agent::isMobile();
+        $form->isWeixinBrowser = strpos(Agent::getUserAgent(), 'MicroMessenger') !== false;
 
         $method = $this->_request->method();
         if($method == 'GET') {
@@ -118,10 +123,14 @@ class OAuth2Controller extends Controller
             $form->username = $this->_request->post('username') ?: '';
             $form->password = $this->_request->post('password') ?: '';
             $form->logout = $this->_request->input('logout') ?: false;
+            $form->unbind = $this->_request->input('unbind') ?: false;
             $form->error = '';
 
             if($form->logout) {
                 return $this->_oauth2->logout($form);
+            }
+            if($form->unbind) {
+                return $this->_oauth2->unbindWeixin($form);
             }
             return $this->_oauth2->login($form);
         }

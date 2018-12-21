@@ -58,18 +58,18 @@ class SessionRepository implements SessionRepositoryInterface
     /**
      * {@inheritdoc}
      */
-    public function loginTimes()
+    public function getLoginCount()
     {
-        return $this->session->get('loginTimes', 0);
+        return $this->session->get('loginCount', 0);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function incLoginTimes()
+    public function incLoginCount()
     {
-        $times = $this->loginTimes();
-        $this->session->put('loginTimes', ++$times);
+        $times = $this->getLoginCount();
+        $this->session->put('loginCount', ++$times);
 
         return $this;
     }
@@ -77,9 +77,37 @@ class SessionRepository implements SessionRepositoryInterface
     /**
      * {@inheritdoc}
      */
-    public function revokeLoginTimes()
+    public function revokeLoginCount()
     {
-        $this->session->forget('loginTimes');
+        $this->session->forget('loginCount');
+
+        return $this;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getLastAttemptTime()
+    {
+        return $this->session->get('lastAttemptTime', null);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function persistLastAttemptTime()
+    {
+        $this->session->put('lastAttemptTime', time());
+
+        return $this;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function revokeLastAttemptTime()
+    {
+        $this->session->forget('lastAttemptTime');
 
         return $this;
     }
