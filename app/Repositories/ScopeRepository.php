@@ -7,11 +7,11 @@
  * @link        https://github.com/layliaiyong/oauth2-server
  */
 
-namespace App\OAuth2\Server\Repositories;
+namespace App\Repositories;
 
 use League\OAuth2\Server\Entities\ClientEntityInterface;
 use League\OAuth2\Server\Repositories\ScopeRepositoryInterface;
-use App\OAuth2\Server\Entities\ScopeEntity;
+use App\Entities\ScopeEntity;
 
 class ScopeRepository implements ScopeRepositoryInterface
 {

@@ -1,10 +1,10 @@
 <?php
 
-namespace App\OAuth2\Server\Repositories;
+namespace App\Repositories;
 
 use League\OAuth2\Server\Entities\RefreshTokenEntityInterface;
 use League\OAuth2\Server\Repositories\RefreshTokenRepositoryInterface;
-use App\OAuth2\Server\Entities\RefreshTokenEntity;
+use App\Entities\RefreshTokenEntity;
 
 class RefreshTokenRepository implements RefreshTokenRepositoryInterface
 {

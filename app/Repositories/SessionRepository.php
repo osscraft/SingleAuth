@@ -1,6 +1,6 @@
 <?php
 
-namespace App\OAuth2\Server\Repositories;
+namespace App\Repositories;
 
 use Illuminate\Http\Request;
 use Illuminate\Session\Store;

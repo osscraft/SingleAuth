@@ -8,24 +8,24 @@
     <script src="//code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
     <script src="//stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
-    <style>
-.input-lg {
-    font-size: 13px;
-    padding: 10px 16px;
-    height: 46px;
-    line-height: 1.3333333;
-}
-.form-layout .btn-lg {
-    -webkit-border-radius: 2px;
-    -moz-border-radius: 2px;
-    border-radius: 2px;
-    border-color: #25a25a;
-}
-    </style>
 </head>
 <body>
+    <style>
+        .input-lg {
+            font-size: 13px;
+            padding: 10px 16px;
+            height: 46px;
+            line-height: 1.3333333;
+        }
+        .form-layout .btn-lg {
+            -webkit-border-radius: 2px;
+            -moz-border-radius: 2px;
+            border-radius: 2px;
+            border-color: #25a25a;
+        }
+    </style>
     @if(!empty($form->showHeader))
-    <header class="navbar navbar-expand navbar-dark flex-column flex-md-row bd-navbar bg-primary">
+    <header class="navbar navbar-expand navbar-dark flex-column flex-md-row bd-navbar bg-success">
         <a class="navbar-brand mr-0 mr-md-2" href="/" aria-label="OAuth2">
             OAuth2
         </a>
@@ -50,6 +50,7 @@
                                 <input type="password" class="form-control input-lg" id="password" name="password" placeholder="密码" value="{{$form->password}}">
                             </div>
                             <div class="form-group">
+                                <input type="hidden" class="form-control input-lg" id="qrtoken" name="qrtoken" value="">
                                 <button type="submit" class="btn btn-success btn-lg btn-block mb15"><span>登录</span></button>
                             </div>
                             <div class="form-group">
@@ -57,7 +58,7 @@
                             </div>
                             @else
                             <div class="form-group">
-                                <input id="username" name="username" type="text" value="{{$form->sessionUser->getIdentifier()}}" class="form-control input-lg" placeholder="用户名" disabled />
+                                <input id="username" name="username" type="text" value="{{$form->sessionUser->getUsername()}}({{$form->sessionUser->getName()}})" class="form-control input-lg" placeholder="用户名" disabled />
                             </div>
                             <div class="form-group">
                                 <input type="hidden" class="form-control input-lg" id="logout" name="logout" value="">
@@ -77,7 +78,7 @@
             <div class="row mx-auto align-items-center mt-5">
                 <div class="mx-auto">
                     <div class="mx-auto text-center"><label>微信扫描下方二维码</label></div>
-                    <img id="qrcode" class="img-fluid mb-3 mb-md-0" src="" alt="" width="160" height="160">
+                    <img id="qrcode" class="img-fluid mb-3 mb-md-0 btn p-0" src="" alt="" width="160" height="160">
                 </div>
             </div>
             @endif
@@ -86,7 +87,10 @@
 </body>
 <script>
     var base = "{{URL()}}";
-    var clientId = '';
+    var clientId = "{{$form->client->getIdentifier()}}";
+    @if(!$form->sessionUser && !$form->isMobile && !$form->isWeixinBrowser)
+    // socket连接逻辑
+    var socketClientId = '';
     var ws = new WebSocket("{{$form->socketServerUri}}");
     ws.onopen = function() {
         console.log("连接成功");
@@ -98,17 +102,29 @@
         var json = JSON.parse(e.data);
         var event = json.event;
         var data = json.data;
-        switch (event) {
-            case 'onconnect':
-                clientId = data.clientId;
-                var qrcode = base + '/qrcode/' + clientId + '?_r=' + Math.random();
-                $('#qrcode').prop('src', qrcode);
-                break;
-        }
-        if(event != 'onticks') {
+
+        if(event != 'ping') {
             $('#messages').append('<div class=message>' + '[' + (new Date()).toLocaleString() + '] ' + e.data + '</div>');
         }
+
+        switch (event) {
+            case 'onconnect':
+                socketClientId = data.clientId;
+                var qrcode = base + '/qrcode/generate/' + clientId + '/' + socketClientId + '?_r=' + Math.random();
+                $('#qrcode').prop('src', qrcode);
+                break;
+            case 'onqrlogin':
+                $('#qrtoken').val(data.token);
+                $('#form').submit();
+                break;
+        }
     };
+    $('#qrcode').on('click', function(e) {
+        var qrcode = base + '/qrcode/generate/' + clientId + '/' + socketClientId + '?_r=' + Math.random();
+        $('#qrcode').prop('src', qrcode);
+    });
+    @endif
+
     $('#other').on('click', function(e) {
         $('#logout').val(1);
         $('#form').submit();

@@ -1,16 +1,24 @@
 <?php
+/**
+ * @author      Lay Liaiyong <lay@liaiyong.com>
+ * @copyright   Copyright (c) Lay Liaiyong
+ * @license     http://mit-license.org/
+ *
+ * @link        https://github.com/layliaiyong/oauth2-server
+ */
 
-namespace App\Service;
+namespace App\Http\Services;
 
-use App\OAuth2\Server\Entities\UserEntity;
-use App\OAuth2\Server\Repositories\AccessTokenRepository;
-use App\OAuth2\Server\Repositories\AuthCodeRepository;
-use App\OAuth2\Server\Repositories\ClientRepository;
-use App\OAuth2\Server\Repositories\RefreshTokenRepository;
-use App\OAuth2\Server\Repositories\ScopeRepository;
-use App\OAuth2\Server\Repositories\SessionRepository;
-use App\OAuth2\Server\Repositories\UserClientRepository;
-use App\OAuth2\Server\Repositories\UserRepository;
+use App\Entities\ThirdEntity;
+use App\Entities\UserEntity;
+use App\Repositories\AccessTokenRepository;
+use App\Repositories\AuthCodeRepository;
+use App\Repositories\ClientRepository;
+use App\Repositories\RefreshTokenRepository;
+use App\Repositories\ScopeRepository;
+use App\Repositories\SessionRepository;
+use App\Repositories\UserClientRepository;
+use App\Repositories\UserRepository;
 use Illuminate\Http\Request;
 use Illuminate\Session\Store;
 use League\OAuth2\Server\AuthorizationServer;
@@ -206,6 +214,67 @@ class OAuth2Service
         $form->sessionUser = $sessionUser = $this->_sessionRepository->getUser();
         // 显示页面
         return view('oauth2.authorize', ['form' => $form]);
+    }
+
+    public function qrLogin($form)
+    {
+        $maxLoginCount = env('LOGIN_COUNT', 3);
+        // 使用授权码
+        $grant = new AuthCodeGrant($this->_authCodeRepository, $this->_refreshTokenRepository, new \DateInterval('PT10M'));
+        $this->_authorizationServer->enableGrantType($grant, new \DateInterval('PT1H'));
+        // 验证请求参数
+        $authRequest = $this->_authorizationServer->validateAuthorizationRequest($this->_psrRequest);
+
+        $form->client = $client = $authRequest->getClient();
+        $form->sessionUser = $user = $this->_sessionRepository->getUser();
+        $form->loginCount = $this->_sessionRepository->getLoginCount();
+        $form->lastAttemptTime = $this->_sessionRepository->getLastAttemptTime();
+        if($form->loginCount > $maxLoginCount && !empty($form->lastAttemptTime) && time() - $form->lastAttemptTime < 1800) {
+            // 设置信息
+            $form->error = '请半小时后重试';
+            return view('oauth2.authorize', ['form' => $form]);
+        }
+        if(empty($user)) {
+            // 验证用户名密码
+            $user = $this->_userRepository->getUserEntityByUserCredentials($form->username, $form->password, $grant->getIdentifier(), $client);
+            if(empty($user)) {
+                // 验证失败
+                $this->_sessionRepository->incLoginCount();
+                $this->_sessionRepository->persistLastAttemptTime();
+                // 设置信息
+                $form->error = '用户名或密码错误';
+                return view('oauth2.authorize', ['form' => $form]);
+            }
+
+            $this->_sessionRepository->persistUser($user);
+            $this->_sessionRepository->revokeLoginCount();
+            $this->_sessionRepository->revokeLastAttemptTime();
+        }
+            
+        // Once the user has logged in set the user on the AuthorizationRequest
+        $authRequest->setUser($user);
+        // Once the user has approved or denied the client update the status
+        // (true = approved, false = denied)
+        $authRequest->setAuthorizationApproved(true);
+        // Return the HTTP redirect response
+        return $this->_authorizationServer->completeAuthorizationRequest($authRequest, $this->_psrResponse);
+    }
+
+    /**
+     * 通过授权码获取令牌
+     */
+    public function authcode($form)
+    {
+        $this->_authorizationServer->enableGrantType(
+            new AuthCodeGrant(
+                $this->_authCodeRepository,
+                $this->_refreshTokenRepository,
+                new \DateInterval('PT10M')
+            ),
+            new \DateInterval('PT1H')
+        );
+
+        return $this->_authorizationServer->respondToAccessTokenRequest($this->_psrRequest, $this->_psrResponse);
     }
 
     /**

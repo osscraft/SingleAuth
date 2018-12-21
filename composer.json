@@ -22,6 +22,7 @@
         "layliaiyong/former": "~1.0.0",
         "league/oauth2-client": "^2.4",
         "league/oauth2-server": "^7.3",
+        "overtrue/wechat": "^4.1",
         "ramsey/uuid": "^3.8",
         "simplesoftwareio/simple-qrcode": "^2.0",
         "symfony/psr-http-message-bridge": "^1.1",
@@ -48,9 +49,6 @@
         }
     },
     "autoload-dev": {
-        "classmap": [
-            "tests/"
-        ]
     },
     "scripts": {
         "post-root-package-install": [

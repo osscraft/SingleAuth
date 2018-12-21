@@ -94,14 +94,14 @@ trait Transmit
             return ['event' => 'error', 'error' => $error, 'msg' => $msg, 'data' => $data, 'reqid' => $reqid];
         } else {
             if(!empty($e)) {
-                return $this->error(GLOBAL_ERR_1000, "{$message} in {$data}");
+                return $this->error(GLOBAL_ERR_2000, "{$message} in {$data}");
             }
             $trace = debug_backtrace();
             $file = $trace[0]['file'];
             $line = $trace[0]['line'];
             $data = "{$message} in {$file}:{$line}";
 
-            return $this->error(GLOBAL_ERR_1000, $data);
+            return $this->error(GLOBAL_ERR_2000, $data);
         }
     }
 }

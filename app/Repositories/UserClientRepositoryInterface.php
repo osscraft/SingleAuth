@@ -1,11 +1,11 @@
 <?php
 
-namespace App\OAuth2\Server\Repositories;
+namespace App\Repositories;
 
 use League\OAuth2\Server\Entities\ClientEntityInterface;
 use League\OAuth2\Server\Entities\UserEntityInterface;
 use League\OAuth2\Server\Repositories\UserRepositoryInterface;
-use App\OAuth2\Server\Entities\UserEntity;
+use App\Entities\UserEntity;
 
 interface UserClientRepositoryInterface
 {

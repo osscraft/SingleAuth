@@ -20,6 +20,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register()
     {
+        $this->app->singleton(\App\Http\Services\ThirdService::class);
+        $this->app->singleton(\App\Http\Services\WeixinService::class);
         // 每天创建一份日志文件
         // $this->app->configureMonologUsing(function(Logger $monolog) {
         //     $handler = new RotatingFileHandler(storage_path('logs/lumen.log'));

@@ -18,8 +18,12 @@ $router->get('index','OAuth2Controller@index');
 $router->get('authorize','OAuth2Controller@auth');
 $router->post('authorize','OAuth2Controller@auth');
 $router->post('access_token','OAuth2Controller@access_token');
-$router->get('qrcode/{clientId}','OAuth2Controller@qrcode');
-$router->get('qrcode/login/{clientId}','OAuth2Controller@qrcodeLogin');
+$router->get('qrcode/generate/{clientId}/{socketClientId}','AssistController@qrcode');
+$router->get('qrcode/authorize/{encrypt}','AssistController@qrcodeAuthorize');
+$router->post('qrcode/authorize/{encrypt}','AssistController@qrcodeAuthorize');
+$router->get('qrcode/callback/{encrypt}','AssistController@qrcodeCallback');
+$router->get('third/weixin/authorize','WeixinController@auth');
+$router->get('third/weixin/callback','WeixinController@callback');
 
 $router->get('/test/{name}', 'ExampleController@test');
 $router->post('/test/{name}', 'ExampleController@test');

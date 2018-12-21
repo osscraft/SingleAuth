@@ -7,12 +7,12 @@
  * @link        https://github.com/layliaiyong/oauth2-server
  */
 
-namespace App\OAuth2\Server\Repositories;
+namespace App\Repositories;
 
 use League\OAuth2\Server\Entities\AccessTokenEntityInterface;
 use League\OAuth2\Server\Entities\ClientEntityInterface;
 use League\OAuth2\Server\Repositories\AccessTokenRepositoryInterface;
-use App\OAuth2\Server\Entities\AccessTokenEntity;
+use App\Entities\AccessTokenEntity;
 
 class AccessTokenRepository implements AccessTokenRepositoryInterface
 {
