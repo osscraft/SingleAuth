@@ -2,6 +2,7 @@
 
 namespace App\Repositories;
 
+use App\Entities\ThirdEntityInterface;
 use Illuminate\Http\Request;
 use Illuminate\Session\Store;
 use League\OAuth2\Server\Entities\UserEntityInterface;
@@ -108,6 +109,55 @@ class SessionRepository implements SessionRepositoryInterface
     public function revokeLastAttemptTime()
     {
         $this->session->forget('lastAttemptTime');
+
+        return $this;
+    }
+
+    /**
+     * @param ThirdEntityInterface $third
+     */
+    public function getThirdUser($third)
+    {
+        $user = $this->session->get("third.{$third->getIdentifier()}.user", null);
+
+        return empty($user) ? null : json_decode($user);
+    }
+
+    /**
+     * @param ThirdEntityInterface $third
+     */
+    public function pesistThirdUser($third, $user)
+    {
+        $this->session->put("third.{$third->getIdentifier()}.user", json_encode($user));
+
+        return $this;
+    }
+
+    /**
+     * @param ThirdEntityInterface $third
+     */
+    public function revokeThirdUser($third)
+    {
+        $this->session->forget("third.{$third->getIdentifier()}.user");
+
+        return $this;
+    }
+
+    public function getToken()
+    {
+        return $this->session->get('token', null);
+    }
+
+    public function pesistToken($token)
+    {
+        $this->session->put('token', $token);
+
+        return $this;
+    }
+
+    public function revokeToken($token)
+    {
+        $this->session->forget('token');
 
         return $this;
     }

@@ -11,6 +11,7 @@ namespace App\Http\Services;
 
 use App\Entities\ThirdEntity;
 use App\Entities\UserEntity;
+use App\Helper\SecurityHelper;
 use App\Repositories\AccessTokenRepository;
 use App\Repositories\AuthCodeRepository;
 use App\Repositories\ClientRepository;
@@ -29,6 +30,10 @@ use Psr\Http\Message\ServerRequestInterface;
 
 class OAuth2Service
 {
+    /**
+     * @var SecurityHelper
+     */
+    private $_securityHelper;
     /**
      * @var Request
      */
@@ -82,11 +87,12 @@ class OAuth2Service
      */
     private $_userRepository;
 
-    public function __construct(Request $request, ServerRequestInterface $psrRequest, ResponseInterface $psrResponse, ClientRepository $clientRepository, AccessTokenRepository $accessTokenRepository, ScopeRepository $scopeRepository, AuthCodeRepository $authCodeRepository, RefreshTokenRepository $refreshTokenRepository, SessionRepository $sessionRepository, UserClientRepository $userClientRepository, UserRepository $userRepository)
+    public function __construct(SecurityHelper $securityHelper, Request $request, ServerRequestInterface $psrRequest, ResponseInterface $psrResponse, ClientRepository $clientRepository, AccessTokenRepository $accessTokenRepository, ScopeRepository $scopeRepository, AuthCodeRepository $authCodeRepository, RefreshTokenRepository $refreshTokenRepository, SessionRepository $sessionRepository, UserClientRepository $userClientRepository, UserRepository $userRepository)
     {
         $privateKey = env('APP_PRIVATE_KEY');
         $encryptionKey = env('APP_KEY');
 
+        $this->_securityHelper = $securityHelper;
         $this->_request = $request;
         $this->_session = $request->session();
         $this->_psrRequest = $psrRequest;
@@ -216,7 +222,7 @@ class OAuth2Service
         return view('oauth2.authorize', ['form' => $form]);
     }
 
-    public function qrLogin($form)
+    public function qrlogin($form)
     {
         $maxLoginCount = env('LOGIN_COUNT', 3);
         // 使用授权码
@@ -235,14 +241,37 @@ class OAuth2Service
             return view('oauth2.authorize', ['form' => $form]);
         }
         if(empty($user)) {
-            // 验证用户名密码
-            $user = $this->_userRepository->getUserEntityByUserCredentials($form->username, $form->password, $grant->getIdentifier(), $client);
+            // 验证二维码登录签名
+            $form->clientId = $client->getIdentifier();
+            $form->clientSecret = $this->_clientRepository->getClientSecret($form->clientId);
+            $token = $this->_sessionRepository->getToken();
+            $resolve = $this->_securityHelper->validQrcodeLoginToken($token);
+            if(empty($resolve)) {
+                throw new \Exception(QRCODE_ERR_101);
+            }
+            list($clientId, $form->socketClientId, $form->timestamp) = $resolve;
+            if($clientId != $form->clientId) {
+                throw new \Exception(QRCODE_ERR_101);
+            }
+            // $form->sign = $this->_securityHelper->qrcodeLoginSignature($form);
+            // dd($form);
+            
+            $valid = $this->_securityHelper->validQrcodeLoginSignature($form);//$form->valid = $valid;dd($form);
+            if(empty($valid)) {
+                // 验证失败
+                $this->_sessionRepository->incLoginCount();
+                $this->_sessionRepository->persistLastAttemptTime();
+                // 设置信息
+                $form->error = '登录失败';
+                return view('oauth2.authorize', ['form' => $form]);
+            }
+            $user = $this->_userRepository->getUserEntityByUsername($form->username);
             if(empty($user)) {
                 // 验证失败
                 $this->_sessionRepository->incLoginCount();
                 $this->_sessionRepository->persistLastAttemptTime();
                 // 设置信息
-                $form->error = '用户名或密码错误';
+                $form->error = '登录用户不存在';
                 return view('oauth2.authorize', ['form' => $form]);
             }
 
@@ -250,6 +279,7 @@ class OAuth2Service
             $this->_sessionRepository->revokeLoginCount();
             $this->_sessionRepository->revokeLastAttemptTime();
         }
+
             
         // Once the user has logged in set the user on the AuthorizationRequest
         $authRequest->setUser($user);

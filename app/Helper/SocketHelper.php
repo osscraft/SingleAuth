@@ -9,6 +9,21 @@ class SocketHelper
 {
     use Transmit;
 
+    const EVENT_ONQRCODE_SCAN = 'onqrcodescan';
+    const EVENT_ONQRCODE_LOGIN = 'onqrcodelogin';
+
+    /**
+     * @var \App\Http\Helper\LogHelper
+     */
+    private $_logHelper;
+
+    public function __construct()
+    {
+        Gateway::$registerAddress = env('SOCKET_SERVER_REGISTER_URL', '127.0.0.1:1236');
+
+        $this->_logHelper = app(LogHelper::class);
+    }
+
     public function isUidOnline($uid)
     {
         return Gateway::isUidOnline($uid);

@@ -12,6 +12,8 @@ class UserRepository implements UserRepositoryInterface
 {
     /**
      * {@inheritdoc}
+     * 
+     * @return UserEntity
      */
     public function getUserEntityByUserCredentials(
         $username,
@@ -21,6 +23,20 @@ class UserRepository implements UserRepositoryInterface
     ) {
         // dd([$username,$password]);
         if ($username === 'lay' && $password === '111111') {
+            $user = new UserEntity();
+            $user->setIdentifier(1);
+            $user->setUsername($username);
+            $user->setName($username);
+            
+            return $user;
+        }
+
+        return;
+    }
+
+    public function getUserEntityByUsername($username)
+    {
+        if ($username === 'lay') {
             $user = new UserEntity();
             $user->setIdentifier(1);
             $user->setUsername($username);

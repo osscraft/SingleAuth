@@ -57,58 +57,44 @@ class AssistController extends Controller
         $form->show = $this->_request->get('code') ?: 0;
         $form->clientId = $clientId;
         $form->socketClientId = $socketClientId;
+        $form->timestamp = time();
         $form->size = $size;
 
-        $timestamp = time();
-        $encrypt = encrypt("$clientId,$socketClientId,$timestamp");
-        $safeEncrypt = $this->_securityHelper->urlSafeEncode($encrypt);
-        $barcode = url("qrcode/authorize/{$safeEncrypt}");// ->errorCorrection('H')
-        $response = QrCode::format('png')->margin(1)->size($size)->encoding('UTF-8')->generate($barcode);
-        if($form->show) {
-            return $barcode;
-        }
-
-        return response($response, 200, ['Content-Length' => strlen($response), 'Content-Type' => 'image/png']);
+        return $this->_assist->qrcode($form);
     }
 
     public function qrcodeAuthorize($encrypt)
     {
         $form = new \stdClass;
         $form->encrypt = $encrypt;
-        $form->show = $this->_request->get('code') ?: 0;
+        $form->show = $this->_request->get('show') ?: 0;
         $form->username = $this->_request->input('username') ?: '';
         $form->password = $this->_request->input('password') ?: '';
         $form->logout = $this->_request->input('logout') ?: false;
         $form->unbind = $this->_request->input('unbind') ?: false;
-        $form->qrtoken = $this->_request->input('qrtoken') ?: false;
+        // $form->qrtoken = $this->_request->input('qrtoken') ?: false;
         $form->socketServerUri = (is_https() ? 'wss' : 'ws') . '://' . env('SOCKET_SERVER_HOST') . ':' . env('SOCKET_SERVER_PORT');
+        $form->qrcodeLifetime = env('QRCODE_LOGIN_LIFETIME', 120);
         $form->isMobile = Agent::isMobile();
         $form->isWeixinBrowser = strpos(Agent::getUserAgent(), 'MicroMessenger') !== false;
 
-        $safeDecrypt = $this->_securityHelper->urlSafeDecode($encrypt);
-        $decrypt = decrypt($safeDecrypt);
-        if(empty($decrypt)) {
-            throw new \Exception(QRCODE_ERR_101);
-        }
-        list($form->clientId, $form->socketClientId, $form->timestamp) = explode(',', $decrypt);
-        
         $method = $this->_request->method();
         if ($method == 'GET') {
             return $this->_assist->authorize($form);
         }
-        
+
         if($form->logout) {
-            return $this->_oauth2->logout($form);
+            return $this->_assist->logout($form);
         }
         
         return $this->_assist->login($form);
     }
 
-    public function qrcodeCallback($encrypt)
+    public function qrcodeCallback($thirdId, $encrypt)
     {
         $form = new \stdClass;
+        $form->thirdId = $thirdId;
         $form->encrypt = $encrypt;
-
         
         return $this->_assist->callback($form);
     }

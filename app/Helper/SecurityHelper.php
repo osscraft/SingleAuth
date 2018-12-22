@@ -39,4 +39,58 @@ class SecurityHelper
         }
         return base64_decode($data);
     }
+
+    public function qrcodeLoginToken($form)
+    {
+        $encrypt = encrypt("$form->clientId,$form->socketClientId,$form->timestamp");
+        return $this->urlSafeEncode($encrypt);
+    }
+
+    public function resolveQrcodeLoginToken($token)
+    {
+        $safeDecrypt = $this->urlSafeDecode($token);
+        $decrypt = decrypt($safeDecrypt);
+        if(empty($decrypt)) {
+            return false;
+        }
+        $resolve = explode(',', $decrypt);
+        if(count($resolve) < 3) {
+            return false;
+        }
+
+        return $resolve;
+    }
+    
+    public function validQrcodeLoginToken($token)
+    {
+        $lifetime = env('QRCODE_LOGIN_LIFETIME', 120);
+        $resolve = $this->resolveQrcodeLoginToken($token);
+        if(!empty($resolve) && !empty($lifetime)) {
+            list(,,$timestamp) = $resolve;
+            if($timestamp + $lifetime >= time()) {
+                return $resolve;
+            }
+        }
+
+        return false;
+    }
+
+    public function qrcodeLoginSignature($form)
+    {
+        $data = [];
+        $data['clientId'] = $form->clientId;
+        $data['clientSecret'] = $form->clientSecret;
+        $data['nonceStr'] = $form->nonceStr;
+        $data['socketClientId'] = $form->socketClientId;
+        $data['timestamp'] = $form->timestamp;
+        $data['username'] = $form->username;
+        ksort($data);
+
+        return strtoupper(sha1(http_build_query($data)));
+    }
+
+    public function validQrcodeLoginSignature($form)
+    {
+        return strtoupper($form->signature) === $this->qrcodeLoginSignature($form);
+    }
 }

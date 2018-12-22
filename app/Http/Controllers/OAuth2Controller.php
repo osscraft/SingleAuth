@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Helper\ApiHelper;
+use App\Helper\SecurityHelper;
 use App\Helper\Traits\Output;
 use App\Http\Controllers\Controller;
 use App\Http\Services\OAuth2Service;
@@ -17,6 +18,10 @@ class OAuth2Controller extends Controller
      */
     private $_apiHelper;
     /**
+     * @var SecurityHelper
+     */
+    private $_securityHelper;
+    /**
      * @var Request
      */
     private $_request;
@@ -30,9 +35,10 @@ class OAuth2Controller extends Controller
      *
      * @return void
      */
-    public function __construct(ApiHelper $apiHelper, Request $request, OAuth2Service $oauth2)
+    public function __construct(ApiHelper $apiHelper, SecurityHelper $securityHelper, Request $request, OAuth2Service $oauth2)
     {
         $this->_apiHelper = $apiHelper;
+        $this->_securityHelper = $securityHelper;
         $this->_request = $request;
         $this->_session = $request->session();
         $this->_oauth2 = $oauth2;
@@ -59,6 +65,7 @@ class OAuth2Controller extends Controller
         $form->username = $this->_request->input('username') ?: '';
         $form->password = $this->_request->input('password') ?: '';
         $form->socketServerUri = (is_https() ? 'wss' : 'ws') . '://' . env('SOCKET_SERVER_HOST') . ':' . env('SOCKET_SERVER_PORT');
+        $form->qrcodeLifetime = env('QRCODE_LOGIN_LIFETIME', 120);
         $form->isMobile = Agent::isMobile();
         $form->isWeixinBrowser = strpos(Agent::getUserAgent(), 'MicroMessenger') !== false;
 
@@ -70,17 +77,26 @@ class OAuth2Controller extends Controller
             $form->password = $this->_request->post('password') ?: '';
             $form->logout = $this->_request->input('logout') ?: false;
             $form->unbind = $this->_request->input('unbind') ?: false;
-            $form->qrtoken = $this->_request->input('qrtoken') ?: false;
+            $form->type = $this->_request->input('type') ?: '';
+            $form->signature = $this->_request->input('signature') ?: false;
+            $form->nonceStr = $this->_request->input('nonceStr') ?: '';
             $form->error = '';
 
             if($form->logout) {
                 return $this->_oauth2->logout($form);
             }
-            if($form->unbind) {
-                return $this->_oauth2->unbindWeixin($form);
-            }
-            if($form->qrtoken) {
-                return $this->_oauth2->qrLogin($form);
+            // if($form->unbind) {
+            //     return $this->_oauth2->unbindWeixin($form);
+            // }
+            if($form->signature) {
+                // $safeDecrypt = $this->_securityHelper->urlSafeDecode($form->qrtoken);
+                // $decrypt = decrypt($safeDecrypt);
+                // if(empty($decrypt)) {
+                //     throw new \Exception(QRCODE_ERR_105);
+                // }
+                // list($form->clientId, $form->socketClientId, $form->timestamp, $form->userId) = explode(',', $decrypt);
+
+                return $this->_oauth2->qrlogin($form);
             }
             return $this->_oauth2->login($form);
         }

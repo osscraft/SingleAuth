@@ -23,6 +23,48 @@
             border-radius: 2px;
             border-color: #25a25a;
         }
+        .cover {
+            display: inline-block;
+            position: absolute;
+            top: 0;
+            width: 100%;
+            left: 0;
+            height: 100%;
+        }
+        .cover-bg {
+            background: #000000;
+            opacity: .5;
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            left: 0;
+        }
+        .cover-text {
+            color: #ffffff;
+            display: inline-block;
+            top: 54px;
+        }
+        .scan {
+            display: inline-block;
+            position: absolute;
+            top: 0;
+            width: 100%;
+            left: 0;
+            height: 100%;
+        }
+        .scan-bg {
+            background: #000000;
+            opacity: .5;
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            left: 0;
+        }
+        .scan-text {
+            color: #ffffff;
+            display: inline-block;
+            top: 44px;
+        }
     </style>
     @if(!empty($form->showHeader))
     <header class="navbar navbar-expand navbar-dark flex-column flex-md-row bd-navbar bg-success">
@@ -50,12 +92,15 @@
                                 <input type="password" class="form-control input-lg" id="password" name="password" placeholder="密码" value="{{$form->password}}">
                             </div>
                             <div class="form-group">
-                                <input type="hidden" class="form-control input-lg" id="qrtoken" name="qrtoken" value="">
+                                <input type="hidden" class="form-control input-lg" id="signature" name="signature" value="">
+                                <input type="hidden" class="form-control input-lg" id="nonceStr" name="nonceStr" value="">
+                                <input type="hidden" class="form-control input-lg" id="type" name="type" value="">
                                 <button type="submit" class="btn btn-success btn-lg btn-block mb15"><span>登录</span></button>
                             </div>
                             <div class="form-group">
                                 <label>忘记密码？</label>
                             </div>
+                            @elseif(empty($form->isBound))
                             @else
                             <div class="form-group">
                                 <input id="username" name="username" type="text" value="{{$form->sessionUser->getUsername()}}({{$form->sessionUser->getName()}})" class="form-control input-lg" placeholder="用户名" disabled />
@@ -77,8 +122,18 @@
             @if(!$form->sessionUser && !$form->isMobile && !$form->isWeixinBrowser)
             <div class="row mx-auto align-items-center mt-5">
                 <div class="mx-auto">
-                    <div class="mx-auto text-center"><label>微信扫描下方二维码</label></div>
-                    <img id="qrcode" class="img-fluid mb-3 mb-md-0 btn p-0" src="" alt="" width="160" height="160">
+                    <div class="mx-auto text-center"><label>扫描下方二维码</label></div>
+                    <div class="mx-auto text-center dropup">
+                        <img id="qrcode" class="dropup img-fluid mb-3 mb-md-0 btn p-0"  src="{{URL('qrcode/generate/1/1')}}" alt="" width="160" height="160">
+                        <div id="qrcodeCover" class="dropup text-center btn p-0 cover" style="display:none">
+                            <span class="dropup text-center cover-bg"></span>
+                            <span class="dropup text-center cover-text" style="display:inline-block">二维码失效<br>请点击刷新</span>
+                        </div>
+                        <div id="qrcodeScan" class="dropup text-center scan" style="display:none">
+                            <span class="dropup text-center scan-bg"></span>
+                            <span class="dropup text-center scan-text" style="display:inline-block">扫描成功<br>请在手机上确认<br>是否授权登录</span>
+                        </div>
+                    </div>
                 </div>
             </div>
             @endif
@@ -86,11 +141,14 @@
     </main>
 </body>
 <script>
+$(document).ready(function() {
     var base = "{{URL()}}";
     var clientId = "{{$form->client->getIdentifier()}}";
     @if(!$form->sessionUser && !$form->isMobile && !$form->isWeixinBrowser)
     // socket连接逻辑
     var socketClientId = '';
+    var delayShow;
+    var lifetime = {{$form->qrcodeLifetime}};
     var ws = new WebSocket("{{$form->socketServerUri}}");
     ws.onopen = function() {
         console.log("连接成功");
@@ -110,19 +168,51 @@
         switch (event) {
             case 'onconnect':
                 socketClientId = data.clientId;
-                var qrcode = base + '/qrcode/generate/' + clientId + '/' + socketClientId + '?_r=' + Math.random();
-                $('#qrcode').prop('src', qrcode);
+                regenQrcode();
                 break;
-            case 'onqrlogin':
-                $('#qrtoken').val(data.token);
+            case 'onqrcodescan':
+                // TODO
+                scanQrcode();
+                break;
+            case 'onqrcodelogin':
+                $('#type').val(data.type);
+                $('#username').val(data.username);
+                $('#signature').val(data.signature);
+                $('#nonceStr').val(data.nonceStr);
                 $('#form').submit();
                 break;
         }
     };
     $('#qrcode').on('click', function(e) {
+        regenQrcode();
+    });
+    $('#qrcodeCover').on('click', function(e) {
+        regenQrcode();
+    });
+    // 重新获取二维码
+    function regenQrcode()
+    {
         var qrcode = base + '/qrcode/generate/' + clientId + '/' + socketClientId + '?_r=' + Math.random();
         $('#qrcode').prop('src', qrcode);
-    });
+        $('#qrcodeCover').hide();
+        $('#qrcodeScan').hide();
+        if(delayShow) {
+            clearTimeout(delayShow);
+        }
+        // 指定时间后二维码过期
+        delayShow = setTimeout(function() {
+            $('#qrcodeCover').show();
+        }, lifetime * 1000);
+    }
+    function scanQrcode()
+    {
+        $('#qrcodeScan').show();
+        $('#qrcode').css({"visibility":"hidden"});
+        $('#qrcodeCover').hide();
+        if(delayShow) {
+            clearTimeout(delayShow);
+        }
+    }
     @endif
 
     $('#other').on('click', function(e) {
@@ -133,5 +223,6 @@
         $('#unbind').val(1);
         $('#form').submit();
     });
+});
 </script>
 </html>
