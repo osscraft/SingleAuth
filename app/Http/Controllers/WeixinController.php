@@ -12,7 +12,7 @@ use Illuminate\Http\Request;
 use Jenssegers\Agent\Facades\Agent;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
 
-class AssistController extends Controller
+class WeixinController extends Controller
 {
     use Output;
     /**

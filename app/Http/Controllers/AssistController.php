@@ -51,14 +51,14 @@ class AssistController extends Controller
         $this->_oauth2 = $oauth2;
     }
 
-    public function qrcode($clientId, $socketClientId, $size = 500)
+    public function qrcode($clientId, $socketClientId)
     {
         $form = new \stdClass;
         $form->show = $this->_request->get('code') ?: 0;
         $form->clientId = $clientId;
         $form->socketClientId = $socketClientId;
         $form->timestamp = time();
-        $form->size = $size;
+        $form->size = 500;
 
         return $this->_assist->qrcode($form);
     }
