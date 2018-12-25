@@ -6,6 +6,7 @@ use App\Helper\ApiHelper;
 use App\Helper\SecurityHelper;
 use App\Helper\Traits\Output;
 use App\Http\Controllers\Controller;
+use App\Http\Services\AssistService;
 use App\Http\Services\WeixinService;
 use Illuminate\Http\Request;
 use Jenssegers\Agent\Facades\Agent;
