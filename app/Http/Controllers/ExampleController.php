@@ -28,4 +28,9 @@ class ExampleController extends Controller
 
         return ['success' => $bool];
     }
+
+    public function out()
+    {
+        return 'output';
+    }
 }
