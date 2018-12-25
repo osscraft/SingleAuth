@@ -22,6 +22,7 @@ $router->get('qrcode/generate/{clientId}/{socketClientId}','AssistController@qrc
 $router->get('qrcode/authorize/{encrypt}','AssistController@qrcodeAuthorize');
 $router->post('qrcode/authorize/{encrypt}','AssistController@qrcodeAuthorize');
 $router->get('qrcode/callback/{thirdId}/{encrypt}','AssistController@qrcodeCallback');
+$router->post('qrcode/callback/{thirdId}/{encrypt}','AssistController@qrcodeCallback');
 $router->get('third/weixin/authorize','WeixinController@auth');
 $router->get('third/weixin/callback','WeixinController@callback');
 

@@ -95,17 +95,26 @@ class AssistController extends Controller
         $form = new \stdClass;
         $form->thirdId = $thirdId;
         $form->encrypt = $encrypt;
+        $form->username = $this->_request->input('username') ?: '';
+        $form->password = $this->_request->input('password') ?: '';
         $form->bind = $this->_request->input('bind') ?: false;
+        $form->unbind = $this->_request->input('unbind') ?: false;
+        $form->isMobile = Agent::isMobile();
+        $form->isWeixinBrowser = strpos(Agent::getUserAgent(), 'MicroMessenger') !== false;
         
         $method = $this->_request->method();
         if ($method == 'GET') {
-            return $this->_assist->callback($form);
+            return $this->_assist->thirdCallback($form);
         }
 
         if($form->bind) {
-            return $this->_assist->bind($form);
+            return $this->_assist->thirdBind($form);
         }
 
-        return $this->_assist->callback($form);
+        if($form->unbind) {
+            return $this->_assist->thirdUnbind($form);
+        }
+
+        return $this->_assist->thirdConfirm($form);
     }
 }

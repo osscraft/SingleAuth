@@ -118,17 +118,19 @@ class SessionRepository implements SessionRepositoryInterface
      */
     public function getThirdUser($third)
     {
-        $user = $this->session->get("third.{$third->getIdentifier()}.user", null);
+        $thirdId = $third->getIdentifier();
+        $thirdUser = $this->session->get("third.{$thirdId}.user");
 
-        return empty($user) ? null : json_decode($user);
+        return empty($thirdUser) ? null : json_decode($thirdUser);
     }
 
     /**
      * @param ThirdEntityInterface $third
      */
-    public function pesistThirdUser($third, $user)
+    public function pesistThirdUser($third, $thirdUser)
     {
-        $this->session->put("third.{$third->getIdentifier()}.user", json_encode($user));
+        $thirdId = $third->getIdentifier();
+        $this->session->put("third.{$thirdId}.user", json_encode($thirdUser));
 
         return $this;
     }
@@ -138,7 +140,8 @@ class SessionRepository implements SessionRepositoryInterface
      */
     public function revokeThirdUser($third)
     {
-        $this->session->forget("third.{$third->getIdentifier()}.user");
+        $thirdId = $third->getIdentifier();
+        $this->session->forget("third.{$thirdId}.user");
 
         return $this;
     }

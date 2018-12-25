@@ -34,6 +34,10 @@ class UserRepository implements UserRepositoryInterface
         return;
     }
 
+    /**
+     * 
+     * @return UserEntity
+     */
     public function getUserEntityByUsername($username)
     {
         if ($username === 'lay') {
@@ -49,6 +53,47 @@ class UserRepository implements UserRepositoryInterface
     }
 
     /**
+     * 
+     * @return UserEntity
+     */
+    public function getUserEntityByIdentifier($userId)
+    {
+        if ($userId === 1) {
+            $user = new UserEntity();
+            $user->setIdentifier(1);
+            $user->setUsername('lay');
+            $user->setName('lay');
+            
+            return $user;
+        }
+
+        return;
+    }
+
+    /**
+     * 
+     * @return UserEntity
+     */
+    public function getBoundUser(ThirdEntityInterface $third, $thirdUser)
+    {
+        $thirdId = $third->getIdentifier();
+        if($thirdId == 'weixin') {
+            $thirdUserId = $thirdUser->id;
+            $jsonfile = storage_path("app/user-third-{$thirdId}-{$thirdUserId}.json");
+        } else {
+            throw new \Exception(QRCODE_ERR_104);
+        }
+
+        $json = file_exists($jsonfile) ? json_decode(file_get_contents($jsonfile)) : null;
+
+        if(empty($json) || empty($json->userId)) {
+            return null;
+        }
+
+        return $this->getUserEntityByIdentifier($json->userId);
+    }
+
+    /**
      * Bind the third application
      * 
      * @return boolean
@@ -57,14 +102,15 @@ class UserRepository implements UserRepositoryInterface
     {
         $thirdId = $third->getIdentifier();
         if($thirdId == 'weixin') {
-            $jsonfile = storage_path("app/user-third-{$thirdId}-{$thirdUser->openid}.json");
-            $userjsonfile = storage_path("app/user-third-{$user->getIdentifier()}.json");
+            $thirdUserId = $thirdUser->id;
+            $jsonfile = storage_path("app/user-third-{$thirdId}-{$thirdUserId}.json");
+            $userJsonfile = storage_path("app/user-third-{$user->getIdentifier()}.json");
         } else {
             throw new \Exception(QRCODE_ERR_104);
         }
         $json = file_exists($jsonfile) ? json_decode(file_get_contents($jsonfile)) : new \stdClass;
         $json->userId = $user->getIdentifier();
-        $json->thirdUserId = $thirdUser->openid;
+        $json->thirdUserId = $thirdUserId;
         $json->isBound = true;
 
         $ret = file_put_contents($jsonfile, json_encode($json));
@@ -80,8 +126,9 @@ class UserRepository implements UserRepositoryInterface
             }
             if(empty($found)) {
                 $newUserJson = new \stdClass;
+                $newUserJson->thirdId = $thirdId;
                 $newUserJson->userId = $user->getIdentifier();
-                $newUserJson->thirdUserId = $thirdUser->openid;
+                $newUserJson->thirdUserId = $thirdUserId;
                 $newUserJson->isBound = true;
                 $newUserJsons[] = $newUserJson;
             }
@@ -100,7 +147,7 @@ class UserRepository implements UserRepositoryInterface
     {
         $thirdId = $third->getIdentifier();
         if($thirdId == 'weixin') {
-            $thirdUserId = $thirdUser->openid;
+            $thirdUserId = $thirdUser->id;
             $jsonfile = storage_path("app/user-third-{$thirdId}-{$thirdUserId}.json");
             $userJsonfile = storage_path("app/user-third-{$user->getIdentifier()}.json");
         } else {
@@ -135,7 +182,7 @@ class UserRepository implements UserRepositoryInterface
     {
         $thirdId = $third->getIdentifier();
         if($thirdId == 'weixin') {
-            $thirdUserId = $thirdUser->openid;
+            $thirdUserId = $thirdUser->id;
             $jsonfile = storage_path("app/user-third-{$thirdId}-{$thirdUserId}.json");
         } else {
             throw new \Exception(QRCODE_ERR_104);

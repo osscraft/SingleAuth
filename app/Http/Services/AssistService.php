@@ -123,20 +123,16 @@ class AssistService
 
         $form->client = $client = $this->_clientRepository->getClientEntity($form->clientId, null, null, false);
         $form->sessionUser = $user = $this->_sessionRepository->getUser();
-        if (empty($user)) {
-            if ($form->isWeixinBrowser) {
-                $this->_third->init('weixin');
+        if ($form->isWeixinBrowser) {
+            $this->_third->init('weixin');
 
-                $form->state = 'STATE';
-                $form->backurl = "/qrcode/callback/weixin/{$form->encrypt}";
-                $targetUrl = $this->_weixin->authorize($form);
-                if (!empty($form->show)) {
-                    return $targetUrl;
-                }
-                return redirect($targetUrl);
-            } else {
-                return view('oauth2.authorize', ['form' => $form]);
+            $form->state = 'STATE';
+            $form->backurl = "/qrcode/callback/weixin/{$form->encrypt}";
+            $targetUrl = $this->_weixin->authorize($form);
+            if (!empty($form->show)) {
+                return $targetUrl;
             }
+            return redirect($targetUrl);
         }
 
         return view('oauth2.authorize', ['form' => $form]);
@@ -215,7 +211,10 @@ class AssistService
         return view('oauth2.authorize', ['form' => $form]);
     }
 
-    public function callback($form)
+    /**
+     * 第三方登录回调
+     */
+    public function thirdCallback($form)
     {
         $resolve = $this->_securityHelper->validQrcodeLoginToken($form->encrypt);
         if(empty($resolve)) {
@@ -228,12 +227,14 @@ class AssistService
             throw new \Exception(QRCODE_ERR_103);
         }
 
+        $form->client = $client = $this->_clientRepository->getClientEntity($form->clientId, null, null, false);
+        // 第三方登录信息
         if($form->thirdId == 'weixin') {
             $this->_third->init('weixin');
             $third = $this->_third->entity();
 
             $thirdUser = $this->_weixin->snsUserInfo();
-            $form->thirdUserName = $thirdUser->nickname;
+            $form->thirdUserName = $thirdUser->name;
 
             $this->_sessionRepository->pesistThirdUser($third, $thirdUser);
         } else {
@@ -241,11 +242,23 @@ class AssistService
         }
         // 是否已经绑定过
         $form->isBound = $this->_userRepository->isBound($third, $thirdUser);
+        if($form->isBound) {
+            $user = $this->_userRepository->getBoundUser($third, $thirdUser);
+            $form->username = $username = $user->getUsername();
+            $form->sessionUser = $sessionUser = $user;
+
+            $this->_sessionRepository->persistUser($user);
+            $this->_sessionRepository->revokeLoginCount();
+            $this->_sessionRepository->revokeLastAttemptTime();
+        }
 
         return view('oauth2.authorize', ['form' => $form]);
     }
 
-    public function bind($form)
+    /**
+     * 第三方登录回调后确认（已绑定）
+     */
+    public function thirdConfirm($form)
     {
         $resolve = $this->_securityHelper->validQrcodeLoginToken($form->encrypt);
         if(empty($resolve)) {
@@ -258,5 +271,173 @@ class AssistService
             throw new \Exception(QRCODE_ERR_103);
         }
 
+        $form->client = $client = $this->_clientRepository->getClientEntity($form->clientId, null, null, false);
+        $form->sessionUser = $sessionUser = $this->_sessionRepository->getUser();
+        // 第三方登录信息
+        if($form->thirdId == 'weixin') {
+            $this->_third->init('weixin');
+            $third = $this->_third->entity();
+
+            $thirdUser = $this->_sessionRepository->getThirdUser($third);
+            if(empty($thirdUser)) {
+                throw new \Exception(USER_ERR_103);
+            }
+            // 设置第三方用户名
+            $form->thirdUserName = $thirdUser->name;
+        } else {
+            throw new \Exception(QRCODE_ERR_104);
+        }
+        // 是否已经绑定过
+        $form->isBound = $this->_userRepository->isBound($third, $thirdUser);
+        if(!$form->isBound) {
+            // 验证失败
+            $this->_sessionRepository->incLoginCount();
+            $this->_sessionRepository->persistLastAttemptTime();
+            // 设置信息
+            $form->error = '无绑定用户';
+            return view('oauth2.authorize', ['form' => $form]);
+        }
+        // 验证绑定用户与会话登录用户一致
+        $user = $this->_userRepository->getBoundUser($third, $thirdUser);
+        if($sessionUser->getIdentifier() != $user->getIdentifier()) {
+            $this->_sessionRepository->revokeUser();// 清除登录用户
+            throw new \Exception(USER_ERR_104);
+        }
+        // 成功清除登录验证信息
+        $this->_sessionRepository->revokeLoginCount();
+        $this->_sessionRepository->revokeLastAttemptTime();
+
+        // 确认登录
+        $form->type = $event = SocketHelper::EVENT_ONQRCODE_LOGIN;
+        $form->username = $username = $user->getUsername();
+        $form->clientSecret = $this->_clientRepository->getClientSecret($form->clientId);
+        $form->nonceStr = $nonceStr = Str::random();
+        $signature = $this->_securityHelper->qrcodeLoginSignature($form);
+        $this->_socketHelper->sendToClient($form->socketClientId, $event, ['type' => $event, 'username' => $username, 'nonceStr' => $nonceStr, 'signature' => $signature]);
+        // 清除第三方用户
+        // $this->_sessionRepository->revokeThirdUser($third);
+
+        return view('assist.success', ['form' => $form]);
+    }
+
+    /**
+     * 第三方登录回调后绑定并确认
+     */
+    public function thirdBind($form)
+    {
+        $maxLoginCount = env('LOGIN_COUNT', 3);
+
+        $resolve = $this->_securityHelper->validQrcodeLoginToken($form->encrypt);
+        if(empty($resolve)) {
+            throw new \Exception(QRCODE_ERR_101);
+        }
+        list($form->clientId, $form->socketClientId, $form->timestamp) = $resolve;
+
+        $isOnline = $this->_socketHelper->isOnline($form->socketClientId);
+        if(empty($isOnline)) {
+            throw new \Exception(QRCODE_ERR_103);
+        }
+
+        $form->client = $client = $this->_clientRepository->getClientEntity($form->clientId, null, null, false);
+        // $form->sessionUser = $sessionUser = $this->_sessionRepository->getUser();
+        // 第三方登录信息
+        if($form->thirdId == 'weixin') {
+            $this->_third->init('weixin');
+            $third = $this->_third->entity();
+
+            $thirdUser = $this->_sessionRepository->getThirdUser($third);
+            if(empty($thirdUser)) {
+                throw new \Exception(USER_ERR_103);
+            }
+            // 设置第三方用户名
+            $form->thirdUserName = $thirdUser->name;
+        } else {
+            throw new \Exception(QRCODE_ERR_104);
+        }
+        // 是否已经绑定过
+        $form->isBound = $this->_userRepository->isBound($third, $thirdUser);
+        $form->loginCount = $this->_sessionRepository->getLoginCount();
+        $form->lastAttemptTime = $this->_sessionRepository->getLastAttemptTime();
+        if($form->loginCount > $maxLoginCount && !empty($form->lastAttemptTime) && time() - $form->lastAttemptTime < 1800) {
+            // 设置信息
+            $form->error = '请半小时后重试';
+            return view('oauth2.authorize', ['form' => $form]);
+        }
+
+        if(!$form->isBound) {
+            // 验证用户名密码
+            $user = $this->_userRepository->getUserEntityByUserCredentials($form->username, $form->password, '', $client);
+            if(empty($user)) {
+                // 验证失败
+                $this->_sessionRepository->incLoginCount();
+                $this->_sessionRepository->persistLastAttemptTime();
+                // 设置信息
+                $form->error = '用户名或密码错误';
+                return view('oauth2.authorize', ['form' => $form]);
+            }
+            // 保存会话,清除登录记录信息
+            $this->_sessionRepository->persistUser($user);
+            $this->_sessionRepository->revokeLoginCount();
+            $this->_sessionRepository->revokeLastAttemptTime();
+            // 绑定
+            $this->_userRepository->bind($user, $third, $thirdUser);
+        } else {
+            $user = $this->_userRepository->getBoundUser($third, $thirdUser);
+        }
+        // 确认登录
+        $form->type = $event = SocketHelper::EVENT_ONQRCODE_LOGIN;
+        $form->username = $username = $user->getUsername();
+        $form->clientSecret = $this->_clientRepository->getClientSecret($form->clientId);
+        $form->nonceStr = $nonceStr = Str::random();
+        $signature = $this->_securityHelper->qrcodeLoginSignature($form);
+        $this->_socketHelper->sendToClient($form->socketClientId, $event, ['type' => $event, 'username' => $username, 'nonceStr' => $nonceStr, 'signature' => $signature]);
+        // 清除第三方用户
+        // $this->_sessionRepository->revokeThirdUser($third);
+
+        return view('assist.success', ['form' => $form]);
+    }
+
+    /**
+     * 第三方登录回调后解除绑定
+     */
+    public function thirdUnbind($form)
+    {
+        $resolve = $this->_securityHelper->validQrcodeLoginToken($form->encrypt);
+        if(empty($resolve)) {
+            throw new \Exception(QRCODE_ERR_101);
+        }
+        list($form->clientId, $form->socketClientId, $form->timestamp) = $resolve;
+
+        $isOnline = $this->_socketHelper->isOnline($form->socketClientId);
+        if(empty($isOnline)) {
+            throw new \Exception(QRCODE_ERR_103);
+        }
+
+        $form->client = $client = $this->_clientRepository->getClientEntity($form->clientId, null, null, false);
+        // 第三方登录信息
+        if($form->thirdId == 'weixin') {
+            $this->_third->init('weixin');
+            $third = $this->_third->entity();
+
+            $thirdUser = $this->_sessionRepository->getThirdUser($third);
+            if(empty($thirdUser)) {
+                throw new \Exception(USER_ERR_103);
+            }
+            // 设置第三方用户名
+            $form->thirdUserName = $thirdUser->name;
+        } else {
+            throw new \Exception(QRCODE_ERR_104);
+        }
+        // 是否已经绑定过
+        $form->isBound = $this->_userRepository->isBound($third, $thirdUser);
+        if($form->isBound) {
+            $user = $this->_userRepository->getBoundUser($third, $thirdUser);
+            // 解除绑定
+            $this->_userRepository->unbind($user, $third, $thirdUser);
+            // 更新
+            $form->isBound = false;
+        }
+
+        return view('oauth2.authorize', ['form' => $form]);
     }
 }

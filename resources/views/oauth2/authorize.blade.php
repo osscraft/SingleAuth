@@ -85,17 +85,24 @@
                             <h1 class="mb-3 bd-text-purple-bright">OAuth2</h1>
                             @if(!empty($form->thirdId) && empty($form->isBound))
                             <div class="form-group">
-                                <input id="username" name="username" type="text" value="{{$form->username}}" class="form-control input-lg" placeholder="用户名" disabled />
-                                <input id="username" name="username" type="text" value="{{$form->thirdUserName}}" class="form-control input-lg" placeholder="第三方用户名" disabled />
+                                <input id="username" name="username" type="text" value="{{$form->thirdUserName}}(第三方用户名)" class="form-control input-lg" placeholder="第三方用户名" disabled />
+                            </div>
+                            <div class="form-group">
+                                <input id="username" name="username" type="text" value="{{$form->username}}" class="form-control input-lg" placeholder="用户名" />
+                            </div>
+                            <div class="form-group">
+                                <input type="password" class="form-control input-lg" id="password" name="password" placeholder="密码" value="{{$form->password}}">
                             </div>
                             <div class="form-group">
                                 <input type="hidden" class="form-control input-lg" id="bind" name="bind" value="1">
-                                <button type="submit" class="btn btn-success btn-lg btn-block mb15"><span>绑定并登录</span></button>
+                                <button type="submit" class="btn btn-success btn-lg btn-block mb15"><span>登录并绑定</span></button>
                             </div>
                             @elseif(!empty($form->thirdId))
                             <div class="form-group">
-                                <input id="username" name="username" type="text" value="{{$form->username}}" class="form-control input-lg" placeholder="用户名" disabled />
-                                <input id="username" name="username" type="text" value="{{$form->thirdUserName}}" class="form-control input-lg" placeholder="第三方用户名" disabled />
+                                <input id="username" name="username" type="text" value="{{$form->thirdUserName}}(第三方用户名)" class="form-control input-lg" placeholder="第三方用户名" disabled />
+                            </div>
+                            <div class="form-group">
+                                <input id="username" name="username" type="text" value="{{$form->sessionUser->getUsername()}}({{$form->sessionUser->getName()}})" class="form-control input-lg" placeholder="用户名" disabled />
                             </div>
                             <div class="form-group">
                                 <input type="hidden" class="form-control input-lg" id="unbind" name="unbind" value="">
@@ -137,7 +144,7 @@
                     </div>
                 </div>
             </div>
-            @if(!$form->sessionUser && !$form->isMobile && !$form->isWeixinBrowser)
+            @if(empty($form->sessionUser) && empty($form->isMobile) && empty($form->isWeixinBrowser))
             <div class="row mx-auto align-items-center mt-5">
                 <div class="mx-auto">
                     <div class="mx-auto text-center"><label>扫描下方二维码</label></div>
@@ -162,7 +169,7 @@
 $(document).ready(function() {
     var base = "{{URL()}}";
     var clientId = "{{$form->client->getIdentifier()}}";
-    @if(!$form->sessionUser && !$form->isMobile && !$form->isWeixinBrowser)
+    @if(empty($form->sessionUser) && empty($form->isMobile) && empty($form->isWeixinBrowser))
     // socket连接逻辑
     var socketClientId = '';
     var delayShow;
