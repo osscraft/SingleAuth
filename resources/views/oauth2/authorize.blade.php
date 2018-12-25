@@ -100,7 +100,7 @@
                             <div class="form-group">
                                 <label>忘记密码？</label>
                             </div>
-                            @elseif(empty($form->isBound))
+                            @elseif(!empty($form->thirdId) && empty($form->isBound))
                             @else
                             <div class="form-group">
                                 <input id="username" name="username" type="text" value="{{$form->sessionUser->getUsername()}}({{$form->sessionUser->getName()}})" class="form-control input-lg" placeholder="用户名" disabled />

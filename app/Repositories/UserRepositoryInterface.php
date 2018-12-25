@@ -20,17 +20,17 @@ interface UserRepositoryInterface extends LeagueUserRepositoryInterface
      * 
      * @return boolean
      */
-    public function bind(UserEntityInterface $user, ThirdEntityInterface $third);
+    public function bind(UserEntityInterface $user, ThirdEntityInterface $third, $thirdUser);
     /**
      * Unbind the third application
      * 
      * @return boolean
      */
-    public function unbind(UserEntityInterface $user, ThirdEntityInterface $third);
+    public function unbind(UserEntityInterface $user, ThirdEntityInterface $third, $thirdUser);
     /**
      * If bind the third application
      * 
      * @return boolean
      */
-    public function isBound(UserEntityInterface $user, ThirdEntityInterface $third);
+    public function isBound(ThirdEntityInterface $third, $thirdUser);
 }

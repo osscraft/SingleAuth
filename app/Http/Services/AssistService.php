@@ -238,7 +238,8 @@ class AssistService
         } else {
             throw new \Exception(QRCODE_ERR_104);
         }
-        // $form->isBound = 
+        // 是否已经绑定过
+        $form->isBound = $this->_userRepository->isBound($third, $thirdUser);
 
         return view('oauth2.authorize', ['form' => $form]);
     }
