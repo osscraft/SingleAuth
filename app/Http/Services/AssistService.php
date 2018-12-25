@@ -233,6 +233,7 @@ class AssistService
             $third = $this->_third->entity();
 
             $thirdUser = $this->_weixin->snsUserInfo();
+            $form->thirdUserName = $thirdUser->nickname;
 
             $this->_sessionRepository->pesistThirdUser($third, $thirdUser);
         } else {

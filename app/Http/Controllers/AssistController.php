@@ -95,7 +95,17 @@ class AssistController extends Controller
         $form = new \stdClass;
         $form->thirdId = $thirdId;
         $form->encrypt = $encrypt;
+        $form->bind = $this->_request->input('bind') ?: false;
         
+        $method = $this->_request->method();
+        if ($method == 'GET') {
+            return $this->_assist->callback($form);
+        }
+
+        if($form->bind) {
+            return $this->_assist->bind($form);
+        }
+
         return $this->_assist->callback($form);
     }
 }

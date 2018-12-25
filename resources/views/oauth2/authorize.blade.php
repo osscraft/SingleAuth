@@ -83,7 +83,28 @@
                     <div class="col-md-6 text-center text-md-left pr-md-5">
                         <form id="form" action="" method="POST" class="form-layout" enctype="multipart/form-data">
                             <h1 class="mb-3 bd-text-purple-bright">OAuth2</h1>
-                            @if(!$form->sessionUser)
+                            @if(!empty($form->thirdId) && empty($form->isBound))
+                            <div class="form-group">
+                                <input id="username" name="username" type="text" value="{{$form->username}}" class="form-control input-lg" placeholder="用户名" disabled />
+                                <input id="username" name="username" type="text" value="{{$form->thirdUserName}}" class="form-control input-lg" placeholder="第三方用户名" disabled />
+                            </div>
+                            <div class="form-group">
+                                <input type="hidden" class="form-control input-lg" id="bind" name="bind" value="1">
+                                <button type="submit" class="btn btn-success btn-lg btn-block mb15"><span>绑定并登录</span></button>
+                            </div>
+                            @elseif(!empty($form->thirdId))
+                            <div class="form-group">
+                                <input id="username" name="username" type="text" value="{{$form->username}}" class="form-control input-lg" placeholder="用户名" disabled />
+                                <input id="username" name="username" type="text" value="{{$form->thirdUserName}}" class="form-control input-lg" placeholder="第三方用户名" disabled />
+                            </div>
+                            <div class="form-group">
+                                <input type="hidden" class="form-control input-lg" id="unbind" name="unbind" value="">
+                                <button type="submit" class="btn btn-success btn-lg btn-block mb15"><span>确认</span></button>
+                            </div>
+                            <div class="form-group">
+                                <a id="cancel" class="btn p-0 float-left">取消绑定？</a>
+                            </div>
+                            @elseif(empty($form->sessionUser))
                             <div class="form-group">
                                 <label id="error" class="text-danger font-weight-bold">@if(empty($form->error)) &nbsp; @else {{$form->error}} @endif</label>
                                 <input type="text" class="form-control input-lg" id="username" name="username" aria-describedby="username" placeholder="用户名" value="{{$form->username}}">
@@ -100,19 +121,16 @@
                             <div class="form-group">
                                 <label>忘记密码？</label>
                             </div>
-                            @elseif(!empty($form->thirdId) && empty($form->isBound))
                             @else
                             <div class="form-group">
                                 <input id="username" name="username" type="text" value="{{$form->sessionUser->getUsername()}}({{$form->sessionUser->getName()}})" class="form-control input-lg" placeholder="用户名" disabled />
                             </div>
                             <div class="form-group">
                                 <input type="hidden" class="form-control input-lg" id="logout" name="logout" value="">
-                                <input type="hidden" class="form-control input-lg" id="unbind" name="unbind" value="">
                                 <button type="submit" class="btn btn-success btn-lg btn-block mb15"><span>确认</span></button>
                             </div>
                             <div class="form-group">
                                 <a id="other" class="btn p-0 float-left">其他帐号？</a>
-                                @if(!empty($form->isWeixinBound)) <a id="cancel" class="btn p-0 float-right">取消绑定</a> @endif
                             </div>
                             @endif
                         </form>
