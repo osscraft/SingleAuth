@@ -14,7 +14,7 @@ class ClientRepository implements ClientRepositoryInterface
     {
         $clients = [
             'myawesomeapp' => [
-                'secret'          => md5('abc123'), //password_hash('abc123', PASSWORD_BCRYPT),
+                'secret'          => 'e99a18c428cb38d5f260853678922e03', //password_hash('abc123', PASSWORD_BCRYPT),
                 'name'            => 'My Awesome App',
                 'redirect_uri'    => url('/index'),
                 'is_confidential' => true,
@@ -29,7 +29,7 @@ class ClientRepository implements ClientRepositoryInterface
         if (
             $mustValidateSecret === true
             && $clients[$clientIdentifier]['is_confidential'] === true
-            && md5($clientSecret) !== $clients[$clientIdentifier]['secret']//password_verify($clientSecret, $clients[$clientIdentifier]['secret']) === false
+            && $clientSecret !== $clients[$clientIdentifier]['secret']//password_verify($clientSecret, $clients[$clientIdentifier]['secret']) === false
         ) {
             return;
         }

@@ -52,8 +52,8 @@ class AccessTokenController extends Controller
     public function access_token()
     {
         $form = new \stdClass;
-        $form->clientId = $this->_request->get('client_id') ?: '';
-        $form->grantType = $grantType = $this->_request->get('grant_type') ?: '';
+        $form->clientId = $this->_request->input('client_id') ?: '';
+        $form->grantType = $grantType = $this->_request->input('grant_type') ?: '';
         // 使用令牌码
         switch($grantType) {
             case 'authorization_code':

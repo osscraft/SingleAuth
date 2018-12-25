@@ -70,7 +70,7 @@ $app->middleware([
 
 $app->routeMiddleware([
     // 'auth' => App\Http\Middleware\Authenticate::class,
-    App\Http\Middleware\AccessMiddleware::class,
+    'access' => App\Http\Middleware\AccessMiddleware::class,
 ]);
 
 /*
@@ -108,7 +108,6 @@ $app->bind(Illuminate\Session\SessionManager::class, function () use ($app) {
 });
 $app->alias('qrcode', SimpleSoftwareIO\QrCode\Facades\QrCode::class);
 $app->alias('Agent', Jenssegers\Agent\Facades\Agent::class);
-$app->alias('access', App\Http\Middleware\AccessMiddleware::class);
 /*
 |--------------------------------------------------------------------------
 | Load The Application Routes

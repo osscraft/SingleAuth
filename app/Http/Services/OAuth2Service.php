@@ -30,6 +30,12 @@ use Psr\Http\Message\ServerRequestInterface;
 
 class OAuth2Service
 {
+    const GRANT_TYPE_AUTH_CODE = 'authorization_code';
+    const GRANT_TYPE_IMPLICT = 'implict';
+    const GRANT_TYPE_PASSWORD = 'password';
+    const GRANT_TYPE_REFRESH_TOKEN = 'refresh_token';
+    const GRANT_TYPE_CLIENT_CREDENTIAL = 'client_credentials';
+
     /**
      * @var SecurityHelper
      */
@@ -99,7 +105,6 @@ class OAuth2Service
         $this->_psrRequest = $psrRequest;
         $this->_psrResponse = $psrResponse;
         $this->_authorizationServer = new AuthorizationServer($clientRepository, $accessTokenRepository, $scopeRepository, $privateKey, $encryptionKey);
-        $this->_resourceServer = new ResourceServer($accessTokenRepository, $publicKey);
         $this->_accessTokenRepository = $accessTokenRepository;
         $this->_authCodeRepository = $authCodeRepository;
         $this->_clientRepository = $clientRepository;

@@ -20,6 +20,7 @@ $router->group([], function() use ($router) {
     $router->get('authorize','OAuth2\AuthorizeController@auth');
     $router->post('authorize','OAuth2\AuthorizeController@auth');
     $router->post('access_token','OAuth2\AccessTokenController@access_token');
+    $router->post('token','OAuth2\AccessTokenController@access_token');
     $router->get('qrcode/generate/{clientId}/{socketClientId}','OAuth2\AssistController@qrcode');
     $router->get('qrcode/authorize/{encrypt}','OAuth2\AssistController@qrcodeAuthorize');
     $router->post('qrcode/authorize/{encrypt}','OAuth2\AssistController@qrcodeAuthorize');
@@ -30,6 +31,7 @@ $router->group([], function() use ($router) {
 
     // 需要访问令牌
     $router->group(['middleware' => 'access'], function() use ($router) {
+        $router->get('resource', 'OAuth2\ResourceController@resource');
         $router->post('resource', 'OAuth2\ResourceController@resource');
     });
 });
