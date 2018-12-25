@@ -167,7 +167,7 @@ $(document).ready(function() {
 
         switch (event) {
             case 'onconnect':
-                socketClientId = data.clientId;
+                socketClientId = data.clientId | data.client_id;
                 regenQrcode();
                 break;
             case 'onqrcodescan':
