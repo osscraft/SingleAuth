@@ -9,6 +9,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Services\OAuth2Service;
 use Illuminate\Http\Request;
 use Jenssegers\Agent\Facades\Agent;
+use League\OAuth2\Client\Provider\GenericProvider;
 
 class OAuth2Controller extends Controller
 {
@@ -42,17 +43,6 @@ class OAuth2Controller extends Controller
         $this->_request = $request;
         $this->_session = $request->session();
         $this->_oauth2 = $oauth2;
-    }
-
-    public function index()
-    {
-        $form = new \stdClass;
-        $form->code = $this->_request->get('code') ?: '';
-
-        $res = $this->_apiHelper->httpPost('/access_token', ['grant_type' => 'authorization_code', 'code' => $form->code, 'client_id' => 'myawesomeapp', 'client_secret' => 'abc123', 'redirect_uri' => url('/index')]);
-        $data = $this->_apiHelper->convert($res);
-
-        return $this->success($data);
     }
 
     //

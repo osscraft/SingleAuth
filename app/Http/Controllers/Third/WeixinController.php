@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Third;
 
 use App\Helper\ApiHelper;
 use App\Helper\SecurityHelper;

@@ -16,19 +16,37 @@ use League\OAuth2\Server\Repositories\UserRepositoryInterface as LeagueUserRepos
 interface UserRepositoryInterface extends LeagueUserRepositoryInterface
 {
     /**
-     * Bind the third application
+     * 通过登录用户名获取用户实例
+     * 
+     * @return UserEntityInterface
+     */
+    public function getUserEntityByUsername($username);
+    /**
+     * 通过用户ID获取用户实例
+     * 
+     * @return UserEntityInterface
+     */
+    public function getUserEntityByIdentifier($userId);
+    /**
+     * 通过绑定的第三方用户信息获取用户实例
+     * 
+     * @return UserEntityInterface
+     */
+    public function getBoundUser(ThirdEntityInterface $third, $thirdUser);
+    /**
+     * 绑定第三方用户
      * 
      * @return boolean
      */
     public function bind(UserEntityInterface $user, ThirdEntityInterface $third, $thirdUser);
     /**
-     * Unbind the third application
+     * 解绑第三方用户
      * 
      * @return boolean
      */
     public function unbind(UserEntityInterface $user, ThirdEntityInterface $third, $thirdUser);
     /**
-     * If bind the third application
+     * 是否绑定第三方用户
      * 
      * @return boolean
      */

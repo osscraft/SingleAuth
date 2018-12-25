@@ -16,7 +16,6 @@ use App\Helper\SocketHelper;
 use App\Repositories\ClientRepository;
 use App\Repositories\ScopeRepository;
 use App\Repositories\SessionRepository;
-use App\Repositories\ThirdRepository;
 use App\Repositories\UserClientRepository;
 use App\Repositories\UserRepository;
 use App\Http\Services\ThirdService;

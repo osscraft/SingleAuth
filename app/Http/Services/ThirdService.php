@@ -34,11 +34,11 @@ class ThirdService
     private $_appSecret;
     private $_appName;
 
-    public function init($type = 'weixin', $appId = '')
+    public function init($identifier = 'weixin')
     {
-        switch($type) {
+        switch($identifier) {
             case 'weixin':
-                $this->_identifier = $type;
+                $this->_identifier = $identifier;
                 $this->_appId = env('WEIXIN_APP_ID');
                 $this->_appSecret = env('WEIXIN_APP_SECRET');
                 $this->_appName = env('WEIXIN_APP_NAME');

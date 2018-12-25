@@ -21,7 +21,6 @@ class UserRepository implements UserRepositoryInterface
         $grantType,
         ClientEntityInterface $clientEntity
     ) {
-        // dd([$username,$password]);
         if ($username === 'lay' && $password === '111111') {
             $user = new UserEntity();
             $user->setIdentifier(1);
@@ -35,6 +34,7 @@ class UserRepository implements UserRepositoryInterface
     }
 
     /**
+     * {@inheritdoc}
      * 
      * @return UserEntity
      */
@@ -53,6 +53,7 @@ class UserRepository implements UserRepositoryInterface
     }
 
     /**
+     * {@inheritdoc}
      * 
      * @return UserEntity
      */
@@ -71,6 +72,7 @@ class UserRepository implements UserRepositoryInterface
     }
 
     /**
+     * {@inheritdoc}
      * 
      * @return UserEntity
      */
@@ -94,7 +96,7 @@ class UserRepository implements UserRepositoryInterface
     }
 
     /**
-     * Bind the third application
+     * {@inheritdoc}
      * 
      * @return boolean
      */
@@ -139,7 +141,7 @@ class UserRepository implements UserRepositoryInterface
         return $ret;
     }
     /**
-     * Unbind the third application
+     * {@inheritdoc}
      * 
      * @return boolean
      */
@@ -174,7 +176,7 @@ class UserRepository implements UserRepositoryInterface
         return $ret;
     }
     /**
-     * If bind the third application
+     * {@inheritdoc}
      * 
      * @return boolean
      */

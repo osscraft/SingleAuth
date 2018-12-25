@@ -2,101 +2,88 @@
 
 namespace App\Http\Controllers\OAuth2;
 
+use App\Helper\ApiHelper;
+use App\Helper\SecurityHelper;
+use App\Helper\Traits\Output;
 use App\Http\Controllers\Controller;
-use App\OAuth2\Entities\UserEntity;
-use App\OAuth2\Repositories\AccessTokenRepository;
-use App\OAuth2\Repositories\AuthCodeRepository;
-use App\OAuth2\Repositories\ClientRepository;
-use App\OAuth2\Repositories\RefreshTokenRepository;
-use App\OAuth2\Repositories\ScopeRepository;
-use League\OAuth2\Server\AuthorizationServer;
-use League\OAuth2\Server\Grant\AuthCodeGrant;
-use Illuminate\Support\Facades\Schema;
-use Illuminate\Database\Schema\Blueprint;
-use Psr\Http\Message\ResponseInterface;
-use Psr\Http\Message\ServerRequestInterface;
+use App\Http\Services\OAuth2Service;
+use Illuminate\Http\Request;
+use Jenssegers\Agent\Facades\Agent;
+use League\OAuth2\Client\Provider\GenericProvider;
 
 class AuthorizeController extends Controller
 {
+    use Output;
+    
     /**
-     * @var ServerRequestInterface
+     * @var ApiHelper
+     */
+    private $_apiHelper;
+    /**
+     * @var SecurityHelper
+     */
+    private $_securityHelper;
+    /**
+     * @var Request
      */
     private $_request;
     /**
-     * @var ResponseInterface
+     * @var OAuth2Service
      */
-    private $_response;
-    /**
-     * @var AuthorizationServer
-     */
-    private $_authorizationServer;
-    /**
-     * @var AccessTokenRepository
-     */
-    private $_accessTokenRepository;
-    /**
-     * @var AuthCodeRepository
-     */
-    private $_authCodeRepository;
-    /**
-     * @var ClientRepository
-     */
-    private $_clientRepository;
-    /**
-     * @var RefreshTokenRepository
-     */
-    private $_refreshTokenRepository;
-    /**
-     * @var ScopeRepository
-     */
-    private $_scopeRepository;
+    private $_oauth2;
+
     /**
      * Create a new controller instance.
      *
      * @return void
      */
-    public function __construct(ServerRequestInterface $request, ResponseInterface $response, ClientRepository $clientRepository, AccessTokenRepository $accessTokenRepository, ScopeRepository $scopeRepository, AuthCodeRepository $authCodeRepository, RefreshTokenRepository $refreshTokenRepository)
+    public function __construct(ApiHelper $apiHelper, SecurityHelper $securityHelper, Request $request, OAuth2Service $oauth2)
     {
-        $privateKey = env('APP_PRIVATE_KEY');
-        $encryptionKey = env('APP_KEY');
+        $this->_apiHelper = $apiHelper;
+        $this->_securityHelper = $securityHelper;
         $this->_request = $request;
-        $this->_response = $response;
-        $this->_authorizationServer = new AuthorizationServer($clientRepository, $accessTokenRepository, $scopeRepository, $privateKey, $encryptionKey);
-        $this->_accessTokenRepository = $accessTokenRepository;
-        $this->_authCodeRepository = $authCodeRepository;
-        $this->_clientRepository = $clientRepository;
-        $this->_refreshTokenRepository = $refreshTokenRepository;
-        $this->_scopeRepository = $scopeRepository;
-        
-        $this->_authorizationServer->enableGrantType(
-            new AuthCodeGrant(
-                $this->_authCodeRepository,
-                $this->_refreshTokenRepository,
-                new \DateInterval('PT10M')
-            ),
-            new \DateInterval('PT1H')
-        );
+        $this->_session = $request->session();
+        $this->_oauth2 = $oauth2;
     }
 
-    //
-    public function auth($ability, $arguments = [])
+    /**
+     * 请求授权
+     */ 
+    public function auth()
     {
-        // dump($this->_authorizationServer);
-        $authRequest = $this->_authorizationServer->validateAuthorizationRequest($this->_request);
+        $form = new \stdClass;
+        $form->clientId = $this->_request->get('client_id') ?: '';
+        $form->responseType = $this->_request->get('response_type') ?: '';
+        $form->state = $this->_request->get('state') ?: '';
+        $form->username = $this->_request->input('username') ?: '';
+        $form->password = $this->_request->input('password') ?: '';
+        $form->socketServerUri = (is_https() ? 'wss' : 'ws') . '://' . env('SOCKET_SERVER_HOST') . ':' . env('SOCKET_SERVER_PORT');
+        $form->qrcodeLifetime = env('QRCODE_LOGIN_LIFETIME', 120);
+        $form->isMobile = Agent::isMobile();
+        $form->isWeixinBrowser = strpos(Agent::getUserAgent(), 'MicroMessenger') !== false;
 
-        // Once the user has logged in set the user on the AuthorizationRequest
-        $authRequest->setUser(new UserEntity());
+        $method = $this->_request->method();
+        if($method == 'GET') {
+            return $this->_oauth2->authorize($form);
+        } else {
+            $form->username = $this->_request->post('username') ?: '';
+            $form->password = $this->_request->post('password') ?: '';
+            $form->logout = $this->_request->input('logout') ?: false;
+            $form->unbind = $this->_request->input('unbind') ?: false;
+            $form->type = $this->_request->input('type') ?: '';
+            $form->signature = $this->_request->input('signature') ?: false;
+            $form->nonceStr = $this->_request->input('nonceStr') ?: '';
+            $form->error = '';
 
-        // Once the user has approved or denied the client update the status
-        // (true = approved, false = denied)
-        $authRequest->setAuthorizationApproved(false);
+            if($form->logout) {
+                return $this->_oauth2->logout($form);
+            }
+            
+            if($form->signature) {
+                return $this->_oauth2->qrlogin($form);
+            }
 
-        // Return the HTTP redirect response
-        return $this->_authorizationServer->completeAuthorizationRequest($authRequest, $this->_response);
-    }
-
-    public function authPost()
-    {
-
+            return $this->_oauth2->login($form);
+        }
     }
 }

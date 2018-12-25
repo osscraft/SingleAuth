@@ -14,17 +14,25 @@
 $router->get('/', function () use ($router) {
     return $router->app->version();
 });
-$router->get('index','OAuth2Controller@index');
-$router->get('authorize','OAuth2Controller@auth');
-$router->post('authorize','OAuth2Controller@auth');
-$router->post('access_token','OAuth2Controller@access_token');
-$router->get('qrcode/generate/{clientId}/{socketClientId}','AssistController@qrcode');
-$router->get('qrcode/authorize/{encrypt}','AssistController@qrcodeAuthorize');
-$router->post('qrcode/authorize/{encrypt}','AssistController@qrcodeAuthorize');
-$router->get('qrcode/callback/{thirdId}/{encrypt}','AssistController@qrcodeCallback');
-$router->post('qrcode/callback/{thirdId}/{encrypt}','AssistController@qrcodeCallback');
-$router->get('third/weixin/authorize','WeixinController@auth');
-$router->get('third/weixin/callback','WeixinController@callback');
 
+$router->group([], function() use ($router) {
+    $router->get('index','Portal\PortalController@index');
+    $router->get('authorize','OAuth2\AuthorizeController@auth');
+    $router->post('authorize','OAuth2\AuthorizeController@auth');
+    $router->post('access_token','OAuth2\AccessTokenController@access_token');
+    $router->get('qrcode/generate/{clientId}/{socketClientId}','OAuth2\AssistController@qrcode');
+    $router->get('qrcode/authorize/{encrypt}','OAuth2\AssistController@qrcodeAuthorize');
+    $router->post('qrcode/authorize/{encrypt}','OAuth2\AssistController@qrcodeAuthorize');
+    $router->get('qrcode/callback/{thirdId}/{encrypt}','OAuth2\AssistController@qrcodeCallback');
+    $router->post('qrcode/callback/{thirdId}/{encrypt}','OAuth2\AssistController@qrcodeCallback');
+    $router->get('third/weixin/authorize','Third\WeixinController@auth');
+    $router->get('third/weixin/callback','Third\WeixinController@callback');
+
+    // 需要访问令牌
+    $router->group(['middleware' => 'access'], function() use ($router) {
+        $router->post('resource', 'OAuth2\ResourceController@resource');
+    });
+});
+// for test
 $router->get('/test/{name}', 'ExampleController@test');
 $router->post('/test/{name}', 'ExampleController@test');

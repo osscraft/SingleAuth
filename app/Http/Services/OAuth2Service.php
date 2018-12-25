@@ -90,6 +90,7 @@ class OAuth2Service
     public function __construct(SecurityHelper $securityHelper, Request $request, ServerRequestInterface $psrRequest, ResponseInterface $psrResponse, ClientRepository $clientRepository, AccessTokenRepository $accessTokenRepository, ScopeRepository $scopeRepository, AuthCodeRepository $authCodeRepository, RefreshTokenRepository $refreshTokenRepository, SessionRepository $sessionRepository, UserClientRepository $userClientRepository, UserRepository $userRepository)
     {
         $privateKey = env('APP_PRIVATE_KEY');
+        $publicKey = env('APP_PUBLIC_KEY');
         $encryptionKey = env('APP_KEY');
 
         $this->_securityHelper = $securityHelper;
@@ -98,6 +99,7 @@ class OAuth2Service
         $this->_psrRequest = $psrRequest;
         $this->_psrResponse = $psrResponse;
         $this->_authorizationServer = new AuthorizationServer($clientRepository, $accessTokenRepository, $scopeRepository, $privateKey, $encryptionKey);
+        $this->_resourceServer = new ResourceServer($accessTokenRepository, $publicKey);
         $this->_accessTokenRepository = $accessTokenRepository;
         $this->_authCodeRepository = $authCodeRepository;
         $this->_clientRepository = $clientRepository;
@@ -307,19 +309,8 @@ class OAuth2Service
         return $this->_authorizationServer->respondToAccessTokenRequest($this->_psrRequest, $this->_psrResponse);
     }
 
-    /**
-     * 与接入应用解绑
-     */
-    public function unbind($form)
+    public function resource($form)
     {
-        
-    }
-
-    /**
-     * 与接入应用绑定
-     */
-    public function bind($form)
-    {
-        
+        dd($this->_psrRequest);
     }
 }
