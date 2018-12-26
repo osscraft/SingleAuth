@@ -25,6 +25,9 @@ use Illuminate\Session\Store;
 use League\OAuth2\Server\AuthorizationServer;
 use League\OAuth2\Server\RequestTypes\AuthorizationRequest;
 use League\OAuth2\Server\Grant\AuthCodeGrant;
+use League\OAuth2\Server\Grant\PasswordGrant;
+use League\OAuth2\Server\Grant\RefreshTokenGrant;
+use League\OAuth2\Server\Grant\ClientCredentialsGrant;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
@@ -300,7 +303,7 @@ class OAuth2Service
     /**
      * 通过授权码获取令牌
      */
-    public function authcode($form)
+    public function grantAuthcode($form)
     {
         $this->_authorizationServer->enableGrantType(
             new AuthCodeGrant(
@@ -314,8 +317,58 @@ class OAuth2Service
         return $this->_authorizationServer->respondToAccessTokenRequest($this->_psrRequest, $this->_psrResponse);
     }
 
+    public function grantPassword($form)
+    {
+        $grant = new PasswordGrant(
+            $this->_userRepository,
+            $this->_refreshTokenRepository
+        );
+        $grant->setRefreshTokenTTL(new \DateInterval('P1M'));
+        $this->_authorizationServer->enableGrantType(
+            $grant,
+            new \DateInterval('PT1H')
+        );
+
+        return $this->_authorizationServer->respondToAccessTokenRequest($this->_psrRequest, $this->_psrResponse);
+    }
+
+    public function grantRefreshToken($form)
+    {
+        $grant = new RefreshTokenGrant(
+            $this->_refreshTokenRepository
+        );
+        $grant->setRefreshTokenTTL(new \DateInterval('P1M'));
+        $this->_authorizationServer->enableGrantType(
+            $grant,
+            new \DateInterval('PT1H')
+        );
+
+        return $this->_authorizationServer->respondToAccessTokenRequest($this->_psrRequest, $this->_psrResponse);
+    }
+
+    public function grantClientCredentials($form)
+    {
+        $this->_authorizationServer->enableGrantType(
+            new ClientCredentialsGrant(),
+            new \DateInterval('PT1H')
+        );
+
+        return $this->_authorizationServer->respondToAccessTokenRequest($this->_psrRequest, $this->_psrResponse);
+    }
+
     public function resource($form)
     {
-        dd($this->_psrRequest);
+        // dd($this->_request->attributes);
+        $oauthAccessTokenId = $this->_request->get('oauth_access_token_id');
+        $oauthClientId = $this->_request->get('oauth_client_id');
+        $oauthUserId = $this->_request->get('oauth_user_id');
+        $oauthScopes = $this->_request->get('oauth_scopes');
+        if(!empty($oauthUserId)) {
+            $user = $this->_userRepository->getUserEntityByIdentifier($oauthUserId);
+    
+            return $user;
+        }
+        
+        throw new \Exception(GLOBAL_ERR_2008);
     }
 }

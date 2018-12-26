@@ -2,11 +2,11 @@
 
 namespace App\Repositories;
 
-use League\OAuth2\Server\Entities\ClientEntityInterface;
 use App\Entities\ThirdEntityInterface;
 use App\Entities\UserEntity;
 use App\Entities\UserEntityInterface;
 use App\Repositories\UserRepositoryInterface;
+use League\OAuth2\Server\Entities\ClientEntityInterface;
 
 class UserRepository implements UserRepositoryInterface
 {
@@ -59,7 +59,7 @@ class UserRepository implements UserRepositoryInterface
      */
     public function getUserEntityByIdentifier($userId)
     {
-        if ($userId === 1) {
+        if ($userId == 1) {
             $user = new UserEntity();
             $user->setIdentifier(1);
             $user->setUsername('lay');

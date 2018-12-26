@@ -57,7 +57,13 @@ class AccessTokenController extends Controller
         // 使用令牌码
         switch($grantType) {
             case 'authorization_code':
-                return $this->_oauth2->authcode($form);
+                return $this->_oauth2->grantAuthcode($form);
+            case 'password':
+                return $this->_oauth2->grantPassword($form);
+            case 'refresh_token':
+                return $this->_oauth2->grantRefreshToken($form);
+            case 'client_credentials':
+                return $this->_oauth2->grantClientCredentials($form);
         }
 
         return $this->success();

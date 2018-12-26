@@ -102,6 +102,7 @@ $app->register(Illuminate\Session\SessionServiceProvider::class);
 $app->register(SimpleSoftwareIO\QrCode\QrCodeServiceProvider::class);
 $app->register(Jenssegers\Agent\AgentServiceProvider::class);
 
+$app->configure('http');  # 加载配置文件
 $app->configure('session');  # 加载配置文件
 $app->bind(Illuminate\Session\SessionManager::class, function () use ($app) {
     return new Illuminate\Session\SessionManager($app);

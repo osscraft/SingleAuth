@@ -9,4 +9,16 @@ use League\OAuth2\Server\Entities\Traits\EntityTrait;
 class UserEntity implements UserEntityInterface
 {
     use EntityTrait, UserTrait;
+
+    /**
+     * {@inheritdoc}
+     */
+    public function jsonSerialize()
+    {
+        return [
+            'id' => $this->getIdentifier(),
+            'name' => $this->getName(),
+            'username' => $this->getUsername(),
+        ];
+    }
 }

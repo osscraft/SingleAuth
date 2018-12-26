@@ -135,10 +135,11 @@ class PortalService
             $form->accessToken = $accessToken = $this->_provider->getAccessToken(OAuth2Service::GRANT_TYPE_AUTH_CODE, [
                 'code' => $_GET['code']
             ]);
-            $form->resourceOwner = $resourceOwner = $this->_provider->getResourceOwner($accessToken);
+            $resourceOwner = $this->_provider->getResourceOwner($accessToken);
+
+            $form->resourceOwner = $resourceOwner->toArray();
 
         } catch(\League\OAuth2\Client\Provider\Exception\IdentityProviderException $e) {
-            dd($e);
             throw new \Exception(OAUTH2_ERR_110);
         }
 

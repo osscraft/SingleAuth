@@ -53,6 +53,8 @@ class ResourceController extends Controller
         // $form->clientId = $this->_request->get('client_id') ?: '';
         // $form->accessToken = $accessToken = $this->_request->get('access_token') ?: '';
 
-        return $this->_oauth2->resource($form);
+        $data = $this->_oauth2->resource($form);
+
+        return $this->success($data);
     }
 }

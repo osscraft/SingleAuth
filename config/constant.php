@@ -7,6 +7,8 @@ define('GLOBAL_ERR_405', '405|方法不存在');
 define('GLOBAL_ERR_500', '500|服务器内部错误');
 define('GLOBAL_ERR_2000', '2000|未知异常');
 
+define('GLOBAL_ERR_2008', '2008|没有权限');
+
 define('USER_ERR_103', '100103|未登录');
 define('USER_ERR_104', '100104|登录用户不一致');
 

@@ -10,8 +10,9 @@
 namespace App\Entities;
 
 use League\OAuth2\Server\Entities\UserEntityInterface as LeagueUserEntityInterface;
+use JsonSerializable;
 
-interface UserEntityInterface extends LeagueUserEntityInterface
+interface UserEntityInterface extends LeagueUserEntityInterface, JsonSerializable
 {
     /**
      * Set the third's identifier.

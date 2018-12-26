@@ -23,6 +23,7 @@ class AppServiceProvider extends ServiceProvider
         $this->app->singleton(\App\Http\Services\AssistService::class);
         $this->app->singleton(\App\Http\Services\ThirdService::class);
         $this->app->singleton(\App\Http\Services\WeixinService::class);
+        $this->app->singleton(\Zend\Diactoros\ServerRequest::class);
         // 每天创建一份日志文件
         // $this->app->configureMonologUsing(function(Logger $monolog) {
         //     $handler = new RotatingFileHandler(storage_path('logs/lumen.log'));
