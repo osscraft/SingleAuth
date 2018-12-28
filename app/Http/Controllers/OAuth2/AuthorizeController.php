@@ -8,6 +8,7 @@ use App\Helper\Traits\Output;
 use App\Http\Controllers\Controller;
 use App\Http\Services\OAuth2Service;
 use Illuminate\Http\Request;
+use Illuminate\Session\Store;
 use Jenssegers\Agent\Facades\Agent;
 use League\OAuth2\Client\Provider\GenericProvider;
 
@@ -27,6 +28,10 @@ class AuthorizeController extends Controller
      * @var Request
      */
     private $_request;
+    /**
+     * @var Store
+     */
+    private $_session;
     /**
      * @var OAuth2Service
      */

@@ -2,16 +2,28 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Http\Request;
+use Illuminate\Session\Store;
+
 class ExampleController extends Controller
 {
+    /**
+     * @var Request
+     */
+    private $_request;
+    /**
+     * @var Store
+     */
+    private $_session;
     /**
      * Create a new controller instance.
      *
      * @return void
      */
-    public function __construct()
+    public function __construct(Request $request)
     {
-        //
+        $this->_request = $request;
+        $this->_session = $request->session();
     }
 
     public function test($name)
@@ -32,5 +44,12 @@ class ExampleController extends Controller
     public function out()
     {
         return 'output';
+    }
+
+    public function clean()
+    {
+        $this->_session->flush();
+        
+        return 'success';
     }
 }

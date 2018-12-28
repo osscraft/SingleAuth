@@ -11,11 +11,12 @@
 |
 */
 
-$router->get('/', function () use ($router) {
-    return $router->app->version();
-});
+// $router->get('/', function () use ($router) {
+//     return $router->app->version();
+// });
 
 $router->group([], function() use ($router) {
+    $router->get('/','Portal\PortalController@index');
     $router->get('index','Portal\PortalController@index');
     $router->get('authorize','OAuth2\AuthorizeController@auth');
     $router->post('authorize','OAuth2\AuthorizeController@auth');
